@@ -7,6 +7,7 @@ import {
   isRouteErrorResponse,
 } from "react-router";
 
+import { QueryProvider } from "@/components/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 import type { Route } from "./+types/root";
@@ -34,7 +35,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <QueryProvider>
+      <Outlet />
+    </QueryProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

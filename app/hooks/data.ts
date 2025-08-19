@@ -16,7 +16,7 @@ async function errorToast(err: any) {
 }
 
 // Auth
-export function useAuthLogin() {
+export function useAuthInitialize() {
   const navigate = useNavigate();
 
   return useMutation({
@@ -27,8 +27,35 @@ export function useAuthLogin() {
       superAdmin: boolean;
     }) => api.post("/users/admin", { json: data }),
     onSuccess: () => {
+      successToast("An OTP has been sent to your email");
+      navigate("/auth/otp");
+    },
+    onError: errorToast,
+  });
+}
+
+export function useAuthOTP() {
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: async (data: { otp: string }) => api.post("/users/admin", { json: data }),
+    onSuccess: () => {
+      successToast("Admin initialized successfully");
+      navigate("/");
+    },
+    onError: errorToast,
+  });
+}
+
+export function useAuthLogin() {
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: async (data: { email: string; password: string }) =>
+      api.post("/users/admin", { json: data }),
+    onSuccess: () => {
       successToast("Logged in successfully");
-      navigate("/account");
+      navigate("/");
     },
     onError: errorToast,
   });

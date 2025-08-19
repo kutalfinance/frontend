@@ -4,7 +4,7 @@ export const formatDate = (dateObj: Date | string): string => {
   const date = new Date(dateObj);
   return date.toLocaleDateString("en-US", {
     day: "2-digit",
-    month: "short", 
-    year: "numeric"
+    month: "short",
+    year: "numeric",
   });
 };

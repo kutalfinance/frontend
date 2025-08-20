@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const headingVariants = cva("scroll-m-20 tracking-tight font-medium", {
   variants: {
     variant: {
-      h1: "text-4xl",
+      h1: "text-3xl",
       h2: "text-2xl",
       h3: "text-lg",
       h4: "text-base",

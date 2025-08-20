@@ -20,15 +20,28 @@ import { Button } from "./ui/button";
 import { Paragraph } from "./ui/text";
 
 export function AppHeader() {
+  const { pathname } = useLocation();
+
   return (
     <div className="border-b">
       <header className="container flex min-h-16 items-center gap-10">
         <AppLogo />
 
         <div className="hidden lg:contents">
-          <nav className="flex gap-7">
+          <nav className="flex gap-3">
             {navLinks.map((link) => (
-              <NavLinkItem key={link.title} to={link.href} link={link} />
+              <NavLink
+                key={link.title}
+                viewTransition
+                to={link.href}
+                className={cn(
+                  "text-muted-foreground hover:text-primary flex items-center gap-1.5 rounded-md px-3 py-2 text-sm transition-colors",
+                  link.pathRegex.test(pathname) && "text-primary bg-muted"
+                )}
+                title={link.title}
+              >
+                <Paragraph className="leading-4">{link.title}</Paragraph>
+              </NavLink>
             ))}
           </nav>
 
@@ -46,10 +59,20 @@ export function AppHeader() {
               <SheetTitle />
               <SheetDescription />
 
-              <nav className="flex flex-col gap-4 py-10 text-lg">
+              <nav className="flex flex-col gap-2 py-10">
                 {navLinks.map((link) => (
-                  <SheetClose asChild>
-                    <NavLinkItem to={link.href} key={link.title} link={link} />
+                  <SheetClose key={link.title} asChild>
+                    <NavLink
+                      viewTransition
+                      to={link.href}
+                      className={cn(
+                        "text-muted-foreground hover:text-primary flex items-center gap-1.5 rounded-md px-3 py-4 text-lg transition-colors",
+                        link.pathRegex.test(pathname) && "text-primary bg-muted"
+                      )}
+                      title={link.title}
+                    >
+                      <Paragraph className="leading-4">{link.title}</Paragraph>
+                    </NavLink>
                   </SheetClose>
                 ))}
               </nav>
@@ -72,27 +95,6 @@ function UserMenu() {
         <AvatarFallback>C</AvatarFallback>
       </Avatar>
     </div>
-  );
-}
-
-function NavLinkItem({
-  link,
-  ...props
-}: React.ComponentProps<typeof NavLink> & { link: (typeof navLinks)[0] }) {
-  const { pathname } = useLocation();
-
-  return (
-    <NavLink
-      viewTransition
-      className={cn(
-        "text-muted-foreground hover:text-foreground flex items-center gap-1.5 rounded-md p-2 transition-colors",
-        link.pathRegex.test(pathname) && "text-primary"
-      )}
-      title={link.title}
-      {...props}
-    >
-      <Paragraph className="leading-4">{link.title}</Paragraph>
-    </NavLink>
   );
 }
 

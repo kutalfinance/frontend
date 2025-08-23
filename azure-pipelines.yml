@@ -118,6 +118,8 @@ stages:
             --name $(CONTAINER_APP_NAME) \
             --resource-group $(RESOURCE_GROUP) \
             --image $(CONTAINER_IMAGE_NAME) \
+            --set-env-vars \
+              VITE_API_URL="$(VITE_API_URL)"
 
           echo "Container App updated successfully!"
 

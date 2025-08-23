@@ -33,9 +33,7 @@ export default function AdminInitialize() {
   return (
     <>
       <hgroup className="flex flex-col">
-        <Heading className="mt-4" variant="h2">
-          Initialize Admin
-        </Heading>
+        <Heading className="mt-4">Initialize Admin</Heading>
         <Paragraph className="text-muted-foreground">Enter your email to continue.</Paragraph>
       </hgroup>
 

@@ -28,9 +28,11 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Paragraph } from "@/components/ui/text";
 
+import { useCreateUser } from "@/hooks/data";
+
 // Zod schemas
 const userDetailsSchema = z.object({
-  isSuperAdmin: z.boolean(),
+  superAdmin: z.boolean(),
   email: z.email("Please enter a valid email address"),
 });
 
@@ -49,9 +51,10 @@ export default function CreateUser() {
   const navigate = useNavigate();
   const [step, setStep] = useState<"details" | "verification">("details");
 
+  const { mutate: createUser } = useCreateUser();
   const detailsForm = useForm<UserDetailsForm>({
     resolver: zodResolver(userDetailsSchema),
-    defaultValues: { isSuperAdmin: false, email: "" },
+    defaultValues: { superAdmin: false, email: "" },
   });
 
   const otpForm = useForm<OTPForm>({
@@ -64,10 +67,7 @@ export default function CreateUser() {
   };
 
   const handleDetailsSubmit = (data: UserDetailsForm) => {
-    // Store user details and proceed to OTP
-    setStep("verification");
-    // Here you would send the email and trigger OTP
-    console.log("Sending OTP for:", data);
+    createUser(data, { onSuccess: () => setStep("verification") });
   };
 
   const handleOtpSubmit = (data: OTPForm) => {
@@ -97,7 +97,7 @@ export default function CreateUser() {
             <form onSubmit={detailsForm.handleSubmit(handleDetailsSubmit)} className="space-y-3">
               <FormField
                 control={detailsForm.control}
-                name="isSuperAdmin"
+                name="superAdmin"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
@@ -132,7 +132,7 @@ export default function CreateUser() {
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder={`Enter ${detailsForm.watch("isSuperAdmin") ? "super admin" : "agent"} email address`}
+                        placeholder={`Enter ${detailsForm.watch("superAdmin") ? "super admin" : "agent"} email address`}
                         {...field}
                       />
                     </FormControl>
@@ -182,8 +182,8 @@ export default function CreateUser() {
                   <div className="flex-1">
                     <Paragraph className="text-sm font-medium">Summary</Paragraph>
                     <Paragraph className="text-muted-foreground text-sm">
-                      Creating {detailsForm.getValues("isSuperAdmin") ? "super admin" : "agent"}{" "}
-                      user: {detailsForm.getValues("email")}
+                      Creating {detailsForm.getValues("superAdmin") ? "super admin" : "agent"} user:{" "}
+                      {detailsForm.getValues("email")}
                     </Paragraph>
                   </div>
                 </div>
@@ -194,7 +194,7 @@ export default function CreateUser() {
                   Back
                 </Button>
                 <Button type="submit">
-                  Create {detailsForm.getValues("isSuperAdmin") ? "Super Admin" : "Agent"}
+                  Create {detailsForm.getValues("superAdmin") ? "Super Admin" : "Agent"}
                 </Button>
               </DialogFooter>
             </form>

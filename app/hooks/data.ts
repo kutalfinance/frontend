@@ -10,8 +10,10 @@ function successToast(description: string) {
 }
 
 async function errorToast(err: any) {
-  // const description =  "Something went wrong. Please try again";
-  const description = (await err.response.text()) ?? "Something went wrong. Please try again";
+  const errResponse = await err.response?.json();
+  // TODO: Remove console log in production
+  console.log("API Error:", errResponse);
+  const description = errResponse?.detail ?? "Something went wrong. Please try again";
   toast.error("Error", { description });
 }
 
@@ -25,7 +27,7 @@ export function useAuthInitialize() {
       email: string;
       password: string;
       superAdmin: boolean;
-    }) => api.post("/users/admin", { json: data }),
+    }) => api.post("users/admin/init", { json: data }),
     onSuccess: () => {
       successToast("An OTP has been sent to your email");
       navigate("/auth/otp");
@@ -38,9 +40,9 @@ export function useAuthOTP() {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: async (data: { otp: string }) => api.post("/users/admin", { json: data }),
+    mutationFn: async (data: { otp: string }) => api.post("users/admin/verify-otp", { json: data }),
     onSuccess: () => {
-      successToast("Admin initialized successfully");
+      successToast("OTP verified successfully");
       navigate("/");
     },
     onError: errorToast,
@@ -52,10 +54,24 @@ export function useAuthLogin() {
 
   return useMutation({
     mutationFn: async (data: { email: string; password: string }) =>
-      api.post("/users/admin", { json: data }),
+      api.post("users/admin/login", { json: data }),
     onSuccess: () => {
       successToast("Logged in successfully");
       navigate("/");
+    },
+    onError: errorToast,
+  });
+}
+
+export function useCreateUser() {
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: (data: { email: string; superAdmin: boolean }) =>
+      api.post("users/admin", { json: data }),
+    onSuccess: () => {
+      successToast("An OTP has been sent to your email");
+      navigate("/auth/otp");
     },
     onError: errorToast,
   });

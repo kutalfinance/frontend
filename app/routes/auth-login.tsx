@@ -33,9 +33,7 @@ export default function Login() {
   return (
     <>
       <hgroup className="flex flex-col">
-        <Heading className="mt-4" variant="h2">
-          Welcome Back
-        </Heading>
+        <Heading className="mt-4">Welcome Back</Heading>
         <Paragraph className="text-muted-foreground">Enter your email to continue.</Paragraph>
       </hgroup>
 

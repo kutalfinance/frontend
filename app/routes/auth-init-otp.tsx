@@ -28,9 +28,7 @@ export default function AdminInitialize() {
   return (
     <>
       <hgroup className="flex flex-col">
-        <Heading className="mt-4" variant="h2">
-          Verify OTP
-        </Heading>
+        <Heading className="mt-4">Verify OTP</Heading>
         <Paragraph className="text-muted-foreground">
           A one-time password has been sent to your email address. Please enter it below to
           continue.

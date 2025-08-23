@@ -54,12 +54,14 @@ stages:
       inputs:
         versionSpec: '22.x'
       displayName: 'Install Node.js'
-    - script: npm install
-      displayName: 'Install Dependencies'
-    - script: npm run test
-      displayName: 'Run Tests'
-    - script: npm run build
-      displayName: 'Build React App'
+    - script: npm install -g pnpm
+      displayName: 'Install pnpm'
+    - script: pnpm install
+      displayName: 'Install Dependencies with pnpm'
+    - script: pnpm run test
+      displayName: 'Run Tests with pnpm'
+    - script: pnpm run build
+      displayName: 'Build React App with pnpm'
 
 - stage: DockerBuildPush
   displayName: 'Docker Build and Push'
@@ -118,8 +120,6 @@ stages:
             --name $(CONTAINER_APP_NAME) \
             --resource-group $(RESOURCE_GROUP) \
             --image $(CONTAINER_IMAGE_NAME) \
-            --set-env-vars \
-              SERVER_URL="$(SERVER_URL)"
 
           echo "Container App updated successfully!"
 

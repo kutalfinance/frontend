@@ -13,7 +13,7 @@ async function errorToast(err: any) {
   const errResponse = await err.response?.json();
   // TODO: Remove console log in production
   console.log("API Error:", errResponse);
-  const description = errResponse?.detail ?? "Something went wrong. Please try again";
+  const description = errResponse?.title ?? "Something went wrong. Please try again";
   toast.error("Error", { description });
 }
 
@@ -29,7 +29,7 @@ export function useAuthInitialize() {
       superAdmin: boolean;
     }) => api.post("users/admin/init", { json: data }),
     onSuccess: () => {
-      successToast("An OTP has been sent to your email");
+      successToast("Admin initialized successfully. Please log in to continue.");
       navigate("/auth/otp");
     },
     onError: errorToast,
@@ -42,7 +42,7 @@ export function useAuthOTP() {
   return useMutation({
     mutationFn: async (data: { otp: string }) => api.post("users/admin/verify-otp", { json: data }),
     onSuccess: () => {
-      successToast("OTP verified successfully");
+      successToast("Logged in successfully");
       navigate("/");
     },
     onError: errorToast,
@@ -56,8 +56,8 @@ export function useAuthLogin() {
     mutationFn: async (data: { email: string; password: string }) =>
       api.post("users/admin/login", { json: data }),
     onSuccess: () => {
-      successToast("Logged in successfully");
-      navigate("/");
+      successToast("An OTP has been sent to your email");
+      navigate("/auth/otp");
     },
     onError: errorToast,
   });

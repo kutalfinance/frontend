@@ -1,0 +1,131 @@
+trigger:
+  branches:
+    include:
+    - dev
+    - staging
+    - main
+
+variables:
+- group: KssGlobal
+
+parameters:
+- name: environment
+  displayName: Environment
+  type: string
+  default: KssFrontendDev
+  values:
+  - KssFrontendDev
+  - KssFrontendProd
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: SecurityScan
+  displayName: 'Security Scanning'
+  condition: in(variables['Build.SourceBranchName'], 'dev')
+  jobs:
+  - job: SecretScan
+    displayName: 'Secret and Credential Scan'
+    steps:
+    - checkout: self
+      fetchDepth: "0"
+
+    - script: |
+        pip install truffleHog3
+        trufflehog3 --format json --output truffleHog-report.json .
+        if [ -s truffleHog-report.json ] && [ "$(cat truffleHog-report.json)" != "[]" ]; then
+          echo "##[error]Secrets detected in repository!"
+          cat truffleHog-report.json
+          exit 1
+        fi
+      displayName: 'Run TruffleHog Secret Scan'
+
+- stage: Build
+  displayName: 'React Vite Build'
+  dependsOn: SecurityScan
+  condition: and(succeeded(), in(variables['Build.SourceBranchName'], 'dev'))
+  jobs:
+  - job: ReactBuild
+    displayName: 'React Vite Build'
+    steps:
+    - checkout: self
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '22.x'
+      displayName: 'Install Node.js'
+    - script: npm install -g pnpm
+      displayName: 'Install pnpm'
+    - script: pnpm install
+      displayName: 'Install Dependencies with pnpm'
+    - script: pnpm run build
+      displayName: 'Build React App with pnpm'
+
+- stage: DockerBuildPush
+  displayName: 'Docker Build and Push'
+  dependsOn: Build
+  condition: in(variables['Build.SourceBranchName'], 'staging', 'main')
+  variables:
+    - name: CONTAINER_IMAGE_NAME
+      value: "$(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.SourceVersion)"
+    - group: ${{ parameters.environment }}
+  jobs:
+  - job: BuildPushDockerImage
+    displayName: 'Build and Push Docker Image'
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'KssArmConnection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az acr login --name $(ACR_NAME)
+          docker build -t $CONTAINER_IMAGE_NAME .
+          docker push $CONTAINER_IMAGE_NAME
+      displayName: 'Build and Push to ACR'
+
+- stage: UpdateContainer
+  displayName: 'Update Container'
+  dependsOn: DockerBuildPush
+  condition: in(variables['Build.SourceBranchName'], 'staging', 'main')
+  variables:
+  - name: CONTAINER_IMAGE_NAME
+    value: "$(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.SourceVersion)"
+  - group: ${{ parameters.environment }}
+
+  jobs:
+  - job: UpdateContainerApp
+    displayName: 'Update Container App'
+    variables:
+    - group: ${{ parameters.environment }}
+    steps:
+    - checkout: none
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'KssArmConnection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo "Updating Container App: $(CONTAINER_APP_NAME)"
+          echo "Resource Group: $(RESOURCE_GROUP)"
+          echo "New Image: $(CONTAINER_IMAGE_NAME)"
+
+          # Update the container app with new image
+          az containerapp update \
+            --name $(CONTAINER_APP_NAME) \
+            --resource-group $(RESOURCE_GROUP) \
+            --image $(CONTAINER_IMAGE_NAME) \
+
+          echo "Container App updated successfully!"
+
+          # Show the current revision status
+          az containerapp revision list \
+            --name $CONTAINER_APP_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --query '[].{Name:name,CreatedTime:properties.createdTime,Active:properties.active,Image:properties.template.containers[0].image}' \
+            --output table
+
+      displayName: 'Update Container App Image'

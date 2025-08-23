@@ -12,10 +12,10 @@ parameters:
 - name: environment
   displayName: Environment
   type: string
-  default: KssBackendDev
+  default: KssFrontendDev
   values:
-  - KssBackendDev
-  - KssBackendProd
+  - KssFrontendDev
+  - KssFrontendProd
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -119,11 +119,7 @@ stages:
             --resource-group $(RESOURCE_GROUP) \
             --image $(CONTAINER_IMAGE_NAME) \
             --set-env-vars \
-              DB_URL="$(DB_URL)" \
-              JWT_SECRET="$(JWT_SECRET)" \
-              MAIL_USER="$(MAIL_USER)" \
-              MAIL_PASSWORD="$(MAIL_PASSWORD)" \
-              CLIENT_URL="$(CLIENT_URL)"
+              SERVER_URL="$(SERVER_URL)"
 
           echo "Container App updated successfully!"
 

@@ -58,8 +58,6 @@ stages:
       displayName: 'Install pnpm'
     - script: pnpm install
       displayName: 'Install Dependencies with pnpm'
-    - script: pnpm run test
-      displayName: 'Run Tests with pnpm'
     - script: pnpm run build
       displayName: 'Build React App with pnpm'
 

@@ -72,7 +72,7 @@ stages:
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: 'dist'
+        artifactName: 'build'
         downloadPath: '$(System.DefaultWorkingDirectory)'
       displayName: 'Download Build Artifacts'
     - script: |

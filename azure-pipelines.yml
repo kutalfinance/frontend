@@ -54,43 +54,32 @@ stages:
       inputs:
         versionSpec: '22.x'
       displayName: 'Install Node.js'
-    - script: npm install -g pnpm
-      displayName: 'Install pnpm'
-    - script: pnpm install
-      displayName: 'Install Dependencies with pnpm'
-    - script: pnpm run build
-      displayName: 'Build React App with pnpm'
-
-    - task: PublishPipelineArtifact@1
+    - script: |
+        corepack enable
+        pnpm install --frozen-lockfile
+        pnpm run build
+      displayName: "Build App"
+    - task: PublishBuildArtifacts@1
       inputs:
-        targetPath: '$(System.DefaultWorkingDirectory)/build'
-        artifact: 'build'
-        publishLocation: 'pipeline'
-      displayName: 'Publish build artifacts'
+        PathtoPublish: 'build'
+        ArtifactName: 'vite-build'
+        publishLocation: 'Container'
 
-- stage: DeploySWA
-  displayName: 'Deploy to Static Web App'
+- stage: Deploy
+  displayName: "Deploy to SWA"
+  condition: or(eq(variables['Build.SourceBranchName'], 'staging'), eq(variables['Build.SourceBranchName'], 'main'))
   dependsOn: Build
-  condition: in(variables['Build.SourceBranchName'], 'staging', 'main')
   variables:
   - group: ${{ parameters.environment }}
-
   jobs:
-  - job: DeployStaticWebApp
-    displayName: 'Deploy to Azure Static Web App'
-    steps:
-      - task: DownloadPipelineArtifact@2
-        inputs:
-          buildType: 'current'
-          artifactName: 'build'
-          targetPath: '$(System.DefaultWorkingDirectory)/swa-build'
-        displayName: 'Download build artifacts'
-
-      - script: npm install -g @azure/static-web-apps-cli
-        displayName: 'Install SWA CLI'
-
-      - script: |
-          swa deploy ./build \
-            --deployment-token $(SWA_DEPLOYMENT_TOKEN) \
-            --env production
-        displayName: 'Deploy with SWA CLI'
+    - job: DeployJob
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:
+        - download: current
+          artifact: vite-build
+        - script: |
+            npm install -g @azure/static-web-apps-cli
+            swa deploy $(Pipeline.Workspace)/vite-build --deployment-token $SWA_DEPLOYMENT_TOKEN
+          env:
+            SWA_DEPLOYMENT_TOKEN: $(SWA_DEPLOYMENT_TOKEN)

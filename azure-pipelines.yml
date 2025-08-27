@@ -8,7 +8,7 @@ trigger:
 variables:
   - group: KssFrontend
   - name: buildFolder
-    value: build
+    value: dist
 
 pool:
   vmImage: ubuntu-latest
@@ -59,7 +59,7 @@ stages:
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(buildFolder)'
-        ArtifactName: 'build'
+        ArtifactName: 'dist'
         publishLocation: Container
       displayName: 'Publish Build Artifacts'
       condition: succeeded()
@@ -72,16 +72,16 @@ stages:
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: 'build'
+        artifactName: 'dist'
         downloadPath: '$(System.DefaultWorkingDirectory)'
       displayName: 'Download Build Artifacts'
     - script: |
-        npm install -g @azure/static-web-apps-cli@1.1.7
+        npm install -g @azure/static-web-apps-cli
         if [ "$(Build.SourceBranchName)" = "main" ]; then
           ENV="production"
         elif [ "$(Build.SourceBranchName)" = "staging" ]; then
           ENV="staging"
         fi
         TOKEN=$(SWA_DEPLOYMENT_TOKEN)
-        swa deploy $(System.DefaultWorkingDirectory)/build --deployment-token $TOKEN --env $ENV
+        swa deploy $(System.DefaultWorkingDirectory)/dist --deployment-token $TOKEN --env $ENV
       displayName: 'Deploy to Azure Static Web App'

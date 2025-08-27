@@ -60,8 +60,12 @@ stages:
       displayName: 'Install Dependencies with pnpm'
     - script: pnpm run build
       displayName: 'Build React App with pnpm'
-    - publish: $(System.DefaultWorkingDirectory)/build
-      artifact: build
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/build'
+        artifact: 'build'
+        publishLocation: 'pipeline'
       displayName: 'Publish build artifacts'
 
 - stage: DeploySWA
@@ -75,9 +79,15 @@ stages:
   - job: DeployStaticWebApp
     displayName: 'Deploy to Azure Static Web App'
     steps:
-      - download: current
-        artifact: build
       - checkout: self
+
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          buildType: 'current'
+          artifactName: 'build'
+          targetPath: '$(System.DefaultWorkingDirectory)/build'
+        displayName: 'Download build artifacts'
+
       - task: AzureStaticWebApp@0
         inputs:
           app_location: $(System.DefaultWorkingDirectory)/build

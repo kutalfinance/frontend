@@ -80,7 +80,7 @@ stages:
       - checkout: self
       - task: AzureStaticWebApp@0
         inputs:
-          app_location: '$(Pipeline.Workspace)/build'
+          app_location: $(System.DefaultWorkingDirectory)/build
           output_location: ''
           skip_app_build: true
           skip_api_build: true

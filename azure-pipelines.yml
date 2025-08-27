@@ -1,36 +1,32 @@
 trigger:
   branches:
     include:
-    - dev
-    - staging
-    - main
+      - dev
+      - staging
+      - main
 
 variables:
-- group: KssGlobal
-
-parameters:
-- name: environment
-  displayName: Environment
-  type: string
-  default: KssFrontendDev
-  values:
-  - KssFrontendDev
-  - KssFrontendProd
+  - group: KssFrontend
+  - name: buildFolder
+    value: build
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: ubuntu-latest
 
 stages:
 - stage: SecurityScan
   displayName: 'Security Scanning'
-  condition: in(variables['Build.SourceBranchName'], 'dev')
+  condition: succeeded()
   jobs:
   - job: SecretScan
     displayName: 'Secret and Credential Scan'
     steps:
     - checkout: self
-      fetchDepth: "0"
-
+      fetchDepth: '0'
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
+      displayName: 'Install Python'
     - script: |
         pip install truffleHog3
         trufflehog3 --format json --output truffleHog-report.json .
@@ -41,10 +37,10 @@ stages:
         fi
       displayName: 'Run TruffleHog Secret Scan'
 
-- stage: Build
-  displayName: 'React Vite Build'
+- stage: BuildAndDeploy
+  displayName: 'Build And Deploy'
   dependsOn: SecurityScan
-  condition: and(succeeded(), in(variables['Build.SourceBranchName'],'dev'))
+  condition: succeeded()
   jobs:
   - job: ReactBuild
     displayName: 'React Vite Build'
@@ -58,28 +54,34 @@ stages:
         corepack enable
         pnpm install --frozen-lockfile
         pnpm run build
-      displayName: "Build App"
+      displayName: 'Build App'
+
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: 'build'
-        ArtifactName: 'vite-build'
-        publishLocation: 'Container'
+        PathtoPublish: '$(buildFolder)'
+        ArtifactName: 'build'
+        publishLocation: Container
+      displayName: 'Publish Build Artifacts'
+      condition: succeeded()
 
-- stage: Deploy
-  displayName: "Deploy to SWA"
-  condition: or(eq(variables['Build.SourceBranchName'], 'staging'), eq(variables['Build.SourceBranchName'], 'main'))
-  dependsOn: Build
-  variables:
-  - group: ${{ parameters.environment }}
-  jobs:
-    - job: DeployJob
-      pool:
-        vmImage: 'ubuntu-latest'
-      steps:
-        - download: current
-          artifact: vite-build
-        - script: |
-            npm install -g @azure/static-web-apps-cli
-            swa deploy $(Pipeline.Workspace)/vite-build --deployment-token $SWA_DEPLOYMENT_TOKEN
-          env:
-            SWA_DEPLOYMENT_TOKEN: $(SWA_DEPLOYMENT_TOKEN)
+  - job: Deploy
+    displayName: 'SWA Deploy'
+    condition: ne(variables['Build.SourceBranchName'], 'dev')
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'dist'
+        downloadPath: '$(System.DefaultWorkingDirectory)'
+      displayName: 'Download Build Artifacts'
+    - script: |
+        npm install -g @azure/static-web-apps-cli@1.1.7
+        if [ "$(Build.SourceBranchName)" = "main" ]; then
+          ENV="production"
+        elif [ "$(Build.SourceBranchName)" = "staging" ]; then
+          ENV="staging"
+        fi
+        TOKEN=$(SWA_DEPLOYMENT_TOKEN)
+        swa deploy $(System.DefaultWorkingDirectory)/build --deployment-token $TOKEN --env $ENV
+      displayName: 'Deploy to Azure Static Web App'

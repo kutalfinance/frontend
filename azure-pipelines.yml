@@ -60,74 +60,27 @@ stages:
       displayName: 'Install Dependencies with pnpm'
     - script: pnpm run build
       displayName: 'Build React App with pnpm'
+    - publish: $(System.DefaultWorkingDirectory)/build
+      artifact: build
+      displayName: 'Publish build artifacts'
 
-- stage: DockerBuildPush
-  displayName: 'Docker Build and Push'
+- stage: DeploySWA
+  displayName: 'Deploy to Static Web App'
   dependsOn: Build
   condition: in(variables['Build.SourceBranchName'], 'staging', 'main')
   variables:
-    - name: CONTAINER_IMAGE_NAME
-      value: "$(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.SourceVersion)"
-    - group: ${{ parameters.environment }}
-  jobs:
-  - job: BuildPushDockerImage
-    displayName: 'Build and Push Docker Image'
-    steps:
-    - checkout: self
-
-    - task: AzureCLI@2
-      inputs:
-        azureSubscription: 'KssArmConnection'
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          az acr login --name $(ACR_NAME)
-          docker build -t $CONTAINER_IMAGE_NAME .
-          docker push $CONTAINER_IMAGE_NAME
-      displayName: 'Build and Push to ACR'
-
-- stage: UpdateContainer
-  displayName: 'Update Container'
-  dependsOn: DockerBuildPush
-  condition: in(variables['Build.SourceBranchName'], 'staging', 'main')
-  variables:
-  - name: CONTAINER_IMAGE_NAME
-    value: "$(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.SourceVersion)"
   - group: ${{ parameters.environment }}
 
   jobs:
-  - job: UpdateContainerApp
-    displayName: 'Update Container App'
-    variables:
-    - group: ${{ parameters.environment }}
+  - job: DeployStaticWebApp
+    displayName: 'Deploy to Azure Static Web App'
     steps:
-    - checkout: none
-
-    - task: AzureCLI@2
-      inputs:
-        azureSubscription: 'KssArmConnection'
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          echo "Updating Container App: $(CONTAINER_APP_NAME)"
-          echo "Resource Group: $(RESOURCE_GROUP)"
-          echo "New Image: $(CONTAINER_IMAGE_NAME)"
-
-          # Update the container app with new image
-          az containerapp update \
-            --name $(CONTAINER_APP_NAME) \
-            --resource-group $(RESOURCE_GROUP) \
-            --image $(CONTAINER_IMAGE_NAME) \
-            --set-env-vars \
-              VITE_API_URL="$(VITE_API_URL)"
-
-          echo "Container App updated successfully!"
-
-          # Show the current revision status
-          az containerapp revision list \
-            --name $CONTAINER_APP_NAME \
-            --resource-group $RESOURCE_GROUP \
-            --query '[].{Name:name,CreatedTime:properties.createdTime,Active:properties.active,Image:properties.template.containers[0].image}' \
-            --output table
-
-      displayName: 'Update Container App Image'
+      - download: current
+        artifact: build
+      - checkout: self
+      - task: AzureStaticWebApp@0
+        inputs:
+          app_location: '/build'
+          output_location: '/output'
+          app_build_command: 'pnpm run build'
+          azure_static_web_apps_api_token: $(SWA_DEPLOYMENT_TOKEN)

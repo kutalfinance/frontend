@@ -86,10 +86,11 @@ stages:
           targetPath: '$(System.DefaultWorkingDirectory)/swa-build'
         displayName: 'Download build artifacts'
 
-      - task: AzureStaticWebApp@0
-        inputs:
-          app_location: '$(System.DefaultWorkingDirectory)/swa-build'
-          output_location: ''
-          skip_app_build: true
-          skip_api_build: true
-          azure_static_web_apps_api_token: $(SWA_DEPLOYMENT_TOKEN)
+      - script: npm install -g @azure/static-web-apps-cli
+        displayName: 'Install SWA CLI'
+
+      - script: |
+          swa deploy ./build \
+            --deployment-token $(SWA_DEPLOYMENT_TOKEN) \
+            --env production
+        displayName: 'Deploy with SWA CLI'

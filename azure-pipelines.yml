@@ -71,7 +71,7 @@ stages:
 - stage: DeploySWA
   displayName: 'Deploy to Static Web App'
   dependsOn: Build
-  condition: and(succeeded(), in(variables['Build.SourceBranchName'], 'staging', 'main'))
+  condition: in(variables['Build.SourceBranchName'], 'staging', 'main')
   variables:
   - group: ${{ parameters.environment }}
 

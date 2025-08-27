@@ -44,7 +44,7 @@ stages:
 - stage: Build
   displayName: 'React Vite Build'
   dependsOn: SecurityScan
-  condition: and(succeeded(), in(variables['Build.SourceBranchName'], 'dev'))
+  condition: and(succeeded(), in(variables['Build.SourceBranchName'], 'dev', 'staging', 'main'))
   jobs:
   - job: ReactBuild
     displayName: 'React Vite Build'
@@ -81,6 +81,6 @@ stages:
       - task: AzureStaticWebApp@0
         inputs:
           app_location: '/build'
-          output_location: '/output'
-          app_build_command: 'pnpm run build'
+          skip_app_build: true
+          skip_api_build: true
           azure_static_web_apps_api_token: $(SWA_DEPLOYMENT_TOKEN)

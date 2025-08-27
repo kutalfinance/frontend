@@ -60,7 +60,7 @@ stages:
       displayName: 'Install Dependencies with pnpm'
     - script: pnpm run build
       displayName: 'Build React App with pnpm'
-    - publish: $(System.DefaultWorkingDirectory)/dist
+    - publish: $(System.DefaultWorkingDirectory)/build
       artifact: build
       displayName: 'Publish build artifacts'
 

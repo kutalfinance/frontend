@@ -44,7 +44,7 @@ stages:
 - stage: Build
   displayName: 'React Vite Build'
   dependsOn: SecurityScan
-  condition: and(succeeded(), in(variables['Build.SourceBranchName'], 'dev', 'staging', 'main'))
+  condition: and(succeeded(), in(variables['Build.SourceBranchName'], ['dev', 'staging', 'main']))
   jobs:
   - job: ReactBuild
     displayName: 'React Vite Build'
@@ -71,7 +71,7 @@ stages:
 - stage: DeploySWA
   displayName: 'Deploy to Static Web App'
   dependsOn: Build
-  condition: in(variables['Build.SourceBranchName'], 'staging', 'main')
+  condition: and(succeeded(), in(variables['Build.SourceBranchName'], ['staging', 'main']))
   variables:
   - group: ${{ parameters.environment }}
 

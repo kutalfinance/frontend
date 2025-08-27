@@ -79,8 +79,6 @@ stages:
   - job: DeployStaticWebApp
     displayName: 'Deploy to Azure Static Web App'
     steps:
-      - checkout: self
-
       - task: DownloadPipelineArtifact@2
         inputs:
           buildType: 'current'

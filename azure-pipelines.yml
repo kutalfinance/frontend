@@ -56,25 +56,6 @@ stages:
         pnpm run build
       displayName: 'Build App'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(buildFolder)'
-        ArtifactName: 'build'
-        publishLocation: Container
-      displayName: 'Publish Build Artifacts'
-      condition: succeeded()
-
-  - job: Deploy
-    displayName: 'SWA Deploy'
-    condition: ne(variables['Build.SourceBranchName'], 'dev')
-    steps:
-    - task: DownloadBuildArtifacts@1
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'build'
-        downloadPath: '$(System.DefaultWorkingDirectory)'
-      displayName: 'Download Build Artifacts'
     - script: |
         npm install -g @azure/static-web-apps-cli
         if [ "$(Build.SourceBranchName)" = "main" ]; then
@@ -82,6 +63,6 @@ stages:
         elif [ "$(Build.SourceBranchName)" = "staging" ]; then
           ENV="staging"
         fi
-        TOKEN=$(SWA_DEPLOYMENT_TOKEN)
-        swa deploy $(System.DefaultWorkingDirectory)/build --deployment-token $TOKEN --env $ENV
+        swa deploy $(buildFolder) --deployment-token $(SWA_DEPLOYMENT_TOKEN) --env $ENV
       displayName: 'Deploy to Azure Static Web App'
+      condition: ne(variables['Build.SourceBranchName'], 'dev')

@@ -8,7 +8,7 @@ trigger:
 variables:
   - group: KssFrontend
   - name: buildFolder
-    value: dist
+    value: build
 
 pool:
   vmImage: ubuntu-latest
@@ -59,7 +59,7 @@ stages:
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(buildFolder)'
-        ArtifactName: 'dist'
+        ArtifactName: 'build'
         publishLocation: Container
       displayName: 'Publish Build Artifacts'
       condition: succeeded()
@@ -72,7 +72,7 @@ stages:
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: 'dist'
+        artifactName: 'build'
         downloadPath: '$(System.DefaultWorkingDirectory)'
       displayName: 'Download Build Artifacts'
     - script: |
@@ -83,5 +83,5 @@ stages:
           ENV="staging"
         fi
         TOKEN=$(SWA_DEPLOYMENT_TOKEN)
-        swa deploy $(System.DefaultWorkingDirectory)/dist --deployment-token $TOKEN --env $ENV
+        swa deploy $(System.DefaultWorkingDirectory)/build --deployment-token $TOKEN --env $ENV
       displayName: 'Deploy to Azure Static Web App'

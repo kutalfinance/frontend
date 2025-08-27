@@ -44,7 +44,7 @@ stages:
 - stage: Build
   displayName: 'React Vite Build'
   dependsOn: SecurityScan
-  condition: in(variables['Build.SourceBranchName'],'dev', 'staging', 'main')
+  condition: and(succeeded(), in(variables['Build.SourceBranchName'],'dev'))
   jobs:
   - job: ReactBuild
     displayName: 'React Vite Build'

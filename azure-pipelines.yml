@@ -6,17 +6,16 @@ trigger:
       - main
 
 variables:
-  - group: KssFrontend
-  - name: buildFolder
-    value: build
+  - group: KssFrontendDev
+  - group: KssGlobal
 
 pool:
   vmImage: ubuntu-latest
 
 stages:
-- stage: SecurityScan
-  displayName: 'Security Scanning'
-  condition: succeeded()
+- stage: ScanAndBuild
+  displayName: 'Scan and Build app'
+  condition: eq(variables['Build.SourceBranchName'], 'dev')
   jobs:
   - job: SecretScan
     displayName: 'Secret and Credential Scan'
@@ -37,18 +36,13 @@ stages:
         fi
       displayName: 'Run TruffleHog Secret Scan'
 
-- stage: BuildAndDeploy
-  displayName: 'Build And Deploy'
-  dependsOn: SecurityScan
-  condition: succeeded()
-  jobs:
   - job: ReactBuild
     displayName: 'React Vite Build'
     steps:
     - checkout: self
     - task: NodeTool@0
       inputs:
-        versionSpec: '22.x'
+        versionSpec: '24.x'
       displayName: 'Install Node.js'
     - script: |
         corepack enable
@@ -56,13 +50,35 @@ stages:
         pnpm run build
       displayName: 'Build App'
 
+- stage: BuildAndDeploy
+  displayName: 'Build Image And Deploy'
+  condition: or(
+    eq(variables['Build.SourceBranchName'], 'staging'),
+    eq(variables['Build.SourceBranchName'], 'main')
+    )
+
+  jobs:
+  - job: BuildImage
+    displayName: 'Build Docker Image'
+    steps:
+    - checkout: self
     - script: |
-        npm install -g @azure/static-web-apps-cli
+        curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+        az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
+        az acr login --name $(ACR_NAME)
+
+        IMAGE=$(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.BuildId)
+        docker build -t $IMAGE .
+        docker push $IMAGE
+
         if [ "$(Build.SourceBranchName)" = "main" ]; then
           ENV="production"
+          RESOURCE_GROUP=$(RESOURCE_GROUP_PROD)
+          ACA_NAME=$(ACA_NAME_PROD)
         elif [ "$(Build.SourceBranchName)" = "staging" ]; then
           ENV="staging"
+          RESOURCE_GROUP=$(RESOURCE_GROUP_DEV)
+          ACA_NAME=$(ACA_NAME_DEV)
         fi
-        swa deploy $(buildFolder) --deployment-token $(SWA_DEPLOYMENT_TOKEN) --env $ENV
-      displayName: 'Deploy to Azure Static Web App'
-      condition: ne(variables['Build.SourceBranchName'], 'dev')
+
+        az containerapp update --resource-group $RESOURCE_GROUP --name $ACA_NAME --image $IMAGE

@@ -6,7 +6,7 @@ trigger:
       - main
 
 variables:
-  - group: KssFrontendDev
+  - group: KssFrontend
   - group: KssGlobal
 
 pool:

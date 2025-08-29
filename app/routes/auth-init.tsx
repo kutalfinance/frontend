@@ -33,8 +33,8 @@ export default function AdminInitialize() {
   return (
     <>
       <hgroup className="flex flex-col">
-        <Heading className="mt-4">Initialize Admin</Heading>
-        <Paragraph className="text-muted-foreground">Enter your email to continue.</Paragraph>
+        <Heading className="mt-4">Initialize Administrator</Heading>
+        <Paragraph className="text-muted-foreground">Create your administrator account to get started.</Paragraph>
       </hgroup>
 
       <div>
@@ -81,7 +81,7 @@ export default function AdminInitialize() {
             />
 
             <Button isLoading={isPending} className="mt-2 w-full">
-              Continue
+              Create Administrator Account
             </Button>
           </form>
         </Form>

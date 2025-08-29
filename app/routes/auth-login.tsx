@@ -34,7 +34,7 @@ export default function Login() {
     <>
       <hgroup className="flex flex-col">
         <Heading className="mt-4">Welcome Back</Heading>
-        <Paragraph className="text-muted-foreground">Enter your email to continue.</Paragraph>
+        <Paragraph className="text-muted-foreground">Enter your credentials to access your account.</Paragraph>
       </hgroup>
 
       <div>
@@ -68,7 +68,7 @@ export default function Login() {
             />
 
             <Button isLoading={isPending} className="mt-2 w-full">
-              Continue
+              Sign In
             </Button>
           </form>
         </Form>

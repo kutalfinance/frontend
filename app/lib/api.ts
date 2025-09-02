@@ -5,7 +5,7 @@ import { API_URL } from "./config";
 
 export const api = ky.extend({
   prefixUrl: `${API_URL}/api/v1`,
-  timeout: 30000,
+  timeout: 1000 * 60,
   hooks: {
     beforeError: [
       (error) => {

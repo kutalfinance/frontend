@@ -14,12 +14,12 @@ import {
 import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAuthLogin } from "@/hooks/data";
+import { useAdminAuthLogin } from "@/hooks/data";
 
 const loginSchema = z.object({ email: z.email(), password: z.string() });
 
 export default function Login() {
-  const { mutate, isPending } = useAuthLogin();
+  const { mutate, isPending } = useAdminAuthLogin();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -34,7 +34,9 @@ export default function Login() {
     <>
       <hgroup className="flex flex-col">
         <Heading className="mt-4">Welcome Back</Heading>
-        <Paragraph className="text-muted-foreground">Enter your credentials to access your account.</Paragraph>
+        <Paragraph className="text-muted-foreground">
+          Enter your credentials to access your account.
+        </Paragraph>
       </hgroup>
 
       <div>

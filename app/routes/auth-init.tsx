@@ -14,12 +14,12 @@ import {
 import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAuthInitialize } from "@/hooks/data";
+import { useAdminAuthInitialize } from "@/hooks/data";
 
 const initSchema = z.object({ name: z.string(), email: z.email(), password: z.string() });
 
 export default function AdminInitialize() {
-  const { mutate, isPending } = useAuthInitialize();
+  const { mutate, isPending } = useAdminAuthInitialize();
 
   const form = useForm<z.infer<typeof initSchema>>({
     resolver: zodResolver(initSchema),
@@ -34,7 +34,9 @@ export default function AdminInitialize() {
     <>
       <hgroup className="flex flex-col">
         <Heading className="mt-4">Initialize Administrator</Heading>
-        <Paragraph className="text-muted-foreground">Create your administrator account to get started.</Paragraph>
+        <Paragraph className="text-muted-foreground">
+          Create your administrator account to get started.
+        </Paragraph>
       </hgroup>
 
       <div>

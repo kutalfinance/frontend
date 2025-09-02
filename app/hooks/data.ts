@@ -13,12 +13,21 @@ async function errorToast(err: any) {
   const errResponse = await err.response?.json();
   // TODO: Remove console log in production
   console.log("API Error:", errResponse);
-  const description = errResponse?.title ?? "Something went wrong. Please try again";
+  const description =
+    errResponse?.detail ?? errResponse?.title ?? "Something went wrong. Please try again";
   toast.error("Error", { description });
 }
 
 // Auth
-export function useAuthInitialize() {
+export function useLoggedInUser() {
+  return useMutation({
+    mutationFn: () => api.get("users/me").json<User>(),
+    onError: errorToast,
+  });
+}
+
+// Auth admin
+export function useAdminAuthInitialize() {
   const navigate = useNavigate();
 
   return useMutation({
@@ -36,7 +45,7 @@ export function useAuthInitialize() {
   });
 }
 
-export function useAuthOTP() {
+export function useAdminAuthOTP() {
   const navigate = useNavigate();
 
   return useMutation({
@@ -49,7 +58,7 @@ export function useAuthOTP() {
   });
 }
 
-export function useAuthLogin() {
+export function useAdminAuthLogin() {
   const navigate = useNavigate();
 
   return useMutation({

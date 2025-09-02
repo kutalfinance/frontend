@@ -9,12 +9,12 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAuthOTP } from "@/hooks/data";
+import { useAdminAuthOTP } from "@/hooks/data";
 
 const otpSchema = z.object({ otp: z.string() });
 
 export default function AdminInitialize() {
-  const { mutate, isPending } = useAuthOTP();
+  const { mutate, isPending } = useAdminAuthOTP();
 
   const form = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),

@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { api } from "@/lib/api";
-import type { User } from "@/lib/types";
+import type { Customer, User } from "@/lib/types";
 
 function successToast(description: string) {
   toast.success("Success", { description });
@@ -84,5 +84,32 @@ export function useCreateUser() {
       navigate("/auth/otp");
     },
     onError: errorToast,
+  });
+}
+
+// Customers
+export function useCustomers() {
+  return useQuery({
+    queryKey: ["customers"],
+    queryFn: () => api.get("customers").json<Customer[]>(),
+  });
+}
+
+export function useCreateCustomer() {
+  return useMutation({
+    mutationFn: (data: Partial<Customer> & { branchId: string }) =>
+      api.post("customers", { json: data }),
+    onSuccess: () => {
+      successToast("Customer created successfully");
+    },
+    onError: errorToast,
+  });
+}
+
+// Branches
+export function useBranches() {
+  return useQuery({
+    queryKey: ["branches"],
+    queryFn: () => api.get("branches").json(),
   });
 }

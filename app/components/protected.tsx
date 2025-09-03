@@ -22,8 +22,8 @@ export function Protected({ children, action, roles }: ProtectedProps) {
   return null;
 }
 
-type AppAction = "users:read" | "users:delete" | "users:create" | "branches:read";
+type AppAction = "users:read" | "users:delete" | "users:create" | "customers:read" | "customers:delete" | "customers:create" | "branches:read";
 const PERMISSIONS_MAP: Record<UserRole, AppAction[]> = {
-  AGENT: ["branches:read", "users:read"],
-  ADMIN: ["branches:read", "users:read", "users:delete", "users:create"],
+  AGENT: ["branches:read", "users:read", "customers:read"],
+  ADMIN: ["branches:read", "users:read", "users:delete", "users:create", "customers:read", "customers:delete", "customers:create"],
 };

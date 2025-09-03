@@ -102,6 +102,6 @@ export const navLinks = [
   { title: "Home", href: "/", pathRegex: /\/$/ },
   { title: "Dashboard", href: "#", pathRegex: /\/dashboard/ },
   { title: "Branches", href: "#", pathRegex: /\/branches/ },
-  { title: "Customers", href: "#", pathRegex: /\/customers/ },
+  { title: "Customers", href: "/customers", pathRegex: /\/customers/ },
   { title: "Users", href: "/users", pathRegex: /\/users/ },
 ];

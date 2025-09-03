@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { api } from "@/lib/api";
-import type { Customer, User } from "@/lib/types";
+import type { Branch, Customer, User } from "@/lib/types";
 
 function successToast(description: string) {
   toast.success("Success", { description });
@@ -110,6 +110,6 @@ export function useCreateCustomer() {
 export function useBranches() {
   return useQuery({
     queryKey: ["branches"],
-    queryFn: () => api.get("branches").json(),
+    queryFn: () => api.get("branches").json<Branch[]>(),
   });
 }

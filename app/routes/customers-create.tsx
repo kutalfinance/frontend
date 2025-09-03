@@ -1,10 +1,19 @@
 import { useNavigate } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Dialog,
   DialogContent,
@@ -21,10 +30,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input, inputStyles } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Heading } from "@/components/ui/text";
 
-import { useCreateCustomer } from "@/hooks/data";
+import { useBranches, useCreateCustomer } from "@/hooks/data";
+import { cn } from "@/lib/utils";
 
 /**
  * The phone regex supports common international formats like:
@@ -59,6 +70,8 @@ type CustomerForm = z.infer<typeof customerSchema>;
 export default function CreateCustomer() {
   const navigate = useNavigate();
   const { mutate: createCustomer, isPending } = useCreateCustomer();
+  const { data } = useBranches();
+  const branches = data || [];
 
   const form = useForm<CustomerForm>({
     resolver: zodResolver(customerSchema),
@@ -109,7 +122,7 @@ export default function CreateCustomer() {
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="phoneNumber"
@@ -139,7 +152,7 @@ export default function CreateCustomer() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="location"
@@ -158,11 +171,55 @@ export default function CreateCustomer() {
                   control={form.control}
                   name="branchId"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Branch ID</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter branch ID" {...field} />
-                      </FormControl>
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Branch</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className={cn(
+                                inputStyles,
+                                "justify-between font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value
+                                ? branches.find((branch) => branch.id === field.value)?.name
+                                : "Select branch"}
+                              <ChevronsUpDown className="opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0">
+                          <Command>
+                            <CommandInput placeholder="Search branches..." className="h-9" />
+                            <CommandList>
+                              <CommandEmpty>No branches found.</CommandEmpty>
+                              <CommandGroup>
+                                {branches.map((branch) => (
+                                  <CommandItem
+                                    value={branch.id}
+                                    key={branch.id}
+                                    onSelect={() => {
+                                      form.setValue("branchId", branch.id);
+                                    }}
+                                  >
+                                    {branch.name}
+                                    <Check
+                                      className={cn(
+                                        "ml-auto",
+                                        branch.id === field.value ? "opacity-100" : "opacity-0"
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -187,7 +244,7 @@ export default function CreateCustomer() {
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="nextOfKin.phoneNubmer"

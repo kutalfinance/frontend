@@ -1,6 +1,11 @@
-import type { Route } from "./+types/home";
+import {
+  ModuleDescription,
+  ModuleHeader,
+  ModuleHeading,
+  ModuleTitle,
+} from "@/components/module-heading";
 
-import { Heading, Paragraph } from "@/components/ui/text";
+import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Dashboard" }, { name: "description", content: "KSS Management Dashboard" }];
@@ -9,12 +14,14 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
   return (
     <div>
-      <hgroup className="flex flex-col">
-        <Heading>Dashboard</Heading>
-        <Paragraph className="text-muted-foreground max-w-lg">
+      <ModuleHeading>
+        <ModuleHeader>
+          <ModuleTitle>Dashboard</ModuleTitle>
+        </ModuleHeader>
+        <ModuleDescription className="text-muted-foreground">
           Welcome to your management dashboard. Monitor system activity and manage users from here.
-        </Paragraph>
-      </hgroup>
+        </ModuleDescription>
+      </ModuleHeading>
     </div>
   );
 }

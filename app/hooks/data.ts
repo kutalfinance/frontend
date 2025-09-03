@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { api } from "@/lib/api";
+import type { User } from "@/lib/types";
 
 function successToast(description: string) {
   toast.success("Success", { description });

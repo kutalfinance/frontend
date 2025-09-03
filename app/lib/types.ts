@@ -1,4 +1,4 @@
-type User = {
+export type User = {
   id: string;
   name: string;
   email: string;
@@ -8,4 +8,4 @@ type User = {
   superAdmin?: boolean; // Optional field
 };
 
-type UserRole = "ADMIN" | "AGENT";
+export type UserRole = "ADMIN" | "AGENT";

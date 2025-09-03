@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,7 +33,6 @@ import {
 } from "@/components/ui/form";
 import { Input, inputStyles } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Heading } from "@/components/ui/text";
 
 import { useBranches, useCreateCustomer } from "@/hooks/data";
 import { cn } from "@/lib/utils";
@@ -46,7 +46,7 @@ import { cn } from "@/lib/utils";
  * */
 const phoneRegex = /^[\+]?[\d\s\-\(\)]+$/;
 
-const customerSchema = z.object({
+const customerDetailsSchema = z.object({
   name: z.string().min(1, "Name is required"),
   phoneNumber: z
     .string()
@@ -54,43 +54,49 @@ const customerSchema = z.object({
     .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)"),
   email: z.email("Please enter a valid email address"),
   location: z.string().min(1, "Location is required"),
-  nextOfKin: z.object({
-    name: z.string().min(1, "Next of kin name is required"),
-    phoneNubmer: z
-      .string()
-      .min(1, "Next of kin phone number is required")
-      .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)"),
-    email: z.email("Please enter a valid next of kin email address"),
-  }),
   branchId: z.string().min(1, "Branch selection is required"),
 });
 
-type CustomerForm = z.infer<typeof customerSchema>;
+const nextOfKinSchema = z.object({
+  name: z.string().min(1, "Next of kin name is required"),
+  phoneNubmer: z
+    .string()
+    .min(1, "Next of kin phone number is required")
+    .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)"),
+  email: z.email("Please enter a valid next of kin email address"),
+});
+
+type CustomerDetailsForm = z.infer<typeof customerDetailsSchema>;
+type NextOfKinForm = z.infer<typeof nextOfKinSchema>;
 
 export default function CreateCustomer() {
   const navigate = useNavigate();
   const { mutate: createCustomer, isPending } = useCreateCustomer();
   const { data } = useBranches();
   const branches = data || [];
+  const [step, setStep] = useState<"customer" | "nextOfKin">("customer");
 
-  const form = useForm<CustomerForm>({
-    resolver: zodResolver(customerSchema),
+  const customerForm = useForm<CustomerDetailsForm>({
+    resolver: zodResolver(customerDetailsSchema),
     defaultValues: {
       name: "",
       phoneNumber: "",
       email: "",
       location: "",
-      nextOfKin: { name: "", phoneNubmer: "", email: "" },
-      branchId: "",
+      branchId: "branch",
     },
+  });
+
+  const nextOfKinForm = useForm<NextOfKinForm>({
+    resolver: zodResolver(nextOfKinSchema),
+    defaultValues: { name: "", phoneNubmer: "", email: "" },
   });
 
   const handleClose = () => navigate("/customers");
 
-  const handleSubmit = (data: CustomerForm) => {
-    createCustomer(data, {
-      onSuccess: () => handleClose(),
-    });
+  const handleFinalSubmit = (data: NextOfKinForm) => {
+    const customerData = customerForm.getValues();
+    createCustomer({ ...customerData, nextOfKin: data }, { onSuccess: () => handleClose() });
   };
 
   return (
@@ -99,17 +105,19 @@ export default function CreateCustomer() {
         <DialogHeader>
           <DialogTitle>Create New Customer</DialogTitle>
           <DialogDescription>
-            Enter the customer details and next of kin information.
+            {step === "customer" && "Enter the customer details and information."}
+            {step === "nextOfKin" && "Enter the next of kin information."}
           </DialogDescription>
         </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <div className="space-y-4">
-              <Heading variant="h4">Customer Information</Heading>
-
+        {step === "customer" && (
+          <Form {...customerForm}>
+            <form
+              onSubmit={customerForm.handleSubmit(() => setStep("nextOfKin"))}
+              className="space-y-4"
+            >
               <FormField
-                control={form.control}
+                control={customerForm.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
@@ -124,7 +132,7 @@ export default function CreateCustomer() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <FormField
-                  control={form.control}
+                  control={customerForm.control}
                   name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
@@ -138,7 +146,7 @@ export default function CreateCustomer() {
                 />
 
                 <FormField
-                  control={form.control}
+                  control={customerForm.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
@@ -154,7 +162,7 @@ export default function CreateCustomer() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <FormField
-                  control={form.control}
+                  control={customerForm.control}
                   name="location"
                   render={({ field }) => (
                     <FormItem>
@@ -168,7 +176,7 @@ export default function CreateCustomer() {
                 />
 
                 <FormField
-                  control={form.control}
+                  control={customerForm.control}
                   name="branchId"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
@@ -203,7 +211,7 @@ export default function CreateCustomer() {
                                     value={branch.id}
                                     key={branch.id}
                                     onSelect={() => {
-                                      form.setValue("branchId", branch.id);
+                                      customerForm.setValue("branchId", branch.id);
                                     }}
                                   >
                                     {branch.name}
@@ -225,14 +233,23 @@ export default function CreateCustomer() {
                   )}
                 />
               </div>
-            </div>
 
-            <div className="space-y-4 border-t pt-4">
-              <Heading variant="h4">Next of Kin Information</Heading>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={handleClose}>
+                  Cancel
+                </Button>
+                <Button type="submit">Continue</Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        )}
 
+        {step === "nextOfKin" && (
+          <Form {...nextOfKinForm}>
+            <form onSubmit={nextOfKinForm.handleSubmit(handleFinalSubmit)} className="space-y-4">
               <FormField
-                control={form.control}
-                name="nextOfKin.name"
+                control={nextOfKinForm.control}
+                name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Next of Kin Name</FormLabel>
@@ -246,8 +263,8 @@ export default function CreateCustomer() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <FormField
-                  control={form.control}
-                  name="nextOfKin.phoneNubmer"
+                  control={nextOfKinForm.control}
+                  name="phoneNubmer"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Next of Kin Phone</FormLabel>
@@ -260,8 +277,8 @@ export default function CreateCustomer() {
                 />
 
                 <FormField
-                  control={form.control}
-                  name="nextOfKin.email"
+                  control={nextOfKinForm.control}
+                  name="email"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Next of Kin Email</FormLabel>
@@ -273,18 +290,18 @@ export default function CreateCustomer() {
                   )}
                 />
               </div>
-            </div>
 
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleClose}>
-                Cancel
-              </Button>
-              <Button type="submit" isLoading={isPending}>
-                Create Customer
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setStep("customer")}>
+                  Back
+                </Button>
+                <Button type="submit" isLoading={isPending}>
+                  Create Customer
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        )}
       </DialogContent>
     </Dialog>
   );

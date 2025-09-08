@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, redirect } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -11,9 +11,21 @@ import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useAdminAuthOTP } from "@/hooks/data";
 
+import type { Route } from "./+types/auth-init-otp";
+
+export const clientLoader = ({ request }: Route.ClientLoaderArgs) => {
+  const url = new URL(request.url);
+  const email = url.searchParams.get("email");
+
+  if (!email) throw redirect("/auth/login");
+
+  return { email };
+};
+
 const otpSchema = z.object({ otp: z.string() });
 
-export default function AdminInitialize() {
+export default function AdminInitialize({ loaderData }: Route.ComponentProps) {
+  const { email } = loaderData;
   const { mutate, isPending } = useAdminAuthOTP();
 
   const form = useForm<z.infer<typeof otpSchema>>({
@@ -22,7 +34,7 @@ export default function AdminInitialize() {
   });
 
   function onLogin(values: z.infer<typeof otpSchema>) {
-    mutate(values);
+    mutate({ ...values, email });
   }
 
   return (
@@ -43,7 +55,7 @@ export default function AdminInitialize() {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <InputOTP maxLength={6} {...field}>
+                  <InputOTP maxLength={6} {...field} autoFocus>
                     <InputOTPGroup>
                       <InputOTPSlot index={0} />
                       <InputOTPSlot index={1} />

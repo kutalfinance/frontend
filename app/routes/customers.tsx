@@ -7,25 +7,27 @@ import {
   ModuleHeading,
   ModuleTitle,
 } from "@/components/module-heading";
-import { Protected } from "@/components/protected";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 import { useCustomers } from "@/hooks/data";
+import { CustomersTable } from "@/modules/customers/data-table";
 
 export default function Customers() {
-  const {} = useCustomers();
+  const { data } = useCustomers();
+  const customers = data ?? [];
 
   return (
     <div>
+      <Outlet />
+
       <ModuleHeading>
         <ModuleHeader>
           <ModuleTitle>Customer Management</ModuleTitle>
           <ModuleActions>
-            <Protected action="customers:create">
-              <Button asChild>
-                <Link to="/customers/create">Create New Customer</Link>
-              </Button>
-            </Protected>
+            <Button asChild>
+              <Link to="/customers/create">Create New Customer</Link>
+            </Button>
           </ModuleActions>
         </ModuleHeader>
         <ModuleDescription>
@@ -34,7 +36,14 @@ export default function Customers() {
         </ModuleDescription>
       </ModuleHeading>
 
-      <Outlet />
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <div></div>
+          <Input placeholder="Filter by name or email..." className="w-full max-w-sm" />
+        </div>
+
+        <CustomersTable customers={customers} />
+      </div>
     </div>
   );
 }

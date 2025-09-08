@@ -11,9 +11,9 @@ export * from "./customer";
 
 // Auth
 export function useLoggedInUser() {
-  return useMutation({
-    mutationFn: () => api.get("users/me").json<User>(),
-    onError: errorToast,
+  return useQuery({
+    queryKey: ["users", "me"],
+    queryFn: () => api.get("users/me").json<User>(),
   });
 }
 
@@ -27,7 +27,7 @@ export function useAdminAuthInitialize() {
       email: string;
       password: string;
       superAdmin: boolean;
-    }) => api.post("users/admin/init", { json: data }),
+    }) => api.post("users/admin/init", { json: data }).json(),
     onSuccess: () => {
       successToast("Admin initialized successfully. Please log in to continue.");
       navigate("/auth/otp");
@@ -40,9 +40,15 @@ export function useAdminAuthOTP() {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: async (data: { otp: string }) => api.post("users/admin/verify-otp", { json: data }),
-    onSuccess: () => {
+    mutationFn: async (data: { otp: string; email: string }) =>
+      api.post("users/admin/verify-otp", { json: data }).json(),
+    onSuccess: (response) => {
+      console.log("Response", response);
+
       successToast("Logged in successfully");
+      // @ts-expect-error untyped token
+      // TODO: manage token type
+      localStorage.setItem("auth_token", response.token);
       navigate("/");
     },
     onError: errorToast,
@@ -50,14 +56,11 @@ export function useAdminAuthOTP() {
 }
 
 export function useAdminAuthLogin() {
-  const navigate = useNavigate();
-
   return useMutation({
     mutationFn: async (data: { email: string; password: string }) =>
-      api.post("users/admin/login", { json: data }),
+      api.post("users/admin/login", { json: data }).json(),
     onSuccess: () => {
       successToast("An OTP has been sent to your email");
-      navigate("/auth/otp");
     },
     onError: errorToast,
   });
@@ -68,7 +71,7 @@ export function useCreateUser() {
 
   return useMutation({
     mutationFn: (data: { email: string; superAdmin: boolean }) =>
-      api.post("users/admin", { json: data }),
+      api.post("users/admin", { json: data }).json(),
     onSuccess: () => {
       successToast("An OTP has been sent to your email");
       navigate("/auth/otp");
@@ -81,6 +84,6 @@ export function useCreateUser() {
 export function useBranches() {
   return useQuery({
     queryKey: ["branches"],
-    queryFn: () => api.get("branches").json<Branch[]>(),
+    queryFn: () => api.get("branch").json<Branch[]>(),
   });
 }

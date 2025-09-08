@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,6 +22,7 @@ const loginSchema = z.object({ email: z.email(), password: z.string() });
 
 export default function Login() {
   const { mutate, isPending } = useAdminAuthLogin();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -27,7 +30,7 @@ export default function Login() {
   });
 
   function onLogin(values: z.infer<typeof loginSchema>) {
-    mutate(values);
+    mutate(values, { onSuccess: () => navigate(`/auth/otp?email=${values.email}`) });
   }
 
   return (

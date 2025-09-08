@@ -1,14 +1,13 @@
 import { Link, Outlet } from "react-router";
 
-import { Protected } from "@/components/protected";
-import { Button } from "@/components/ui/button";
 import {
-  ModuleHeading,
   ModuleActions,
   ModuleDescription,
   ModuleHeader,
+  ModuleHeading,
   ModuleTitle,
 } from "@/components/module-heading";
+import { Button } from "@/components/ui/button";
 
 export default function Users() {
   return (
@@ -17,11 +16,9 @@ export default function Users() {
         <ModuleHeader>
           <ModuleTitle>User Management</ModuleTitle>
           <ModuleActions>
-            <Protected action="users:create">
-              <Button asChild>
-                <Link to="/users/create">Create New User</Link>
-              </Button>
-            </Protected>
+            <Button asChild>
+              <Link to="/users/create">Create New User</Link>
+            </Button>
           </ModuleActions>
         </ModuleHeader>
         <ModuleDescription>

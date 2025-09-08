@@ -14,7 +14,7 @@ const useCustomerReplicache = () => {
     name: "customers",
     puller: async () => {
       try {
-        const customers = await api.get("customers").json<Customer[]>();
+        const customers = await api.get("customer").json<Customer[]>();
 
         const patch = [
           { op: "clear" },
@@ -40,9 +40,7 @@ const useCustomerReplicache = () => {
       }
     },
     pusher: async (req) => {
-      const promises = req.mutations.map((mutation) =>
-        api.post("sync/customers", { json: mutation })
-      );
+      const promises = req.mutations.map((mutation) => api.post("customer", { json: mutation }));
 
       try {
         const responses = await Promise.all(promises);

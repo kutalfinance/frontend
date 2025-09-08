@@ -1,10 +1,14 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { api } from "@/lib/api";
+import { API_URL } from "@/lib/config";
 import type { Branch, Customer, User } from "@/lib/types";
+
+import { useReplicache } from "./use-replicache";
 
 function successToast(description: string) {
   toast.success("Success", { description });
@@ -91,10 +95,68 @@ export function useCreateUser() {
 
 // Customers
 export function useCustomers() {
+  const rep = useReplicache({
+    name: "customers",
+    puller: async () => {
+      const res = await fetch(`${API_URL}/api/v1/customer`);
+
+      return {
+        httpRequestInfo: {
+          httpStatusCode: res.status,
+          errorMessage: "",
+        },
+      };
+    },
+    pusher: async (req) => {
+      console.log("pusher", req);
+
+      const promises = req.mutations.map((m) =>
+        fetch(`${API_URL}/api/v1/customer`, {
+          method: "POST",
+          body: JSON.stringify(m),
+          headers: { "Content-Type": "application/json" },
+        })
+      );
+      const responses = await Promise.all(promises);
+      return {
+        httpRequestInfo: {
+          httpStatusCode: responses[0].status,
+          errorMessage: "",
+        },
+      };
+    },
+
+    mutators: {},
+  });
+
+  useEffect(() => {
+    if (!rep) return;
+
+    rep.subscribe(
+      async (tx) => {
+        return await tx.scan<Customer>().values().toArray();
+      },
+      {
+        onData: (customers) => {
+          console.log("Customers updated:", customers);
+        },
+      }
+    );
+  }, []);
+
   return useQuery({
     queryKey: ["customers"],
-    queryFn: () => api.get("customers").json<Customer[]>(),
+    queryFn: async () => {
+      if (!rep) return [];
+      return await rep.query((tx) => tx.scan<Customer>().toArray());
+    },
+    retry: false,
   });
+
+  // return useQuery({
+  //   queryKey: ["customers"],
+  //   queryFn: () => api.get("customers").json<Customer[]>(),
+  // });
 }
 
 export function useCreateCustomer() {

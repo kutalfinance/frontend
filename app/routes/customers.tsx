@@ -10,7 +10,11 @@ import {
 import { Protected } from "@/components/protected";
 import { Button } from "@/components/ui/button";
 
+import { useCustomers } from "@/hooks/data";
+
 export default function Customers() {
+  const {} = useCustomers();
+
   return (
     <div>
       <ModuleHeading>

@@ -1,0 +1,69 @@
+/**
+ * Centralized query keys factory for React Query
+ * Provides consistent, type-safe query keys across the application
+ */
+
+export const queryKeys = {
+  // Auth related queries
+  auth: {
+    user: () => ["auth", "user"] as const,
+    me: () => ["auth", "me"] as const,
+  },
+  
+  // Users queries
+  users: {
+    all: () => ["users"] as const,
+    detail: (id: string) => ["users", id] as const,
+    me: () => ["users", "me"] as const,
+  },
+  
+  // Customers queries
+  customers: {
+    all: () => ["customers"] as const,
+    detail: (id: string) => ["customers", id] as const,
+    byBranch: (branchId: string) => ["customers", "branch", branchId] as const,
+    search: (query: string) => ["customers", "search", query] as const,
+  },
+  
+  // Branches queries
+  branches: {
+    all: () => ["branches"] as const,
+    detail: (id: string) => ["branches", id] as const,
+    withCustomers: (id: string) => ["branches", id, "customers"] as const,
+  },
+  
+  // Generic utility for creating scoped keys
+  scoped: (scope: string) => ({
+    all: () => [scope] as const,
+    detail: (id: string) => [scope, id] as const,
+    filtered: (filters: Record<string, unknown>) => [scope, "filtered", filters] as const,
+  }),
+} as const;
+
+// Type helpers for query key inference
+export type QueryKeys = typeof queryKeys;
+export type AuthQueryKeys = QueryKeys["auth"];
+export type UsersQueryKeys = QueryKeys["users"];
+export type CustomersQueryKeys = QueryKeys["customers"];
+export type BranchesQueryKeys = QueryKeys["branches"];
+
+// Helper function to get all query keys for a specific scope (useful for invalidation)
+export const getQueryKeysForScope = (scope: keyof typeof queryKeys) => {
+  return queryKeys[scope];
+};
+
+// Helper function to invalidate all queries for a specific entity
+export const invalidationHelpers = {
+  customers: {
+    all: () => queryKeys.customers.all(),
+    related: () => [queryKeys.customers.all(), queryKeys.branches.all()] as const,
+  },
+  users: {
+    all: () => queryKeys.users.all(),
+    related: () => [queryKeys.users.all(), queryKeys.auth.me()] as const,
+  },
+  branches: {
+    all: () => queryKeys.branches.all(),
+    related: () => [queryKeys.branches.all(), queryKeys.customers.all()] as const,
+  },
+};

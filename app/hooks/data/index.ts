@@ -1,18 +1,18 @@
 import { useNavigate } from "react-router";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
+import type { Customer } from "@/lib/types";
 import type { Branch, User } from "@/lib/types";
 
+import { invalidationHelpers, queryKeys } from "./query-keys";
 import { errorToast, successToast } from "./utils";
-
-export * from "./customer";
 
 // Auth
 export function useLoggedInUser() {
   return useQuery({
-    queryKey: ["users", "me"],
+    queryKey: queryKeys.users.me(),
     queryFn: () => api.get("users/me").json<User>(),
   });
 }
@@ -83,7 +83,31 @@ export function useCreateUser() {
 // Branches
 export function useBranches() {
   return useQuery({
-    queryKey: ["branches"],
+    queryKey: queryKeys.branches.all(),
     queryFn: () => api.get("branch").json<Branch[]>(),
+  });
+}
+
+export function useCustomers() {
+  return useQuery({
+    queryKey: queryKeys.customers.all(),
+    queryFn: () => api.get("customer").json<Customer[]>(),
+  });
+}
+
+export function useCreateCustomer() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Partial<Customer> & { branchId: string }) =>
+      api.post("customer", { json: data }).json<Customer>(),
+    onSuccess: () => {
+      // Invalidate related queries using helper
+      invalidationHelpers.customers.related().forEach((queryKey) => {
+        queryClient.invalidateQueries({ queryKey });
+      });
+      successToast("Customer created successfully");
+    },
+    onError: errorToast,
   });
 }

@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { type MutatorDefs, Replicache, type ReplicacheOptions } from "replicache";
 
 export function useReplicache<MD extends MutatorDefs>(options: ReplicacheOptions<MD>) {
-  const ref = useRef<Replicache | null>(null);
+  const ref = useRef<Replicache<MD> | null>(null);
 
   useEffect(() => {
     if (ref.current) return;

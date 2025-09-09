@@ -3,17 +3,33 @@ import { useNavigate } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
-import type { Customer } from "@/lib/types";
-import type { Branch, User } from "@/lib/types";
+import { authToken } from "@/lib/auth-token";
+import type { APIResponse, Branch, Customer, User } from "@/lib/types";
 
-import { invalidationHelpers, queryKeys } from "./query-keys";
-import { errorToast, successToast } from "./utils";
+import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";
 
 // Auth
 export function useLoggedInUser() {
   return useQuery({
     queryKey: queryKeys.users.me(),
     queryFn: () => api.get("users/me").json<User>(),
+  });
+}
+
+export function useLogout() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      authToken.clear();
+      queryClient.clear();
+    },
+    onSuccess: () => {
+      successToast("Logged out successfully");
+      navigate("/auth/login");
+    },
+    onError: errorToast,
   });
 }
 
@@ -41,14 +57,14 @@ export function useAdminAuthOTP() {
 
   return useMutation({
     mutationFn: async (data: { otp: string; email: string }) =>
-      api.post("users/admin/verify-otp", { json: data }).json(),
+      api.post("users/admin/verify-otp", { json: data }).json<APIResponse<{ token: string }>>(),
     onSuccess: (response) => {
       console.log("Response", response);
 
       successToast("Logged in successfully");
-      // @ts-expect-error untyped token
       // TODO: manage token type
-      localStorage.setItem("auth_token", response.token);
+      // @ts-expect-error untyped token
+      authToken.set(response.token);
       navigate("/");
     },
     onError: errorToast,

@@ -1,3 +1,8 @@
+export type APIResponse<T> = {
+  status: string;
+  data: T;
+};
+
 export type User = {
   id: string;
   name: string;

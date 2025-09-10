@@ -1,5 +1,6 @@
-import { Link, Outlet } from "react-router";
+import { Outlet } from "react-router";
 
+import { GroupLink } from "@/components/group-link";
 import {
   ModuleActions,
   ModuleDescription,
@@ -17,7 +18,7 @@ export default function Users() {
           <ModuleTitle>User Management</ModuleTitle>
           <ModuleActions>
             <Button asChild>
-              <Link to="/users/create">Create New User</Link>
+              <GroupLink to="users/create">Create New User</GroupLink>
             </Button>
           </ModuleActions>
         </ModuleHeader>

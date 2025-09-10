@@ -19,6 +19,13 @@ import { AppLogo } from "./app-logo";
 import { Button } from "./ui/button";
 import { Paragraph } from "./ui/text";
 
+const navLinks = [
+  { title: "Home", href: "", pathRegex: /\/(u|a)\/$/ },
+  { title: "Branches", href: "#", pathRegex: /\/branches/ },
+  { title: "Customers", href: "customers", pathRegex: /\/customers/ },
+  { title: "Users", href: "users", pathRegex: /\/users/ },
+];
+
 export function AppHeader() {
   const { pathname } = useLocation();
 
@@ -32,7 +39,6 @@ export function AppHeader() {
             {navLinks.map((link) => (
               <NavLink
                 key={link.title}
-                viewTransition
                 to={link.href}
                 className={cn(
                   "text-muted-foreground hover:text-primary flex items-center gap-1.5 rounded-md px-3 py-2 text-sm transition-colors",
@@ -97,11 +103,3 @@ function UserMenu() {
     </div>
   );
 }
-
-export const navLinks = [
-  { title: "Home", href: "/", pathRegex: /\/$/ },
-  { title: "Dashboard", href: "#", pathRegex: /\/dashboard/ },
-  { title: "Branches", href: "#", pathRegex: /\/branches/ },
-  { title: "Customers", href: "/customers", pathRegex: /\/customers/ },
-  { title: "Users", href: "/users", pathRegex: /\/users/ },
-];

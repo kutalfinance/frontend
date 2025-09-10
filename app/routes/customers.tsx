@@ -15,7 +15,7 @@ import { CustomersTable } from "@/modules/customers/data-table";
 
 export default function Customers() {
   const { data } = useCustomers();
-  const customers = data ?? [];
+  const customers = data?.data ?? [];
 
   return (
     <div>

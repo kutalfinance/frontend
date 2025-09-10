@@ -1,8 +1,8 @@
 import * as React from "react";
 
-import { Slot as SlotPrimitive } from "radix-ui";
 import { type VariantProps, cva } from "class-variance-authority";
 import { LoaderCircle } from "lucide-react";
+import { Slot as SlotPrimitive } from "radix-ui";
 
 import { cn } from "@/lib/utils";
 
@@ -59,10 +59,7 @@ function Button({
       disabled={isLoading || disabled}
       {...props}
     >
-      <span className="contents">
-        {isLoading && <LoaderCircle className="animate-spin" />}
-        {props.children}
-      </span>
+      {isLoading ? <LoaderCircle className="animate-spin" /> : props.children}
     </Comp>
   );
 }

@@ -73,7 +73,7 @@ export default function CreateCustomer() {
   const navigate = useNavigate();
   const { mutate: createCustomer, isPending } = useCreateCustomer();
   const { data } = useBranches();
-  const branches = data || [];
+  const branches = data?.data || [];
   const [step, setStep] = useState<"customer" | "nextOfKin">("customer");
 
   const customerForm = useForm<CustomerDetailsForm>({

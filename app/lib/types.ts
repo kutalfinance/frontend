@@ -1,19 +1,32 @@
 export type APIResponse<T> = {
-  status: string;
+  msg: string;
   data: T;
 };
+
+export enum UserRoles {
+  ADMIN = "ADMIN",
+  AGENT = "AGENT",
+}
 
 export type User = {
   id: string;
   name: string;
   email: string;
-  role: UserRole;
+  role: UserRoles;
   createdAt: string; // date-time
   updatedAt: string; // date-time
   superAdmin?: boolean;
 };
 
-export type UserRole = "ADMIN" | "AGENT";
+export type Agent = {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRoles;
+  branches?: Branch[];
+  createdAt: string; // date-time
+  updatedAt: string; // date-time
+};
 
 export type CustomerNextOfKin = {
   name: string;
@@ -39,16 +52,6 @@ export type Branch = {
   location: string;
   agent?: User;
   customers?: Customer[];
-  createdAt: string; // date-time
-  updatedAt: string; // date-time
-};
-
-export type Agent = {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  branches?: Branch[];
   createdAt: string; // date-time
   updatedAt: string; // date-time
 };

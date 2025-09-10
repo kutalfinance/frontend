@@ -11,7 +11,7 @@ import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useAdminAuthOTP } from "@/hooks/data";
 
-import type { Route } from "./+types/auth-init-otp";
+import type { Route } from "./+types/auth-admin-otp";
 
 export const clientLoader = ({ request }: Route.ClientLoaderArgs) => {
   const url = new URL(request.url);
@@ -42,8 +42,7 @@ export default function AdminInitialize({ loaderData }: Route.ComponentProps) {
       <hgroup className="flex flex-col">
         <Heading className="mt-4">Verify OTP</Heading>
         <Paragraph className="text-muted-foreground">
-          A one-time password has been sent to your email address. Please enter it below to
-          continue.
+          A one-time password has been sent to {email}. Please enter it below to continue.
         </Paragraph>
       </hgroup>
 

@@ -30,7 +30,7 @@ export default function Login() {
   });
 
   function onLogin(values: z.infer<typeof loginSchema>) {
-    mutate(values, { onSuccess: () => navigate(`/auth/otp?email=${values.email}`) });
+    mutate(values, { onSuccess: () => navigate(`/auth/admin/otp?email=${values.email}`) });
   }
 
   return (

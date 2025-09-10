@@ -11,7 +11,6 @@
     "format:fix": "prettier --log-level warn --write ."
   },
   "dependencies": {
-    "@fontsource-variable/geist": "^5.2.6",
     "@fontsource-variable/geist-mono": "^5.2.6",
     "@hookform/resolvers": "^5.2.1",
     "@react-router/node": "^7.7.1",

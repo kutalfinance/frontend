@@ -10,9 +10,26 @@ import { errorToast, invalidationHelpers, queryKeys, successToast } from "./util
 
 // Auth
 export function useLoggedInUser() {
+  const navigate = useNavigate();
+
   return useQuery({
     queryKey: queryKeys.users.me(),
-    queryFn: () => api.get("users/me").json<User>(),
+    queryFn: async () => {
+      try {
+        const response = await api.get("users/me").json<User>();
+        if (!response) {
+          navigate("/auth");
+          authToken.clear();
+          return;
+        }
+
+        return response;
+      } catch (e) {
+        navigate("/auth");
+        authToken.clear();
+        return;
+      }
+    },
   });
 }
 
@@ -59,12 +76,11 @@ export function useAdminAuthOTP() {
     mutationFn: async (data: { otp: string; email: string }) =>
       api.post("users/admin/verify-otp", { json: data }).json<APIResponse<{ token: string }>>(),
     onSuccess: (response) => {
-      console.log("Response", response);
-
-      successToast("Logged in successfully");
       // TODO: manage token type
       // @ts-expect-error untyped token
       authToken.set(response.token);
+
+      successToast("Logged in successfully");
       navigate("/");
     },
     onError: errorToast,
@@ -100,14 +116,14 @@ export function useCreateUser() {
 export function useBranches() {
   return useQuery({
     queryKey: queryKeys.branches.all(),
-    queryFn: () => api.get("branch").json<Branch[]>(),
+    queryFn: () => api.get("branch").json<APIResponse<Branch[]>>(),
   });
 }
 
 export function useCustomers() {
   return useQuery({
     queryKey: queryKeys.customers.all(),
-    queryFn: () => api.get("customer").json<Customer[]>(),
+    queryFn: () => api.get("customer").json<APIResponse<Customer[]>>(),
   });
 }
 

@@ -1,23 +1,33 @@
 FROM node:22-alpine AS installer
-COPY ./package.json package-lock.json /app/
+RUN corepack enable
+COPY ./package.json pnpm-lock.yaml /app/
 WORKDIR /app
-RUN npm install
+RUN pnpm install --frozen-lockfile
 
 FROM node:22-alpine AS builder
+RUN corepack enable
 COPY . /app/
 COPY --from=installer /app/node_modules /app/node_modules
 WORKDIR /app
 
 ARG VITE_API_URL
 
-RUN npm run build
+RUN pnpm build
 
-FROM node:22-alpine
-COPY ./package.json package-lock.json /app/
-COPY --from=installer /app/node_modules /app/node_modules
-COPY --from=builder /app/dist /app/dist
-WORKDIR /app
-RUN npm install -g serve
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY <<EOF /etc/nginx/conf.d/default.conf
+server {
+    listen 80;
+    server_name localhost;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location / {
+        try_files \$uri \$uri/ /index.html;
+    }
+}
+EOF
 
 EXPOSE 80
-CMD ["serve", "-s", "dist", "-l", "80"]
+CMD ["nginx", "-g", "daemon off;"]

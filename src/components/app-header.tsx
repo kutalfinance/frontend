@@ -20,7 +20,7 @@ import { Paragraph } from "./ui/text";
 
 const navLinks: { title: string; href: LinkProps["to"]; pathRegex: RegExp }[] = [
   { title: "Home", href: "/u", pathRegex: /\/u$/ },
-  { title: "Branches", href: "/u/branches", pathRegex: /\/branches/ },
+  { title: "Branches", href: ".", pathRegex: /\/branches/ },
   { title: "Customers", href: "/u/customers", pathRegex: /\/customers/ },
   { title: "Users", href: "/u/users", pathRegex: /\/users/ },
 ];

@@ -1,5 +1,3 @@
-import { useNavigate } from "react-router";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { CornerUpLeft } from "lucide-react";
@@ -19,14 +17,6 @@ import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useAdminAuthLogin } from "@/hooks/data";
-<<<<<<<< HEAD:src/routes/_auth.auth/auth-admin-login.tsx
-
-const loginSchema = z.object({ email: z.email(), password: z.string() });
-
-export default function Login() {
-  const { mutate, isPending } = useAdminAuthLogin();
-  const navigate = useNavigate();
-========
 
 export const Route = createFileRoute("/_auth/auth/u/login")({
   component: AdminLogin,
@@ -37,7 +27,6 @@ const loginSchema = z.object({ email: z.email(), password: z.string() });
 export default function AdminLogin() {
   const { mutate, isPending } = useAdminAuthLogin();
   const navigate = Route.useNavigate();
->>>>>>>> cdaa337 (BREAKING: migrate from react router to tanstack router):src/routes/_auth.auth/u.login.tsx
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -45,13 +34,9 @@ export default function AdminLogin() {
   });
 
   function onLogin(values: z.infer<typeof loginSchema>) {
-<<<<<<<< HEAD:src/routes/_auth.auth/auth-admin-login.tsx
-    mutate(values, { onSuccess: () => navigate(`/auth/admin/otp?email=${values.email}`) });
-========
     mutate(values, {
       onSuccess: () => navigate({ to: "/auth/u/otp", search: { email: values.email } }),
     });
->>>>>>>> cdaa337 (BREAKING: migrate from react router to tanstack router):src/routes/_auth.auth/u.login.tsx
   }
 
   return (

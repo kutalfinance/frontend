@@ -1,8 +1,3 @@
-<<<<<<<< HEAD:src/routes/_auth.auth/auth-admin-otp.tsx
-import { Link, redirect } from "react-router";
-
-========
->>>>>>>> cdaa337 (BREAKING: migrate from react router to tanstack router):src/routes/_auth.auth/u.otp.tsx
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, createFileRoute, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
@@ -15,23 +10,6 @@ import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useAdminAuthOTP } from "@/hooks/data";
 
-<<<<<<<< HEAD:src/routes/_auth.auth/auth-admin-otp.tsx
-import type { Route } from "./+types/auth-admin-otp";
-
-export const clientLoader = ({ request }: Route.ClientLoaderArgs) => {
-  const url = new URL(request.url);
-  const email = url.searchParams.get("email");
-
-  if (!email) throw redirect("/auth/login");
-
-  return { email };
-};
-
-const otpSchema = z.object({ otp: z.string() });
-
-export default function AdminInitialize({ loaderData }: Route.ComponentProps) {
-  const { email } = loaderData;
-========
 export const Route = createFileRoute("/_auth/auth/u/otp")({
   component: AdminOTP,
   validateSearch: z.object({ email: z.email() }),
@@ -44,7 +22,6 @@ const otpSchema = z.object({ otp: z.string() });
 
 export default function AdminOTP() {
   const { email } = Route.useSearch();
->>>>>>>> cdaa337 (BREAKING: migrate from react router to tanstack router):src/routes/_auth.auth/u.otp.tsx
   const { mutate, isPending } = useAdminAuthOTP();
 
   const form = useForm<z.infer<typeof otpSchema>>({

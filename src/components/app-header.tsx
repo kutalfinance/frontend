@@ -18,19 +18,11 @@ import { AppLogo } from "./app-logo";
 import { Button } from "./ui/button";
 import { Paragraph } from "./ui/text";
 
-<<<<<<< HEAD:app/components/app-header.tsx
-const navLinks = [
-  { title: "Home", href: "", pathRegex: /\/(u|a)\/$/ },
-  { title: "Branches", href: "#", pathRegex: /\/branches/ },
-  { title: "Customers", href: "customers", pathRegex: /\/customers/ },
-  { title: "Users", href: "users", pathRegex: /\/users/ },
-=======
 const navLinks: { title: string; href: LinkProps["to"]; pathRegex: RegExp }[] = [
   { title: "Home", href: "/u", pathRegex: /\/u$/ },
-  { title: "Branches", href: ".", pathRegex: /\/branches/ },
+  { title: "Branches", href: "/u/branches", pathRegex: /\/branches/ },
   { title: "Customers", href: "/u/customers", pathRegex: /\/customers/ },
   { title: "Users", href: "/u/users", pathRegex: /\/users/ },
->>>>>>> cdaa337 (BREAKING: migrate from react router to tanstack router):src/components/app-header.tsx
 ];
 
 export function AppHeader() {

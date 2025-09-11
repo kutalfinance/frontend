@@ -16,21 +16,15 @@ import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useAdminAuthInitialize } from "@/hooks/data";
-<<<<<<<< HEAD:src/routes/_auth.auth/auth-admin-init.tsx
-========
 
 export const Route = createFileRoute("/_auth/auth/u/initialize")({
   component: AdminInitialize,
 });
->>>>>>>> cdaa337 (BREAKING: migrate from react router to tanstack router):src/routes/_auth.auth/u.initialize.tsx
 
 const initSchema = z.object({ name: z.string(), email: z.email(), password: z.string() });
 
 export default function AdminInitialize() {
-<<<<<<<< HEAD:src/routes/_auth.auth/auth-admin-init.tsx
-========
   const navigate = Route.useNavigate();
->>>>>>>> cdaa337 (BREAKING: migrate from react router to tanstack router):src/routes/_auth.auth/u.initialize.tsx
   const { mutate, isPending } = useAdminAuthInitialize();
 
   const form = useForm<z.infer<typeof initSchema>>({

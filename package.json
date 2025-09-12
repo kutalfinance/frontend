@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build && tsc",
-    "dev": "vite --port 3000",
+    "dev": "vite --port 5500",
     "format": "prettier --log-level warn --check .",
     "format:fix": "prettier --log-level warn --write .",
     "serve": "vite preview",

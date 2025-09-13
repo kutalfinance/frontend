@@ -1,18 +1,19 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
 import { authToken } from "@/lib/auth-token";
 import type {
   APIResponse,
+  AdminMetrics,
+  AgentLogin,
   Branch,
   Customer,
-  User,
-  AdminMetrics,
-  VerifyOtp,
-  AgentLogin,
   ResetPassword,
   SendPasswordResetLink,
+  User,
+  VerifyOtp,
 } from "@/lib/types";
 
 import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";

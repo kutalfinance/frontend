@@ -1,8 +1,8 @@
 import ky from "ky";
 import { toast } from "sonner";
 
-import { API_URL } from "./config";
 import { authToken } from "./auth-token";
+import { API_URL } from "./config";
 
 export const api = ky.extend({
   prefixUrl: `${API_URL}/api/v1`,

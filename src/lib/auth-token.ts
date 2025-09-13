@@ -53,4 +53,3 @@ export const authToken = {
     return token ? `Bearer ${token}` : null;
   },
 } as const;
-

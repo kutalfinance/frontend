@@ -1,7 +1,8 @@
+import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
+
 import { api } from "@/lib/api";
 import { authToken } from "@/lib/auth-token";
-import { UserRoles, type User } from "@/lib/types";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { type User, UserRoles } from "@/lib/types";
 
 // Root route handler - authenticates user and redirects based on role
 export const Route = createFileRoute("/")({

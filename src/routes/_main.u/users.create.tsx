@@ -1,10 +1,11 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { SuperAdminOnly } from "@/components/protected";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -30,7 +31,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Paragraph } from "@/components/ui/text";
 
 import { useCreateUser } from "@/hooks/data";
-import { SuperAdminOnly } from "@/components/protected";
 
 export const Route = createFileRoute("/_main/u/users/create")({
   component: CreateUser,

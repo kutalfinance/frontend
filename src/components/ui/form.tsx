@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import { Label as LabelPrimitive, Slot as SlotPrimitive } from "radix-ui";
-
 import {
   Controller,
   type ControllerProps,

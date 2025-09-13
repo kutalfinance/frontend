@@ -25,14 +25,7 @@ export function useLoggedInUser() {
     queryKey: queryKeys.users.me(),
     queryFn: async () => {
       try {
-        const response = await api.get("users/me").json<User>();
-        if (!response) {
-          navigate({ to: "/auth" });
-          authToken.clear();
-          return;
-        }
-
-        return response;
+        return await api.get("users/me").json<User>();
       } catch (e) {
         navigate({ to: "/auth" });
         authToken.clear();
@@ -143,7 +136,8 @@ export function useCreateAgent() {
 
 export function useAgentLogin() {
   return useMutation({
-    mutationFn: (data: AgentLogin) => api.post("users/agent/login", { json: data }).json<APIResponse<unknown>>(),
+    mutationFn: (data: AgentLogin) =>
+      api.post("users/agent/login", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       successToast("An OTP has been sent to your email");
     },
@@ -242,7 +236,8 @@ export function useDeleteBranch() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => api.delete("branch", { searchParams: { id } }).json<APIResponse<unknown>>(),
+    mutationFn: (id: string) =>
+      api.delete("branch", { searchParams: { id } }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       invalidationHelpers.branches.related().forEach((queryKey) => {
         queryClient.invalidateQueries({ queryKey });

@@ -55,3 +55,39 @@ export type Branch = {
   createdAt: string; // date-time
   updatedAt: string; // date-time
 };
+
+// ========== ADDITIONAL TYPES ==========
+
+export type AdminMetrics = {
+  totalUsers?: number;
+  totalBranches?: number;
+  totalCustomers?: number;
+};
+
+export type VerifyOtp = {
+  email: string;
+  otp: string;
+};
+
+export type LoginResponse = {
+  message?: string;
+  token?: string;
+};
+
+export type AgentLogin = {
+  email: string;
+};
+
+export type ResetPassword = {
+  email: string;
+  newPassword: string;
+};
+
+export type SendPasswordResetLink = {
+  email: string;
+};
+
+export type AdminLogin = {
+  email: string;
+  password: string;
+};

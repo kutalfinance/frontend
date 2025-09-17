@@ -6,7 +6,7 @@
   "jsxSingleQuote": false,
   "printWidth": 100,
   "importOrder": [
-    "^(react|react-router/?([a-zA-Z/]*))$",
+    "^(react|@tanstack\/react-router/?([a-zA-Z/]*))$",
     "<THIRD_PARTY_MODULES>",
     "^@/components/(.*)$",
     "^@/(.*)$",

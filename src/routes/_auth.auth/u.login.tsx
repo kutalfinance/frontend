@@ -1,5 +1,6 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, createFileRoute } from "@tanstack/react-router";
+
+import { zodResolver } from "@hookform/resolvers/zod";
 import { CornerUpLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

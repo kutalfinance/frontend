@@ -1,10 +1,11 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { SuperAdminOnly } from "@/components/protected";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -155,31 +156,36 @@ function CreateUser() {
               />
 
               {userType === "admin" && (
-                <FormField
-                  control={detailsForm.control}
-                  name="superAdmin"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <div className="hover:bg-muted relative flex items-start justify-between gap-2 rounded-lg border p-3 transition-colors">
-                          <div className="flex-1 space-y-1">
-                            <FormLabel htmlFor="super-admin-switch">Super Administrator</FormLabel>
-                            <Paragraph className="text-muted-foreground text-xs">
-                              Grant full administrative privileges and user management capabilities
-                            </Paragraph>
+                <SuperAdminOnly>
+                  <FormField
+                    control={detailsForm.control}
+                    name="superAdmin"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="hover:bg-muted relative flex items-start justify-between gap-2 rounded-lg border p-3 transition-colors">
+                            <div className="flex-1 space-y-1">
+                              <FormLabel htmlFor="super-admin-switch">
+                                Super Administrator
+                              </FormLabel>
+                              <Paragraph className="text-muted-foreground text-xs">
+                                Grant full administrative privileges and user management
+                                capabilities
+                              </Paragraph>
+                            </div>
+                            <Checkbox
+                              id="super-admin-switch"
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="after:absolute after:inset-0"
+                            />
                           </div>
-                          <Checkbox
-                            id="super-admin-switch"
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="after:absolute after:inset-0"
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </SuperAdminOnly>
               )}
 
               <DialogFooter>

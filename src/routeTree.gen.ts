@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RouteRouteImport } from './routes/route'
 import { Route as MainURouteRouteImport } from './routes/_main.u/route'
 import { Route as AuthAuthRouteRouteImport } from './routes/_auth.auth/route'
 import { Route as MainUIndexRouteImport } from './routes/_main.u/index'
@@ -21,6 +22,11 @@ import { Route as AuthAuthUOtpRouteImport } from './routes/_auth.auth/u.otp'
 import { Route as AuthAuthULoginRouteImport } from './routes/_auth.auth/u.login'
 import { Route as AuthAuthUInitializeRouteImport } from './routes/_auth.auth/u.initialize'
 
+const RouteRoute = RouteRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MainURouteRoute = MainURouteRouteImport.update({
   id: '/_main/u',
   path: '/u',
@@ -78,6 +84,7 @@ const AuthAuthUInitializeRoute = AuthAuthUInitializeRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof RouteRoute
   '/auth': typeof AuthAuthRouteRouteWithChildren
   '/u': typeof MainURouteRouteWithChildren
   '/u/customers': typeof MainUCustomersRouteWithChildren
@@ -91,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/u/users/create': typeof MainUUsersCreateRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof RouteRoute
   '/u/customers': typeof MainUCustomersRouteWithChildren
   '/u/users': typeof MainUUsersRouteWithChildren
   '/auth': typeof AuthAuthIndexRoute
@@ -103,6 +111,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof RouteRoute
   '/_auth/auth': typeof AuthAuthRouteRouteWithChildren
   '/_main/u': typeof MainURouteRouteWithChildren
   '/_main/u/customers': typeof MainUCustomersRouteWithChildren
@@ -118,6 +127,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/auth'
     | '/u'
     | '/u/customers'
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/u/users/create'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/u/customers'
     | '/u/users'
     | '/auth'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/u/users/create'
   id:
     | '__root__'
+    | '/'
     | '/_auth/auth'
     | '/_main/u'
     | '/_main/u/customers'
@@ -156,12 +168,20 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  RouteRoute: typeof RouteRoute
   AuthAuthRouteRoute: typeof AuthAuthRouteRouteWithChildren
   MainURouteRoute: typeof MainURouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof RouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_main/u': {
       id: '/_main/u'
       path: '/u'
@@ -301,6 +321,7 @@ const MainURouteRouteWithChildren = MainURouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  RouteRoute: RouteRoute,
   AuthAuthRouteRoute: AuthAuthRouteRouteWithChildren,
   MainURouteRoute: MainURouteRouteWithChildren,
 }

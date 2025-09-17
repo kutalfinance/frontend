@@ -1,5 +1,6 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 

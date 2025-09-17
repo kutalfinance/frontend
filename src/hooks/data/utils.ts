@@ -48,6 +48,11 @@ export const queryKeys = {
     withCustomers: (id: string) => ["branches", id, "customers"] as const,
   },
 
+  // Metrics queries
+  metrics: {
+    admin: () => ["metrics", "admin"] as const,
+  },
+
   // Generic utility for creating scoped keys
   scoped: (scope: string) => ({
     all: () => [scope] as const,

@@ -15,7 +15,7 @@ export type User = {
   role: UserRoles;
   createdAt: string; // date-time
   updatedAt: string; // date-time
-  superAdmin?: boolean;
+  isSuperAdmin?: boolean;
 };
 
 export type Agent = {

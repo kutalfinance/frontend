@@ -27,13 +27,14 @@ import { Input } from "@/components/ui/input";
 
 import { useUsers } from "@/hooks/data";
 import type { User } from "@/lib/types";
+import { CircleCheckBig, LoaderCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_main/u/users")({
   component: Users,
 });
 
 function Users() {
-  const { data } = useUsers();
+  const { data, isLoading } = useUsers();
   const users = data?.data ?? [];
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -89,7 +90,13 @@ function Users() {
           <Input placeholder="Filter by name or email..." className="w-full max-w-sm" />
         </div>
 
-        <DataTable table={table} />
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <LoaderCircle className="text-primary size-8 animate-spin" />
+          </div>
+        ) : (
+          <DataTable table={table} />
+        )}
       </div>
     </div>
   );
@@ -99,38 +106,41 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ getValue }) => <span className="font-medium">{getValue() as string}</span>,
+    cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
   },
   {
     accessorKey: "email",
     header: "Email",
-    cell: ({ getValue }) => <span className="text-muted-foreground">{getValue() as string}</span>,
+    cell: ({ row }) => <span className="text-muted-foreground">{row.original.email}</span>,
   },
   {
     accessorKey: "role",
     header: "Role",
-    cell: ({ getValue }) => {
-      const role = getValue() as string;
+    cell: ({ row }) => {
+      const role = row.original.role;
       return <Badge variant={role === "ADMIN" ? "default" : "secondary"}>{role}</Badge>;
     },
   },
   {
-    accessorKey: "superAdmin",
-    header: "Super Admin",
-    cell: ({ getValue }) => {
-      const isSuperAdmin = getValue() as boolean;
-      return isSuperAdmin ? (
-        <Badge variant="destructive">Super Admin</Badge>
-      ) : (
-        <span className="text-muted-foreground">—</span>
+    accessorKey: "isSuperAdmin",
+    header: () => <span className="block w-fit">Super Admin</span>,
+    cell: ({ row }) => {
+      return (
+        <div className="">
+          {row.original.isSuperAdmin ? (
+            <CircleCheckBig className="text-success size-5" />
+          ) : (
+            <span className="text-muted-foreground ml-0.5">—</span>
+          )}
+        </div>
       );
     },
   },
   {
     accessorKey: "createdAt",
     header: "Created",
-    cell: ({ getValue }) => {
-      const date = new Date(getValue() as string);
+    cell: ({ row }) => {
+      const date = new Date(row.original.createdAt);
       return <span className="text-muted-foreground">{date.toLocaleDateString()}</span>;
     },
   },

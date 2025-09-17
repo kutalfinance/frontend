@@ -98,9 +98,16 @@ export function useAdminAuthLogin() {
 // ========== AUTH MODULE END ==========
 
 // ========== USERS MODULE START ==========
-export function useCreateUser() {
+export function useUsers() {
+  return useQuery({
+    queryKey: queryKeys.users.all(),
+    queryFn: () => api.get("user").json<APIResponse<User[]>>(),
+  });
+}
+
+export function useCreateAdmin() {
   return useMutation({
-    mutationFn: (data: { email: string; superAdmin: boolean }) =>
+    mutationFn: (data: Partial<User>) =>
       api.post("user/admin", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       successToast("An OTP has been sent to your email");
@@ -109,18 +116,11 @@ export function useCreateUser() {
   });
 }
 
-export function useUsers() {
-  return useQuery({
-    queryKey: queryKeys.users.all(),
-    queryFn: () => api.get("users").json<APIResponse<User[]>>(),
-  });
-}
-
 export function useCreateAgent() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { name: string; email: string }) =>
+    mutationFn: (data: Partial<User>) =>
       api.post("user/agent", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       invalidationHelpers.users.related().forEach((queryKey) => {

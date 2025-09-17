@@ -30,7 +30,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Paragraph } from "@/components/ui/text";
 
-import { useCreateUser } from "@/hooks/data";
+import { useCreateAdmin, useCreateAgent } from "@/hooks/data";
 
 export const Route = createFileRoute("/_main/u/users/create")({
   component: CreateUser,
@@ -50,7 +50,7 @@ const userTypeOptions = [
 ];
 
 const userDetailsSchema = z.object({
-  superAdmin: z.boolean(),
+  superAdmin: z.boolean().optional(),
   email: z.email("Please enter a valid email address"),
 });
 
@@ -70,7 +70,8 @@ function CreateUser() {
   const [step, setStep] = useState<"userType" | "details" | "verification">("userType");
   const [userType, setUserType] = useState<"agent" | "admin" | (string & {})>("agent");
 
-  const { mutate: createUser, isPending } = useCreateUser();
+  const { mutate: createAdmin, isPending: isPendingAdmin } = useCreateAdmin();
+  const { mutate: createAgent, isPending: isPendingAgent } = useCreateAgent();
 
   const detailsForm = useForm<UserDetailsForm>({
     resolver: zodResolver(userDetailsSchema),
@@ -85,7 +86,11 @@ function CreateUser() {
   const handleClose = () => navigate({ to: ".." });
 
   const handleDetailsSubmit = (data: UserDetailsForm) => {
-    createUser(data, { onSuccess: () => setStep("verification") });
+    if (userType === "agent") {
+      return createAgent(data, { onSuccess: () => setStep("verification") });
+    }
+
+    createAdmin(data, { onSuccess: () => setStep("verification") });
   };
 
   const handleOtpSubmit = (data: OTPForm) => {
@@ -192,7 +197,7 @@ function CreateUser() {
                 <Button type="button" variant="outline" onClick={() => setStep("userType")}>
                   Back
                 </Button>
-                <Button isLoading={isPending} type="submit">
+                <Button isLoading={isPendingAdmin || isPendingAgent} type="submit">
                   Send Verification Code
                 </Button>
               </DialogFooter>

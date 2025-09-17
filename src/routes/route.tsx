@@ -13,13 +13,18 @@ export const Route = createFileRoute("/")({
     </div>
   ),
   loader: async () => {
-    const response = await api.get("users/me").json<User>();
-    if (response.role === UserRoles.ADMIN) {
-      return redirect({ to: "/u" });
+    try {
+      const response = await api.get("user/me").json<User>();
+      if (response.role === UserRoles.ADMIN) {
+        return redirect({ to: "/u" });
+      }
+      // TODO: Redirect to agent dashboard when implemented
+      authToken.clear();
+      return redirect({ to: "/auth" });
+    } catch (err) {
+      authToken.clear();
+      return redirect({ to: "/auth" });
     }
-
-    // TODO: Redirect to agent dashboard when implemented
-    return redirect({ to: "/auth" });
   },
   onError: () => {
     authToken.clear();

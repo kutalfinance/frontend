@@ -6,7 +6,7 @@ type SuperAdminOnlyProps = {
 
 export function SuperAdminOnly({ children }: SuperAdminOnlyProps) {
   const { data } = useLoggedInUser();
-  if (!data?.superAdmin) return null;
+  if (!data?.data.superAdmin) return null;
 
   return children;
 }

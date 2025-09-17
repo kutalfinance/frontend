@@ -26,7 +26,7 @@ export function useLoggedInUser() {
     queryKey: queryKeys.users.me(),
     queryFn: async () => {
       try {
-        return await api.get("users/me").json<User>();
+        return await api.get("user/me").json<APIResponse<User>>();
       } catch (e) {
         navigate({ to: "/auth" });
         authToken.clear();
@@ -62,7 +62,7 @@ export function useAdminAuthInitialize() {
       email: string;
       password: string;
       superAdmin: boolean;
-    }) => api.post("users/admin/init", { json: data }).json<APIResponse<unknown>>(),
+    }) => api.post("user/admin/init", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       successToast("An OTP has been sent to your email");
     },
@@ -75,12 +75,9 @@ export function useAdminAuthOTP() {
 
   return useMutation({
     mutationFn: async (data: { otp: string; email: string }) =>
-      api.post("users/admin/verify-otp", { json: data }).json<APIResponse<{ token: string }>>(),
+      api.post("user/admin/verify-otp", { json: data }).json<APIResponse<{ token: string }>>(),
     onSuccess: (response) => {
-      // TODO: manage token type
-      // @ts-expect-error untyped token
-      authToken.set(response.token);
-
+      authToken.set(response.data.token);
       successToast("Logged in successfully");
       navigate({ to: "/u" });
     },
@@ -91,7 +88,7 @@ export function useAdminAuthOTP() {
 export function useAdminAuthLogin() {
   return useMutation({
     mutationFn: async (data: { email: string; password: string }) =>
-      api.post("users/admin/login", { json: data }).json<APIResponse<unknown>>(),
+      api.post("user/admin/login", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       successToast("An OTP has been sent to your email");
     },
@@ -104,7 +101,7 @@ export function useAdminAuthLogin() {
 export function useCreateUser() {
   return useMutation({
     mutationFn: (data: { email: string; superAdmin: boolean }) =>
-      api.post("users/admin", { json: data }).json<APIResponse<unknown>>(),
+      api.post("user/admin", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       successToast("An OTP has been sent to your email");
     },
@@ -124,7 +121,7 @@ export function useCreateAgent() {
 
   return useMutation({
     mutationFn: (data: { name: string; email: string }) =>
-      api.post("users/agent", { json: data }).json<APIResponse<unknown>>(),
+      api.post("user/agent", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       invalidationHelpers.users.related().forEach((queryKey) => {
         queryClient.invalidateQueries({ queryKey });
@@ -138,7 +135,7 @@ export function useCreateAgent() {
 export function useAgentLogin() {
   return useMutation({
     mutationFn: (data: AgentLogin) =>
-      api.post("users/agent/login", { json: data }).json<APIResponse<unknown>>(),
+      api.post("user/agent/login", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       successToast("An OTP has been sent to your email");
     },
@@ -151,7 +148,7 @@ export function useVerifyOtp() {
 
   return useMutation({
     mutationFn: (data: VerifyOtp) =>
-      api.post("users/agent/verify-otp", { json: data }).json<APIResponse<{ token: string }>>(),
+      api.post("user/agent/verify-otp", { json: data }).json<APIResponse<{ token: string }>>(),
     onSuccess: (response) => {
       // TODO: manage token type
       // @ts-expect-error untyped token
@@ -166,7 +163,7 @@ export function useVerifyOtp() {
 export function useResetPassword() {
   return useMutation({
     mutationFn: (data: ResetPassword) =>
-      api.post("users/admin/reset-password", { json: data }).json<APIResponse<unknown>>(),
+      api.post("user/admin/reset-password", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       successToast("Password reset successfully");
     },
@@ -177,7 +174,7 @@ export function useResetPassword() {
 export function useSendPasswordResetLink() {
   return useMutation({
     mutationFn: (data: SendPasswordResetLink) =>
-      api.post("users/admin/reset-password/send", { json: data }).json<APIResponse<unknown>>(),
+      api.post("user/admin/reset-password/send", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       successToast("Password reset link sent to your email");
     },
@@ -188,7 +185,7 @@ export function useSendPasswordResetLink() {
 export function useAdminMetrics() {
   return useQuery({
     queryKey: queryKeys.metrics.admin(),
-    queryFn: () => api.get("users/admin/metrics").json<APIResponse<AdminMetrics>>(),
+    queryFn: () => api.get("user/admin/metrics").json<APIResponse<AdminMetrics>>(),
   });
 }
 // ========== USERS MODULE END ==========

@@ -9,7 +9,8 @@ export const Route = createFileRoute("/_main/u/")({
 });
 
 function App() {
-  const { data: user } = useLoggedInUser();
+  const { data } = useLoggedInUser();
+  const user = data?.data;
 
   if (!user) return null;
 

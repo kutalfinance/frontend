@@ -50,7 +50,8 @@ const userTypeOptions = [
 ];
 
 const userDetailsSchema = z.object({
-  superAdmin: z.boolean().optional(),
+  isSuperAdmin: z.boolean().optional(),
+  name: z.string("Name is required"),
   email: z.email("Please enter a valid email address"),
 });
 
@@ -75,7 +76,7 @@ function CreateUser() {
 
   const detailsForm = useForm<UserDetailsForm>({
     resolver: zodResolver(userDetailsSchema),
-    defaultValues: { superAdmin: false, email: "" },
+    defaultValues: { isSuperAdmin: false, email: "" },
   });
 
   const otpForm = useForm<OTPForm>({
@@ -84,6 +85,12 @@ function CreateUser() {
   });
 
   const handleClose = () => navigate({ to: ".." });
+
+  const handleUserTypeChange = (value: string) => {
+    setUserType(value);
+    detailsForm.reset();
+    otpForm.reset();
+  };
 
   const handleDetailsSubmit = (data: UserDetailsForm) => {
     if (userType === "agent") {
@@ -115,7 +122,7 @@ function CreateUser() {
         {step === "userType" && (
           <form className="space-y-3" onSubmit={() => setStep("details")}>
             <div>
-              <RadioGroup onValueChange={(v) => setUserType(v)} value={userType}>
+              <RadioGroup onValueChange={handleUserTypeChange} value={userType}>
                 {userTypeOptions.map((option) => (
                   <div className="border-input has-data-[state=checked]:border-primary relative flex w-full items-start gap-2 rounded-md border p-4 shadow-xs outline-none">
                     <div className="grid flex-1 gap-1">
@@ -144,6 +151,20 @@ function CreateUser() {
             <form onSubmit={detailsForm.handleSubmit(handleDetailsSubmit)} className="space-y-3">
               <FormField
                 control={detailsForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input type="text" placeholder={`Enter ${userType} full name`} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={detailsForm.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
@@ -164,7 +185,7 @@ function CreateUser() {
                 <SuperAdminOnly>
                   <FormField
                     control={detailsForm.control}
-                    name="superAdmin"
+                    name="isSuperAdmin"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
@@ -255,7 +276,7 @@ function CreateUser() {
                   Back
                 </Button>
                 <Button type="submit">
-                  Create {detailsForm.getValues("superAdmin") ? "Administrator" : "Agent"}
+                  Create {detailsForm.getValues("isSuperAdmin") ? "Administrator" : "Agent"}
                 </Button>
               </DialogFooter>
             </form>

@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input";
 
 import { useUsers } from "@/hooks/data";
 import type { User } from "@/lib/types";
-import { CircleCheckBig } from "lucide-react";
+import { CircleCheckBig, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/_main/u/users")({
@@ -142,7 +142,7 @@ export const columns: ColumnDef<User>[] = [
       return (
         <div className="">
           {row.original.isSuperAdmin ? (
-            <CircleCheckBig className="text-success size-5" />
+            <CircleCheckBig className="text-success size-4 stroke-3" />
           ) : (
             <span className="text-muted-foreground ml-0.5">—</span>
           )}
@@ -156,6 +156,18 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const date = new Date(row.original.createdAt);
       return <span className="text-muted-foreground">{date.toLocaleDateString()}</span>;
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: () => {
+      return (
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal />
+        </Button>
+      );
     },
   },
 ];

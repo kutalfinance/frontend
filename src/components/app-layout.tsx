@@ -1,6 +1,15 @@
 import { Link, useLocation } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-import { Menu, PanelLeft, Settings } from "lucide-react";
+import { Menu, PanelLeft } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -15,10 +24,9 @@ import {
 
 import { cn } from "@/lib/utils";
 
-import { AppLogo } from "./app-logo";
-import { Button } from "./ui/button";
-import { Paragraph } from "./ui/text";
-import { useLoggedInUser } from "@/hooks/data";
+import { AppLogo } from "@/components/app-logo";
+import { Paragraph } from "@/components/ui/text";
+import { useLoggedInUser, useLogout } from "@/hooks/data";
 
 import type { LinkProps } from "@tanstack/react-router";
 import { Contact, Home, Landmark, Users, type LucideIcon } from "lucide-react";
@@ -147,19 +155,32 @@ export function AppSidebar() {
 
 function UserMenu() {
   const { data } = useLoggedInUser();
+  const logout = useLogout();
   const user = data?.data;
 
   if (!user) return null;
 
   return (
     <div className="ml-auto flex items-center gap-4">
-      <Button variant="ghost" size="icon">
-        <Settings />
-      </Button>
-      <Avatar>
-        <AvatarImage src="" />
-        <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
-      </Avatar>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Avatar>
+            <AvatarImage src="" />
+            <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end">
+          <DropdownMenuLabel>
+            <div>
+              <div className="font-medium">{user.name}</div>
+              <div className="text-muted-foreground text-xs">{user.email}</div>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => logout.mutate()}>Log out</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

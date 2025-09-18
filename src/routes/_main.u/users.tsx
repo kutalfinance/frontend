@@ -27,7 +27,8 @@ import { Input } from "@/components/ui/input";
 
 import { useUsers } from "@/hooks/data";
 import type { User } from "@/lib/types";
-import { CircleCheckBig, LoaderCircle } from "lucide-react";
+import { CircleCheckBig } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/_main/u/users")({
   component: Users,
@@ -82,27 +83,40 @@ function Users() {
           Manage admin and agent accounts. Create new users, view their status, and control access
           permissions.
         </ModuleDescription>
-      </ModuleHeading>
 
-      <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <div></div>
           <Input placeholder="Filter by name or email..." className="w-full max-w-sm" />
         </div>
+      </ModuleHeading>
 
-        {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <LoaderCircle className="text-primary size-8 animate-spin" />
-          </div>
-        ) : (
-          <DataTable table={table} />
-        )}
-      </div>
+      <DataTable table={table} isLoading={isLoading} />
     </div>
   );
 }
 
 export const columns: ColumnDef<User>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "name",
     header: "Name",

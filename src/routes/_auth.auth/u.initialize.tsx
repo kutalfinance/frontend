@@ -89,7 +89,7 @@ function AdminInitialize() {
             />
 
             <Button isLoading={isPending} className="mt-2 w-full">
-              Create Administrator Account
+              Create administrator account
             </Button>
           </form>
         </Form>

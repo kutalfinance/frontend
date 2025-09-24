@@ -81,11 +81,11 @@ function AdminLogin() {
             />
 
             <Button isLoading={isPending} className="my-2 w-full">
-              Sign In
+              Sign in
             </Button>
 
             <Link to="/auth/u/check" className="link">
-              Back to Email
+              Back to email
             </Link>
           </form>
         </Form>

@@ -100,11 +100,11 @@ function AdminOnboarding() {
             />
 
             <Button isLoading={isPending} className="my-2 w-full">
-              Set Password
+              Set password
             </Button>
 
             <Link to="/auth/u/check" className="link">
-              Back to Email
+              Back to email
             </Link>
           </form>
         </Form>

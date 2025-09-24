@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input";
 
 import { useUsers } from "@/hooks/data";
 import type { User } from "@/lib/types";
-import { CircleCheckBig, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/_main/u/users")({
@@ -132,22 +132,11 @@ export const columns: ColumnDef<User>[] = [
     header: "Role",
     cell: ({ row }) => {
       const role = row.original.role;
-      return <Badge variant={role === "ADMIN" ? "accent" : "default"}>{role}</Badge>;
-    },
-  },
-  {
-    accessorKey: "isSuperAdmin",
-    header: () => <span className="block w-fit">Super Admin</span>,
-    cell: ({ row }) => {
-      return (
-        <div className="">
-          {row.original.isSuperAdmin ? (
-            <CircleCheckBig className="text-success size-4 stroke-3" />
-          ) : (
-            <span className="text-muted-foreground ml-0.5">—</span>
-          )}
-        </div>
-      );
+      if (row.original.isSuperAdmin) {
+        return <Badge variant="destructive">SUPER ADMIN</Badge>;
+      }
+
+      return <Badge variant={role === "ADMIN" ? "default" : "accent"}>{role}</Badge>;
     },
   },
   {

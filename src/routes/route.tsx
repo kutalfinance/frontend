@@ -3,24 +3,20 @@ import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import { api } from "@/lib/api";
 import { authToken } from "@/lib/auth-token";
 import { type User, UserRoles } from "@/lib/types";
+import { AppSplashScreen } from "@/components/app-splash-screen";
 
 // Root route handler - authenticates user and redirects based on role
 export const Route = createFileRoute("/")({
   component: Layout,
-  pendingComponent: () => (
-    <div className="flex h-dvh w-screen items-center justify-center">
-      <div className="border-primary/70 size-8 animate-spin rounded-full border-4 border-b-transparent" />
-    </div>
-  ),
+  pendingComponent: () => <AppSplashScreen />,
   loader: async () => {
     try {
       const response = await api.get("user/me").json<User>();
       if (response.role === UserRoles.ADMIN) {
         return redirect({ to: "/u" });
       }
-      // TODO: Redirect to agent dashboard when implemented
-      authToken.clear();
-      return redirect({ to: "/auth" });
+      // Else redirect to agent dashboard
+      return redirect({ to: "/a" });
     } catch (err) {
       authToken.clear();
       return redirect({ to: "/auth" });

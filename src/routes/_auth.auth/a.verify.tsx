@@ -9,21 +9,21 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAdminAuthVerify } from "@/hooks/data";
+import { useAgentAuthVerify } from "@/hooks/data";
 
-export const Route = createFileRoute("/_auth/auth/u/verify")({
-  component: AdminOTP,
+export const Route = createFileRoute("/_auth/auth/a/verify")({
+  component: AgentOTP,
   validateSearch: z.object({ email: z.email() }),
   beforeLoad: ({ search }) => {
-    if (!search.email) throw redirect({ to: "/auth/u/check" });
+    if (!search.email) throw redirect({ to: "/auth/a/login" });
   },
 });
 
 const otpSchema = z.object({ otp: z.string() });
 
-function AdminOTP() {
+function AgentOTP() {
   const { email } = Route.useSearch();
-  const { mutate, isPending } = useAdminAuthVerify();
+  const { mutate, isPending } = useAgentAuthVerify();
 
   const form = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
@@ -37,10 +37,9 @@ function AdminOTP() {
   return (
     <>
       <hgroup className="flex flex-col">
-        <Heading className="mt-4">Verify OTP</Heading>
+        <Heading className="mt-4">Agent Verification</Heading>
         <Paragraph className="text-muted-foreground">
-          We've sent a 6-digit verification code to {email}. Enter it below to complete your
-          sign-in.
+          We've sent a 6-digit verification code to {email}. Enter it below to access your agent account.
         </Paragraph>
       </hgroup>
 
@@ -72,8 +71,8 @@ function AdminOTP() {
             Verify & Sign in
           </Button>
 
-          <Link to="/auth/u/check" className="link">
-            Back to email
+          <Link to="/auth/a/login" className="link">
+            Back to Login
           </Link>
         </form>
       </Form>

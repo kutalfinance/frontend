@@ -60,7 +60,6 @@ function useAppLayoutContext() {
 
 export function AppLayoutProvider({ children, ...props }: React.ComponentProps<"div">) {
   const [open, setOpen] = useState(false);
-  console.log(open);
 
   return (
     <AppLayoutContext.Provider value={{ open, setOpen }}>

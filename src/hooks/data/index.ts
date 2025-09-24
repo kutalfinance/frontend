@@ -7,7 +7,6 @@ import { authToken } from "@/lib/auth-token";
 import type {
   APIResponse,
   AdminMetrics,
-  AgentLogin,
   Branch,
   Customer,
   ResetPassword,
@@ -73,7 +72,7 @@ export function useAdminAuthInitialize() {
   });
 }
 
-export function useAdminAuthOTP() {
+export function useAdminAuthVerify() {
   const navigate = useNavigate();
 
   return useMutation({
@@ -82,7 +81,7 @@ export function useAdminAuthOTP() {
     onSuccess: (response) => {
       authToken.set(response.data.token);
       successToast("Logged in successfully");
-      navigate({ to: "/u" });
+      navigate({ to: "/" });
     },
     onError: errorToast,
   });
@@ -132,70 +131,6 @@ export function useAdminAuthLogin() {
     onError: errorToast,
   });
 }
-// ========== AUTH MODULE END ==========
-
-// ========== USERS MODULE START ==========
-export function useUsers() {
-  return useQuery({
-    queryKey: queryKeys.users.all(),
-    queryFn: () => api.get("user").json<APIResponse<User[]>>(),
-  });
-}
-
-export function useCreateAdmin() {
-  return useMutation({
-    mutationFn: (data: Partial<User>) =>
-      api.post("user/admin", { json: data }).json<APIResponse<unknown>>(),
-    onSuccess: () => {
-      successToast("An OTP has been sent to your email");
-    },
-    onError: errorToast,
-  });
-}
-
-export function useCreateAgent() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: Partial<User>) =>
-      api.post("user/agent", { json: data }).json<APIResponse<unknown>>(),
-    onSuccess: () => {
-      invalidationHelpers.users.related().forEach((queryKey) => {
-        queryClient.invalidateQueries({ queryKey });
-      });
-      successToast("Agent created successfully");
-    },
-    onError: errorToast,
-  });
-}
-
-export function useAgentLogin() {
-  return useMutation({
-    mutationFn: (data: AgentLogin) =>
-      api.post("user/agent/login", { json: data }).json<APIResponse<unknown>>(),
-    onSuccess: () => {
-      successToast("An OTP has been sent to your email");
-    },
-    onError: errorToast,
-  });
-}
-
-export function useVerifyOtp() {
-  const navigate = useNavigate();
-
-  return useMutation({
-    mutationFn: (data: VerifyOtp) =>
-      api.post("user/agent/verify-otp", { json: data }).json<APIResponse<{ token: string }>>(),
-    onSuccess: (response) => {
-      // TODO: manage token type
-      // @ts-expect-error untyped token
-      authToken.set(response.token);
-      successToast("Logged in successfully");
-      navigate({ to: "/u" });
-    },
-    onError: errorToast,
-  });
-}
 
 export function useResetPassword() {
   return useMutation({
@@ -214,6 +149,77 @@ export function useSendPasswordResetLink() {
       api.post("user/admin/reset-password/send", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       successToast("Password reset link sent to your email");
+    },
+    onError: errorToast,
+  });
+}
+
+// Auth agent
+export function useAgentAuthLogin() {
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: (data: { email: string }) =>
+      api.post("user/agent/login", { json: data }).json<APIResponse<unknown>>(),
+    onSuccess: (_, variables) => {
+      successToast("An OTP has been sent to your email");
+      navigate({ to: "/auth/a/verify", search: { email: variables.email } });
+    },
+    onError: errorToast,
+  });
+}
+
+export function useAgentAuthVerify() {
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: (data: VerifyOtp) =>
+      api.post("user/agent/verify-otp", { json: data }).json<APIResponse<{ token: string }>>(),
+    onSuccess: (response) => {
+      authToken.set(response.data.token);
+      successToast("Logged in successfully");
+      navigate({ to: "/" });
+    },
+    onError: errorToast,
+  });
+}
+// ========== AUTH MODULE END ==========
+
+// ========== USERS MODULE START ==========
+export function useUsers() {
+  return useQuery({
+    queryKey: queryKeys.users.all(),
+    queryFn: () => api.get("user").json<APIResponse<User[]>>(),
+  });
+}
+
+export function useCreateAdmin() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Partial<User>) =>
+      api.post("user/admin", { json: data }).json<APIResponse<unknown>>(),
+    onSuccess: () => {
+      invalidationHelpers.users.related().forEach((queryKey) => {
+        queryClient.invalidateQueries({ queryKey });
+      });
+      successToast("An OTP has been sent to your email");
+    },
+    onError: errorToast,
+  });
+}
+
+export function useCreateAgent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Partial<User>) =>
+      api.post("user/agent", { json: data }).json<APIResponse<unknown>>(),
+    onSuccess: () => {
+      invalidationHelpers.users.related().forEach((queryKey) => {
+        queryClient.invalidateQueries({ queryKey });
+      });
+      successToast("Agent created successfully");
     },
     onError: errorToast,
   });

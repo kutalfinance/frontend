@@ -74,10 +74,6 @@ export type LoginResponse = {
   token?: string;
 };
 
-export type AgentLogin = {
-  email: string;
-};
-
 export type ResetPassword = {
   email: string;
   newPassword: string;

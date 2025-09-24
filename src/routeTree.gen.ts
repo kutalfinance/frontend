@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RouteRouteImport } from './routes/route'
 import { Route as MainURouteRouteImport } from './routes/_main.u/route'
+import { Route as MainARouteRouteImport } from './routes/_main.a/route'
 import { Route as AuthAuthRouteRouteImport } from './routes/_auth.auth/route'
 import { Route as MainUIndexRouteImport } from './routes/_main.u/index'
+import { Route as MainAIndexRouteImport } from './routes/_main.a/index'
 import { Route as AuthAuthIndexRouteImport } from './routes/_auth.auth/index'
 import { Route as MainUUsersRouteImport } from './routes/_main.u/users'
 import { Route as MainUCustomersRouteImport } from './routes/_main.u/customers'
@@ -23,6 +25,8 @@ import { Route as AuthAuthUOnboardingRouteImport } from './routes/_auth.auth/u.o
 import { Route as AuthAuthULoginRouteImport } from './routes/_auth.auth/u.login'
 import { Route as AuthAuthUInitializeRouteImport } from './routes/_auth.auth/u.initialize'
 import { Route as AuthAuthUCheckRouteImport } from './routes/_auth.auth/u.check'
+import { Route as AuthAuthAVerifyRouteImport } from './routes/_auth.auth/a.verify'
+import { Route as AuthAuthALoginRouteImport } from './routes/_auth.auth/a.login'
 
 const RouteRoute = RouteRouteImport.update({
   id: '/',
@@ -34,6 +38,11 @@ const MainURouteRoute = MainURouteRouteImport.update({
   path: '/u',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MainARouteRoute = MainARouteRouteImport.update({
+  id: '/_main/a',
+  path: '/a',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthAuthRouteRoute = AuthAuthRouteRouteImport.update({
   id: '/_auth/auth',
   path: '/auth',
@@ -43,6 +52,11 @@ const MainUIndexRoute = MainUIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => MainURouteRoute,
+} as any)
+const MainAIndexRoute = MainAIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MainARouteRoute,
 } as any)
 const AuthAuthIndexRoute = AuthAuthIndexRouteImport.update({
   id: '/',
@@ -94,15 +108,29 @@ const AuthAuthUCheckRoute = AuthAuthUCheckRouteImport.update({
   path: '/u/check',
   getParentRoute: () => AuthAuthRouteRoute,
 } as any)
+const AuthAuthAVerifyRoute = AuthAuthAVerifyRouteImport.update({
+  id: '/a/verify',
+  path: '/a/verify',
+  getParentRoute: () => AuthAuthRouteRoute,
+} as any)
+const AuthAuthALoginRoute = AuthAuthALoginRouteImport.update({
+  id: '/a/login',
+  path: '/a/login',
+  getParentRoute: () => AuthAuthRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof RouteRoute
   '/auth': typeof AuthAuthRouteRouteWithChildren
+  '/a': typeof MainARouteRouteWithChildren
   '/u': typeof MainURouteRouteWithChildren
   '/u/customers': typeof MainUCustomersRouteWithChildren
   '/u/users': typeof MainUUsersRouteWithChildren
   '/auth/': typeof AuthAuthIndexRoute
+  '/a/': typeof MainAIndexRoute
   '/u/': typeof MainUIndexRoute
+  '/auth/a/login': typeof AuthAuthALoginRoute
+  '/auth/a/verify': typeof AuthAuthAVerifyRoute
   '/auth/u/check': typeof AuthAuthUCheckRoute
   '/auth/u/initialize': typeof AuthAuthUInitializeRoute
   '/auth/u/login': typeof AuthAuthULoginRoute
@@ -116,7 +144,10 @@ export interface FileRoutesByTo {
   '/u/customers': typeof MainUCustomersRouteWithChildren
   '/u/users': typeof MainUUsersRouteWithChildren
   '/auth': typeof AuthAuthIndexRoute
+  '/a': typeof MainAIndexRoute
   '/u': typeof MainUIndexRoute
+  '/auth/a/login': typeof AuthAuthALoginRoute
+  '/auth/a/verify': typeof AuthAuthAVerifyRoute
   '/auth/u/check': typeof AuthAuthUCheckRoute
   '/auth/u/initialize': typeof AuthAuthUInitializeRoute
   '/auth/u/login': typeof AuthAuthULoginRoute
@@ -129,11 +160,15 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof RouteRoute
   '/_auth/auth': typeof AuthAuthRouteRouteWithChildren
+  '/_main/a': typeof MainARouteRouteWithChildren
   '/_main/u': typeof MainURouteRouteWithChildren
   '/_main/u/customers': typeof MainUCustomersRouteWithChildren
   '/_main/u/users': typeof MainUUsersRouteWithChildren
   '/_auth/auth/': typeof AuthAuthIndexRoute
+  '/_main/a/': typeof MainAIndexRoute
   '/_main/u/': typeof MainUIndexRoute
+  '/_auth/auth/a/login': typeof AuthAuthALoginRoute
+  '/_auth/auth/a/verify': typeof AuthAuthAVerifyRoute
   '/_auth/auth/u/check': typeof AuthAuthUCheckRoute
   '/_auth/auth/u/initialize': typeof AuthAuthUInitializeRoute
   '/_auth/auth/u/login': typeof AuthAuthULoginRoute
@@ -147,11 +182,15 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/a'
     | '/u'
     | '/u/customers'
     | '/u/users'
     | '/auth/'
+    | '/a/'
     | '/u/'
+    | '/auth/a/login'
+    | '/auth/a/verify'
     | '/auth/u/check'
     | '/auth/u/initialize'
     | '/auth/u/login'
@@ -165,7 +204,10 @@ export interface FileRouteTypes {
     | '/u/customers'
     | '/u/users'
     | '/auth'
+    | '/a'
     | '/u'
+    | '/auth/a/login'
+    | '/auth/a/verify'
     | '/auth/u/check'
     | '/auth/u/initialize'
     | '/auth/u/login'
@@ -177,11 +219,15 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_auth/auth'
+    | '/_main/a'
     | '/_main/u'
     | '/_main/u/customers'
     | '/_main/u/users'
     | '/_auth/auth/'
+    | '/_main/a/'
     | '/_main/u/'
+    | '/_auth/auth/a/login'
+    | '/_auth/auth/a/verify'
     | '/_auth/auth/u/check'
     | '/_auth/auth/u/initialize'
     | '/_auth/auth/u/login'
@@ -194,6 +240,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   RouteRoute: typeof RouteRoute
   AuthAuthRouteRoute: typeof AuthAuthRouteRouteWithChildren
+  MainARouteRoute: typeof MainARouteRouteWithChildren
   MainURouteRoute: typeof MainURouteRouteWithChildren
 }
 
@@ -213,6 +260,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainURouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_main/a': {
+      id: '/_main/a'
+      path: '/a'
+      fullPath: '/a'
+      preLoaderRoute: typeof MainARouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_auth/auth': {
       id: '/_auth/auth'
       path: '/auth'
@@ -226,6 +280,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/u/'
       preLoaderRoute: typeof MainUIndexRouteImport
       parentRoute: typeof MainURouteRoute
+    }
+    '/_main/a/': {
+      id: '/_main/a/'
+      path: '/'
+      fullPath: '/a/'
+      preLoaderRoute: typeof MainAIndexRouteImport
+      parentRoute: typeof MainARouteRoute
     }
     '/_auth/auth/': {
       id: '/_auth/auth/'
@@ -297,11 +358,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAuthUCheckRouteImport
       parentRoute: typeof AuthAuthRouteRoute
     }
+    '/_auth/auth/a/verify': {
+      id: '/_auth/auth/a/verify'
+      path: '/a/verify'
+      fullPath: '/auth/a/verify'
+      preLoaderRoute: typeof AuthAuthAVerifyRouteImport
+      parentRoute: typeof AuthAuthRouteRoute
+    }
+    '/_auth/auth/a/login': {
+      id: '/_auth/auth/a/login'
+      path: '/a/login'
+      fullPath: '/auth/a/login'
+      preLoaderRoute: typeof AuthAuthALoginRouteImport
+      parentRoute: typeof AuthAuthRouteRoute
+    }
   }
 }
 
 interface AuthAuthRouteRouteChildren {
   AuthAuthIndexRoute: typeof AuthAuthIndexRoute
+  AuthAuthALoginRoute: typeof AuthAuthALoginRoute
+  AuthAuthAVerifyRoute: typeof AuthAuthAVerifyRoute
   AuthAuthUCheckRoute: typeof AuthAuthUCheckRoute
   AuthAuthUInitializeRoute: typeof AuthAuthUInitializeRoute
   AuthAuthULoginRoute: typeof AuthAuthULoginRoute
@@ -311,6 +388,8 @@ interface AuthAuthRouteRouteChildren {
 
 const AuthAuthRouteRouteChildren: AuthAuthRouteRouteChildren = {
   AuthAuthIndexRoute: AuthAuthIndexRoute,
+  AuthAuthALoginRoute: AuthAuthALoginRoute,
+  AuthAuthAVerifyRoute: AuthAuthAVerifyRoute,
   AuthAuthUCheckRoute: AuthAuthUCheckRoute,
   AuthAuthUInitializeRoute: AuthAuthUInitializeRoute,
   AuthAuthULoginRoute: AuthAuthULoginRoute,
@@ -320,6 +399,18 @@ const AuthAuthRouteRouteChildren: AuthAuthRouteRouteChildren = {
 
 const AuthAuthRouteRouteWithChildren = AuthAuthRouteRoute._addFileChildren(
   AuthAuthRouteRouteChildren,
+)
+
+interface MainARouteRouteChildren {
+  MainAIndexRoute: typeof MainAIndexRoute
+}
+
+const MainARouteRouteChildren: MainARouteRouteChildren = {
+  MainAIndexRoute: MainAIndexRoute,
+}
+
+const MainARouteRouteWithChildren = MainARouteRoute._addFileChildren(
+  MainARouteRouteChildren,
 )
 
 interface MainUCustomersRouteChildren {
@@ -365,6 +456,7 @@ const MainURouteRouteWithChildren = MainURouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   RouteRoute: RouteRoute,
   AuthAuthRouteRoute: AuthAuthRouteRouteWithChildren,
+  MainARouteRoute: MainARouteRouteWithChildren,
   MainURouteRoute: MainURouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport

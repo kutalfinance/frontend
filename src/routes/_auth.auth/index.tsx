@@ -22,16 +22,16 @@ function AuthHome() {
 
       <div className="space-y-3">
         <Button asChild className="w-full">
-          <Link to=".">
+          <Link to="/auth/a/login">
             <Users />
-            Agent Login
+            Agent login
           </Link>
         </Button>
 
         <Button asChild variant="outline" className="w-full">
           <Link to="/auth/u/check">
             <Shield />
-            Administrator Login
+            Administrator login
           </Link>
         </Button>
       </div>

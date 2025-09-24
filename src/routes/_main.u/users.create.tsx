@@ -108,7 +108,7 @@ function CreateUser() {
 
   return (
     <Dialog open onOpenChange={handleClose}>
-      <DialogContent>
+      <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Create New User</DialogTitle>
           <DialogDescription>

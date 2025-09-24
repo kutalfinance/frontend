@@ -24,8 +24,7 @@ export const Route = createFileRoute("/_auth/auth/u/initialize")({
 
 const initSchema = z.object({ name: z.string(), email: z.email(), password: z.string() });
 
-export default function AdminInitialize() {
-  const navigate = Route.useNavigate();
+function AdminInitialize() {
   const { mutate, isPending } = useAdminAuthInitialize();
 
   const form = useForm<z.infer<typeof initSchema>>({
@@ -34,12 +33,7 @@ export default function AdminInitialize() {
   });
 
   function onLogin(values: z.infer<typeof initSchema>) {
-    mutate(
-      { ...values, superAdmin: true },
-      {
-        onSuccess: () => navigate({ to: "/auth/u/otp", search: { email: values.email } }),
-      }
-    );
+    mutate({ ...values, superAdmin: true });
   }
 
   return (
@@ -87,7 +81,7 @@ export default function AdminInitialize() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder="********" {...field} />
+                    <PasswordInput placeholder="Create your admin password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

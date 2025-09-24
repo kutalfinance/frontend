@@ -18,9 +18,11 @@ import { Route as MainUUsersRouteImport } from './routes/_main.u/users'
 import { Route as MainUCustomersRouteImport } from './routes/_main.u/customers'
 import { Route as MainUUsersCreateRouteImport } from './routes/_main.u/users.create'
 import { Route as MainUCustomersCreateRouteImport } from './routes/_main.u/customers.create'
-import { Route as AuthAuthUOtpRouteImport } from './routes/_auth.auth/u.otp'
+import { Route as AuthAuthUVerifyRouteImport } from './routes/_auth.auth/u.verify'
+import { Route as AuthAuthUOnboardingRouteImport } from './routes/_auth.auth/u.onboarding'
 import { Route as AuthAuthULoginRouteImport } from './routes/_auth.auth/u.login'
 import { Route as AuthAuthUInitializeRouteImport } from './routes/_auth.auth/u.initialize'
+import { Route as AuthAuthUCheckRouteImport } from './routes/_auth.auth/u.check'
 
 const RouteRoute = RouteRouteImport.update({
   id: '/',
@@ -67,9 +69,14 @@ const MainUCustomersCreateRoute = MainUCustomersCreateRouteImport.update({
   path: '/create',
   getParentRoute: () => MainUCustomersRoute,
 } as any)
-const AuthAuthUOtpRoute = AuthAuthUOtpRouteImport.update({
-  id: '/u/otp',
-  path: '/u/otp',
+const AuthAuthUVerifyRoute = AuthAuthUVerifyRouteImport.update({
+  id: '/u/verify',
+  path: '/u/verify',
+  getParentRoute: () => AuthAuthRouteRoute,
+} as any)
+const AuthAuthUOnboardingRoute = AuthAuthUOnboardingRouteImport.update({
+  id: '/u/onboarding',
+  path: '/u/onboarding',
   getParentRoute: () => AuthAuthRouteRoute,
 } as any)
 const AuthAuthULoginRoute = AuthAuthULoginRouteImport.update({
@@ -82,6 +89,11 @@ const AuthAuthUInitializeRoute = AuthAuthUInitializeRouteImport.update({
   path: '/u/initialize',
   getParentRoute: () => AuthAuthRouteRoute,
 } as any)
+const AuthAuthUCheckRoute = AuthAuthUCheckRouteImport.update({
+  id: '/u/check',
+  path: '/u/check',
+  getParentRoute: () => AuthAuthRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof RouteRoute
@@ -91,9 +103,11 @@ export interface FileRoutesByFullPath {
   '/u/users': typeof MainUUsersRouteWithChildren
   '/auth/': typeof AuthAuthIndexRoute
   '/u/': typeof MainUIndexRoute
+  '/auth/u/check': typeof AuthAuthUCheckRoute
   '/auth/u/initialize': typeof AuthAuthUInitializeRoute
   '/auth/u/login': typeof AuthAuthULoginRoute
-  '/auth/u/otp': typeof AuthAuthUOtpRoute
+  '/auth/u/onboarding': typeof AuthAuthUOnboardingRoute
+  '/auth/u/verify': typeof AuthAuthUVerifyRoute
   '/u/customers/create': typeof MainUCustomersCreateRoute
   '/u/users/create': typeof MainUUsersCreateRoute
 }
@@ -103,9 +117,11 @@ export interface FileRoutesByTo {
   '/u/users': typeof MainUUsersRouteWithChildren
   '/auth': typeof AuthAuthIndexRoute
   '/u': typeof MainUIndexRoute
+  '/auth/u/check': typeof AuthAuthUCheckRoute
   '/auth/u/initialize': typeof AuthAuthUInitializeRoute
   '/auth/u/login': typeof AuthAuthULoginRoute
-  '/auth/u/otp': typeof AuthAuthUOtpRoute
+  '/auth/u/onboarding': typeof AuthAuthUOnboardingRoute
+  '/auth/u/verify': typeof AuthAuthUVerifyRoute
   '/u/customers/create': typeof MainUCustomersCreateRoute
   '/u/users/create': typeof MainUUsersCreateRoute
 }
@@ -118,9 +134,11 @@ export interface FileRoutesById {
   '/_main/u/users': typeof MainUUsersRouteWithChildren
   '/_auth/auth/': typeof AuthAuthIndexRoute
   '/_main/u/': typeof MainUIndexRoute
+  '/_auth/auth/u/check': typeof AuthAuthUCheckRoute
   '/_auth/auth/u/initialize': typeof AuthAuthUInitializeRoute
   '/_auth/auth/u/login': typeof AuthAuthULoginRoute
-  '/_auth/auth/u/otp': typeof AuthAuthUOtpRoute
+  '/_auth/auth/u/onboarding': typeof AuthAuthUOnboardingRoute
+  '/_auth/auth/u/verify': typeof AuthAuthUVerifyRoute
   '/_main/u/customers/create': typeof MainUCustomersCreateRoute
   '/_main/u/users/create': typeof MainUUsersCreateRoute
 }
@@ -134,9 +152,11 @@ export interface FileRouteTypes {
     | '/u/users'
     | '/auth/'
     | '/u/'
+    | '/auth/u/check'
     | '/auth/u/initialize'
     | '/auth/u/login'
-    | '/auth/u/otp'
+    | '/auth/u/onboarding'
+    | '/auth/u/verify'
     | '/u/customers/create'
     | '/u/users/create'
   fileRoutesByTo: FileRoutesByTo
@@ -146,9 +166,11 @@ export interface FileRouteTypes {
     | '/u/users'
     | '/auth'
     | '/u'
+    | '/auth/u/check'
     | '/auth/u/initialize'
     | '/auth/u/login'
-    | '/auth/u/otp'
+    | '/auth/u/onboarding'
+    | '/auth/u/verify'
     | '/u/customers/create'
     | '/u/users/create'
   id:
@@ -160,9 +182,11 @@ export interface FileRouteTypes {
     | '/_main/u/users'
     | '/_auth/auth/'
     | '/_main/u/'
+    | '/_auth/auth/u/check'
     | '/_auth/auth/u/initialize'
     | '/_auth/auth/u/login'
-    | '/_auth/auth/u/otp'
+    | '/_auth/auth/u/onboarding'
+    | '/_auth/auth/u/verify'
     | '/_main/u/customers/create'
     | '/_main/u/users/create'
   fileRoutesById: FileRoutesById
@@ -238,11 +262,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainUCustomersCreateRouteImport
       parentRoute: typeof MainUCustomersRoute
     }
-    '/_auth/auth/u/otp': {
-      id: '/_auth/auth/u/otp'
-      path: '/u/otp'
-      fullPath: '/auth/u/otp'
-      preLoaderRoute: typeof AuthAuthUOtpRouteImport
+    '/_auth/auth/u/verify': {
+      id: '/_auth/auth/u/verify'
+      path: '/u/verify'
+      fullPath: '/auth/u/verify'
+      preLoaderRoute: typeof AuthAuthUVerifyRouteImport
+      parentRoute: typeof AuthAuthRouteRoute
+    }
+    '/_auth/auth/u/onboarding': {
+      id: '/_auth/auth/u/onboarding'
+      path: '/u/onboarding'
+      fullPath: '/auth/u/onboarding'
+      preLoaderRoute: typeof AuthAuthUOnboardingRouteImport
       parentRoute: typeof AuthAuthRouteRoute
     }
     '/_auth/auth/u/login': {
@@ -259,21 +290,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAuthUInitializeRouteImport
       parentRoute: typeof AuthAuthRouteRoute
     }
+    '/_auth/auth/u/check': {
+      id: '/_auth/auth/u/check'
+      path: '/u/check'
+      fullPath: '/auth/u/check'
+      preLoaderRoute: typeof AuthAuthUCheckRouteImport
+      parentRoute: typeof AuthAuthRouteRoute
+    }
   }
 }
 
 interface AuthAuthRouteRouteChildren {
   AuthAuthIndexRoute: typeof AuthAuthIndexRoute
+  AuthAuthUCheckRoute: typeof AuthAuthUCheckRoute
   AuthAuthUInitializeRoute: typeof AuthAuthUInitializeRoute
   AuthAuthULoginRoute: typeof AuthAuthULoginRoute
-  AuthAuthUOtpRoute: typeof AuthAuthUOtpRoute
+  AuthAuthUOnboardingRoute: typeof AuthAuthUOnboardingRoute
+  AuthAuthUVerifyRoute: typeof AuthAuthUVerifyRoute
 }
 
 const AuthAuthRouteRouteChildren: AuthAuthRouteRouteChildren = {
   AuthAuthIndexRoute: AuthAuthIndexRoute,
+  AuthAuthUCheckRoute: AuthAuthUCheckRoute,
   AuthAuthUInitializeRoute: AuthAuthUInitializeRoute,
   AuthAuthULoginRoute: AuthAuthULoginRoute,
-  AuthAuthUOtpRoute: AuthAuthUOtpRoute,
+  AuthAuthUOnboardingRoute: AuthAuthUOnboardingRoute,
+  AuthAuthUVerifyRoute: AuthAuthUVerifyRoute,
 }
 
 const AuthAuthRouteRouteWithChildren = AuthAuthRouteRoute._addFileChildren(

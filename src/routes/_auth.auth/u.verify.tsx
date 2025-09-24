@@ -11,17 +11,17 @@ import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useAdminAuthOTP } from "@/hooks/data";
 
-export const Route = createFileRoute("/_auth/auth/u/otp")({
+export const Route = createFileRoute("/_auth/auth/u/verify")({
   component: AdminOTP,
   validateSearch: z.object({ email: z.email() }),
   beforeLoad: ({ search }) => {
-    if (!search.email) throw redirect({ to: "/auth/u/login" });
+    if (!search.email) throw redirect({ to: "/auth/u/check" });
   },
 });
 
 const otpSchema = z.object({ otp: z.string() });
 
-export default function AdminOTP() {
+function AdminOTP() {
   const { email } = Route.useSearch();
   const { mutate, isPending } = useAdminAuthOTP();
 
@@ -39,7 +39,8 @@ export default function AdminOTP() {
       <hgroup className="flex flex-col">
         <Heading className="mt-4">Verify OTP</Heading>
         <Paragraph className="text-muted-foreground">
-          A one-time password has been sent to {email}. Please enter it below to continue.
+          We've sent a 6-digit verification code to {email}. Enter it below to complete your
+          sign-in.
         </Paragraph>
       </hgroup>
 
@@ -67,12 +68,12 @@ export default function AdminOTP() {
             )}
           />
 
-          <Button isLoading={isPending} className="mt-2 w-full">
-            Verify
+          <Button isLoading={isPending} className="my-2 w-full">
+            Verify & Sign In
           </Button>
 
-          <Link to="/auth/u/login" className="link">
-            Back to Login
+          <Link to="/auth/u/check" className="link">
+            Back to Email
           </Link>
         </form>
       </Form>

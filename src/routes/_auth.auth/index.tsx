@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_auth/auth/")({
   component: AuthHome,
 });
 
-export default function AuthHome() {
+function AuthHome() {
   return (
     <>
       <hgroup className="flex flex-col">
@@ -29,7 +29,7 @@ export default function AuthHome() {
         </Button>
 
         <Button asChild variant="outline" className="w-full">
-          <Link to="/auth/u/login">
+          <Link to="/auth/u/check">
             <Shield />
             Administrator Login
           </Link>

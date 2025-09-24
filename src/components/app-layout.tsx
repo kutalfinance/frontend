@@ -140,7 +140,7 @@ export function AppSidebar() {
             to={link.href}
             className={cn(
               "text-muted-foreground hover:text-primary flex items-center gap-2 rounded-md px-3 py-3 text-sm transition-colors",
-              link.pathRegex.test(pathname) && "text-primary bg-muted"
+              link.pathRegex.test(pathname) && "text-primary bg-accent"
             )}
             title={link.title}
           >

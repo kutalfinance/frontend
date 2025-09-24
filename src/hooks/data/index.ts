@@ -48,7 +48,7 @@ export function useLogout() {
     },
     onSuccess: () => {
       successToast("Logged out successfully");
-      navigate({ to: "/auth/u/login" });
+      navigate({ to: "/auth" });
     },
     onError: errorToast,
   });
@@ -56,6 +56,8 @@ export function useLogout() {
 
 // Auth admin
 export function useAdminAuthInitialize() {
+  const navigate = useNavigate();
+
   return useMutation({
     mutationFn: async (data: {
       name: string;
@@ -63,8 +65,9 @@ export function useAdminAuthInitialize() {
       password: string;
       superAdmin: boolean;
     }) => api.post("user/admin/init", { json: data }).json<APIResponse<unknown>>(),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       successToast("An OTP has been sent to your email");
+      navigate({ to: "/auth/u/verify", search: { email: variables.email } });
     },
     onError: errorToast,
   });
@@ -85,12 +88,46 @@ export function useAdminAuthOTP() {
   });
 }
 
+export function useAdminAuthCheck() {
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: async (data: { email: string }) =>
+      api.get("user/admin/is-active", { searchParams: data }).json<APIResponse<boolean>>(),
+    onSuccess: (response, variables) => {
+      if (response.data) {
+        navigate({ to: "/auth/u/login", search: { email: variables.email } });
+      } else {
+        navigate({ to: "/auth/u/onboarding", search: { email: variables.email } });
+      }
+    },
+    onError: errorToast,
+  });
+}
+
+export function useAdminAuthOnboarding() {
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: async (data: { email: string; password: string }) =>
+      api.post("user/admin/set-password", { json: data }).json<APIResponse<unknown>>(),
+    onSuccess: (_, variables) => {
+      successToast("An OTP has been sent to your email");
+      navigate({ to: "/auth/u/verify", search: { email: variables.email } });
+    },
+    onError: errorToast,
+  });
+}
+
 export function useAdminAuthLogin() {
+  const navigate = useNavigate();
+
   return useMutation({
     mutationFn: async (data: { email: string; password: string }) =>
       api.post("user/admin/login", { json: data }).json<APIResponse<unknown>>(),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       successToast("An OTP has been sent to your email");
+      navigate({ to: "/auth/u/verify", search: { email: variables.email } });
     },
     onError: errorToast,
   });

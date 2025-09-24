@@ -16,37 +16,42 @@ import {
 import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAdminAuthLogin } from "@/hooks/data";
+import { useAdminAuthOnboarding } from "@/hooks/data";
 
-export const Route = createFileRoute("/_auth/auth/u/login")({
-  component: AdminLogin,
+export const Route = createFileRoute("/_auth/auth/u/onboarding")({
+  component: AdminOnboarding,
   validateSearch: z.object({ email: z.email() }),
   beforeLoad: ({ search }) => {
     if (!search.email) throw redirect({ to: "/auth/u/check" });
   },
 });
 
-const loginSchema = z.object({ email: z.email(), password: z.string() });
+const loginSchema = z
+  .object({ email: z.email(), password: z.string(), confirmPassword: z.string() })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
-function AdminLogin() {
+function AdminOnboarding() {
   const { email } = Route.useSearch();
-  const { mutate, isPending } = useAdminAuthLogin();
+  const { mutate, isPending } = useAdminAuthOnboarding();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email, password: "" },
+    defaultValues: { email, password: "", confirmPassword: "" },
   });
 
   function onLogin(values: z.infer<typeof loginSchema>) {
-    mutate(values);
+    mutate({ email, password: values.password });
   }
 
   return (
     <>
       <hgroup className="flex flex-col">
-        <Heading className="mt-4">Enter Your Password</Heading>
+        <Heading className="mt-4">Set Your Password</Heading>
         <Paragraph className="text-muted-foreground">
-          Please enter your password to sign in to your account.
+          Create a secure password for your new admin account.
         </Paragraph>
       </hgroup>
 
@@ -66,6 +71,7 @@ function AdminLogin() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="password"
@@ -73,7 +79,20 @@ function AdminLogin() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder="Enter your password" {...field} />
+                    <PasswordInput placeholder="Create a secure password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <PasswordInput placeholder="Confirm your password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -81,7 +100,7 @@ function AdminLogin() {
             />
 
             <Button isLoading={isPending} className="my-2 w-full">
-              Sign In
+              Set Password
             </Button>
 
             <Link to="/auth/u/check" className="link">

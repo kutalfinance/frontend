@@ -30,9 +30,9 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Paragraph } from "@/components/ui/text";
 
-import { useCreateAdmin, useCreateAgent } from "@/hooks/data";
+import { useCreateAdmin, useCreateAgent } from "@/hooks/data/users";
 
-export const Route = createFileRoute("/_main/u/users/create")({
+export const Route = createFileRoute("/admin/users/create")({
   component: CreateUser,
 });
 

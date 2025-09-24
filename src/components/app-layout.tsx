@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 
 import { AppLogo } from "@/components/app-logo";
 import { Paragraph } from "@/components/ui/text";
-import { useLoggedInUser, useLogout } from "@/hooks/data";
+import { useLoggedInUser, useLogout } from "@/hooks/auth/common";
 
 import type { LinkProps } from "@tanstack/react-router";
 import { Contact, Home, Landmark, Users, type LucideIcon } from "lucide-react";
@@ -38,10 +38,10 @@ export const navLinks: {
   pathRegex: RegExp;
   icon: LucideIcon;
 }[] = [
-  { title: "Home", href: "/u", pathRegex: /\/u$/, icon: Home },
+  { title: "Home", href: "/admin", pathRegex: /\/admin$/, icon: Home },
   { title: "Branches", href: ".", pathRegex: /\/branches/, icon: Landmark },
-  { title: "Customers", href: "/u/customers", pathRegex: /\/customers/, icon: Contact },
-  { title: "Users", href: "/u/users", pathRegex: /\/users/, icon: Users },
+  { title: "Customers", href: "/admin/customers", pathRegex: /\/customers/, icon: Contact },
+  { title: "Users", href: "/admin/users", pathRegex: /\/users/, icon: Users },
 ];
 
 type AppLayoutContextType = {

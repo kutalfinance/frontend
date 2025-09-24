@@ -17,16 +17,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAdminAuthCheck } from "@/hooks/data";
+import { useAgentAuthLogin } from "@/hooks/auth/agent";
 
-export const Route = createFileRoute("/_auth/auth/u/check")({
-  component: AdminLogin,
+export const Route = createFileRoute("/auth/agent/login")({
+  component: AgentLogin,
 });
 
 const loginSchema = z.object({ email: z.email() });
 
-function AdminLogin() {
-  const { mutate, isPending } = useAdminAuthCheck();
+function AgentLogin() {
+  const { mutate, isPending } = useAgentAuthLogin();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -44,7 +44,7 @@ function AdminLogin() {
       </Link>
 
       <hgroup className="flex flex-col">
-        <Heading className="mt-4">Admin Login</Heading>
+        <Heading className="mt-4">Agent Login</Heading>
         <Paragraph className="text-muted-foreground">
           Enter your email address to continue.
         </Paragraph>
@@ -67,7 +67,7 @@ function AdminLogin() {
               )}
             />
 
-            <Button isLoading={isPending} className="mt-2 w-full">
+            <Button isLoading={isPending} className="my-2 w-full">
               Continue
             </Button>
           </form>

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, redirect } from "@tanstack/react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -16,32 +16,37 @@ import {
 import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAdminAuthInitialize } from "@/hooks/data";
+import { useAdminAuthLogin } from "@/hooks/auth/admin";
 
-export const Route = createFileRoute("/_auth/auth/u/initialize")({
-  component: AdminInitialize,
+export const Route = createFileRoute("/auth/admin/login")({
+  component: AdminLogin,
+  validateSearch: z.object({ email: z.email() }),
+  beforeLoad: ({ search }) => {
+    if (!search.email) throw redirect({ to: "/auth/admin/check" });
+  },
 });
 
-const initSchema = z.object({ name: z.string(), email: z.email(), password: z.string() });
+const loginSchema = z.object({ email: z.email(), password: z.string() });
 
-function AdminInitialize() {
-  const { mutate, isPending } = useAdminAuthInitialize();
+function AdminLogin() {
+  const { email } = Route.useSearch();
+  const { mutate, isPending } = useAdminAuthLogin();
 
-  const form = useForm<z.infer<typeof initSchema>>({
-    resolver: zodResolver(initSchema),
-    defaultValues: { name: "", email: "", password: "" },
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email, password: "" },
   });
 
-  function onLogin(values: z.infer<typeof initSchema>) {
-    mutate({ ...values, superAdmin: true });
+  function onLogin(values: z.infer<typeof loginSchema>) {
+    mutate(values);
   }
 
   return (
     <>
       <hgroup className="flex flex-col">
-        <Heading className="mt-4">Initialize Administrator</Heading>
+        <Heading className="mt-4">Enter Your Password</Heading>
         <Paragraph className="text-muted-foreground">
-          Create your administrator account to get started.
+          Please enter your password to sign in to your account.
         </Paragraph>
       </hgroup>
 
@@ -50,25 +55,12 @@ function AdminInitialize() {
           <form onSubmit={form.handleSubmit(onLogin)} className="grid gap-2">
             <FormField
               control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input autoFocus placeholder="Enter your name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="Enter your email" {...field} />
+                    <Input disabled type="email" placeholder="Enter your email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -81,16 +73,20 @@ function AdminInitialize() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder="Create your admin password" {...field} />
+                    <PasswordInput placeholder="Enter your password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <Button isLoading={isPending} className="mt-2 w-full">
-              Create administrator account
+            <Button isLoading={isPending} className="my-2 w-full">
+              Sign in
             </Button>
+
+            <Link to="/auth/admin/check" className="link">
+              Back to email
+            </Link>
           </form>
         </Form>
       </div>

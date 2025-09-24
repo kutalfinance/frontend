@@ -6,7 +6,7 @@ import { AppLogo } from "@/components/app-logo";
 import { Button } from "@/components/ui/button";
 import { Paragraph } from "@/components/ui/text";
 
-export const Route = createFileRoute("/_auth/auth/")({
+export const Route = createFileRoute("/auth/")({
   component: AuthHome,
 });
 
@@ -22,14 +22,14 @@ function AuthHome() {
 
       <div className="space-y-3">
         <Button asChild className="w-full">
-          <Link to="/auth/a/login">
+          <Link to="/auth/agent/login">
             <Users />
             Agent login
           </Link>
         </Button>
 
         <Button asChild variant="outline" className="w-full">
-          <Link to="/auth/u/check">
+          <Link to="/auth/admin/check">
             <Shield />
             Administrator login
           </Link>

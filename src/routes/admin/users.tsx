@@ -25,12 +25,12 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
 
-import { useUsers } from "@/hooks/data";
+import { useUsers } from "@/hooks/data/users";
 import type { User } from "@/lib/types";
 import { MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
-export const Route = createFileRoute("/_main/u/users")({
+export const Route = createFileRoute("/admin/users")({
   component: Users,
 });
 
@@ -75,7 +75,7 @@ function Users() {
           <ModuleTitle>User Management</ModuleTitle>
           <ModuleActions>
             <Button asChild>
-              <Link to="/u/users/create">Create New User</Link>
+              <Link to="/admin/users/create">Create New User</Link>
             </Button>
           </ModuleActions>
         </ModuleHeader>

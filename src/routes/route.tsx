@@ -13,10 +13,10 @@ export const Route = createFileRoute("/")({
     try {
       const response = await api.get("user/me").json<User>();
       if (response.role === UserRoles.ADMIN) {
-        return redirect({ to: "/u" });
+        return redirect({ to: "/admin" });
       }
       // Else redirect to agent dashboard
-      return redirect({ to: "/a" });
+      return redirect({ to: "/agent" });
     } catch (err) {
       authToken.clear();
       return redirect({ to: "/auth" });

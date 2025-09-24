@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CornerUpLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -16,17 +17,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAgentAuthLogin } from "@/hooks/data";
-import { CornerUpLeft } from "lucide-react";
+import { useAdminAuthCheck } from "@/hooks/auth/admin";
 
-export const Route = createFileRoute("/_auth/auth/a/login")({
-  component: AgentLogin,
+export const Route = createFileRoute("/auth/admin/check")({
+  component: AdminCheck,
 });
 
 const loginSchema = z.object({ email: z.email() });
 
-function AgentLogin() {
-  const { mutate, isPending } = useAgentAuthLogin();
+function AdminCheck() {
+  const { mutate, isPending } = useAdminAuthCheck();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -44,7 +44,7 @@ function AgentLogin() {
       </Link>
 
       <hgroup className="flex flex-col">
-        <Heading className="mt-4">Agent Login</Heading>
+        <Heading className="mt-4">Admin Login</Heading>
         <Paragraph className="text-muted-foreground">
           Enter your email address to continue.
         </Paragraph>
@@ -67,7 +67,7 @@ function AgentLogin() {
               )}
             />
 
-            <Button isLoading={isPending} className="my-2 w-full">
+            <Button isLoading={isPending} className="mt-2 w-full">
               Continue
             </Button>
           </form>

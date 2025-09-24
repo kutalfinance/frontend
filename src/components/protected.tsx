@@ -1,4 +1,4 @@
-import { useLoggedInUser } from "@/hooks/data";
+import { useLoggedInUser } from "@/hooks/auth/common";
 
 type SuperAdminOnlyProps = {
   children: React.ReactNode;

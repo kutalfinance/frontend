@@ -1,21 +1,20 @@
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
+import { AppHeader, AppLayoutProvider, AppSidebar } from "@/components/app-layout";
+import { useLoggedInUser } from "@/hooks/auth/common";
 import { AppSplashScreen } from "@/components/app-splash-screen";
 import { api } from "@/lib/api";
-import { UserRoles, type User } from "@/lib/types";
+import { UserRoles, type APIResponse, type User } from "@/lib/types";
 import { authToken } from "@/lib/auth-token";
 
-import { AppHeader, AppLayoutProvider, AppSidebar } from "@/components/app-layout";
-import { useLoggedInUser } from "@/hooks/data";
-
-export const Route = createFileRoute("/_main/a")({
-  component: MainLayout,
+export const Route = createFileRoute("/admin")({
+  component: AdminLayout,
   pendingComponent: () => <AppSplashScreen />,
   loader: async () => {
     try {
-      const response = await api.get("user/me").json<User>();
-      if (response.role !== UserRoles.AGENT) {
-        return redirect({ to: "/u" });
+      const response = await api.get("user/me").json<APIResponse<User>>();
+      if (response.data.role !== UserRoles.ADMIN) {
+        return redirect({ to: "/agent" });
       }
     } catch (err) {
       authToken.clear();
@@ -28,7 +27,7 @@ export const Route = createFileRoute("/_main/a")({
   },
 });
 
-function MainLayout() {
+function AdminLayout() {
   useLoggedInUser();
 
   return (
@@ -44,3 +43,4 @@ function MainLayout() {
     </AppLayoutProvider>
   );
 }
+

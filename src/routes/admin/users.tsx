@@ -1,5 +1,6 @@
 import { Link, Outlet, createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { format } from "date-fns";
 
 import {
   type ColumnDef,
@@ -27,8 +28,9 @@ import { Input } from "@/components/ui/input";
 
 import { useUsers } from "@/hooks/data/users";
 import type { User } from "@/lib/types";
-import { MoreHorizontal } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { EditUser } from "@/modules/users/edit-user";
 
 export const Route = createFileRoute("/admin/users")({
   component: Users,
@@ -144,18 +146,27 @@ export const columns: ColumnDef<User>[] = [
     header: "Created",
     cell: ({ row }) => {
       const date = new Date(row.original.createdAt);
-      return <span className="text-muted-foreground">{date.toLocaleDateString()}</span>;
+      return <span className="text-muted-foreground">{format(date, "dd/MM/yyyy - h:mm a")}</span>;
     },
   },
   {
     id: "actions",
     enableHiding: false,
-    cell: () => {
+    cell: ({ row }) => {
       return (
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal />
-        </Button>
+        <div className="flex gap-2">
+          <EditUser user={row.original}>
+            <Button variant="ghost" size="icon">
+              <span className="sr-only">Edit</span>
+              <SquarePen />
+            </Button>
+          </EditUser>
+
+          <Button variant="ghost" size="icon">
+            <span className="sr-only">Delete</span>
+            <Trash2 className="text-destructive" />
+          </Button>
+        </div>
       );
     },
   },

@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Menu, PanelLeft } from "lucide-react";
+import { Coins, History, Menu, PanelLeft } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -32,17 +32,35 @@ import type { LinkProps } from "@tanstack/react-router";
 import { Contact, Home, Landmark, Users, type LucideIcon } from "lucide-react";
 import { createContext, useContext, useState } from "react";
 
-export const navLinks: {
+const adminNavLinks: {
   title: string;
   href: LinkProps["to"];
   pathRegex: RegExp;
   icon: LucideIcon;
 }[] = [
-  { title: "Home", href: "/admin", pathRegex: /\/admin$/, icon: Home },
-  { title: "Branches", href: ".", pathRegex: /\/branches/, icon: Landmark },
-  { title: "Customers", href: "/admin/customers", pathRegex: /\/customers/, icon: Contact },
-  { title: "Users", href: "/admin/users", pathRegex: /\/users/, icon: Users },
+  { title: "Dashboard", href: "/admin", pathRegex: /^\/admin$/, icon: Home },
+  { title: "Branches", href: ".", pathRegex: /\/admin\/branches/, icon: Landmark },
+  { title: "Customers", href: "/admin/customers", pathRegex: /\/admin\/customers/, icon: Contact },
+  { title: "Contributions", href: ".", pathRegex: /\/admin\/contributions/, icon: Coins },
+  { title: "Users", href: "/admin/users", pathRegex: /\/admin\/users/, icon: Users },
+  { title: "Audit Trail", href: ".", pathRegex: /\/admin\/audit/, icon: History },
 ];
+
+const agentNavLinks: {
+  title: string;
+  href: LinkProps["to"];
+  pathRegex: RegExp;
+  icon: LucideIcon;
+}[] = [
+  { title: "Dashboard", href: "/agent", pathRegex: /^\/agent$/, icon: Home },
+  { title: "Branches", href: ".", pathRegex: /\/agent\/branches/, icon: Landmark },
+  { title: "Customers", href: ".", pathRegex: /\/agent\/customers/, icon: Contact },
+  { title: "Contributions", href: ".", pathRegex: /\/agent\/contributions/, icon: Coins },
+];
+
+export function getNavLinks(userRole: string) {
+  return userRole === "ADMIN" ? adminNavLinks : agentNavLinks;
+}
 
 type AppLayoutContextType = {
   open: boolean;
@@ -69,7 +87,6 @@ export function AppLayoutProvider({ children, ...props }: React.ComponentProps<"
 }
 
 export function AppHeader() {
-  const { pathname } = useLocation();
   const { setOpen } = useAppLayoutContext();
 
   return (
@@ -102,22 +119,7 @@ export function AppHeader() {
               <SheetTitle />
               <SheetDescription />
 
-              <nav className="flex flex-col gap-2 py-10">
-                {navLinks.map((link) => (
-                  <SheetClose key={link.title} asChild>
-                    <Link
-                      to={link.href}
-                      className={cn(
-                        "text-muted-foreground hover:text-primary flex items-center gap-1.5 rounded-md px-3 py-4 text-lg transition-colors",
-                        link.pathRegex.test(pathname) && "text-primary bg-muted"
-                      )}
-                      title={link.title}
-                    >
-                      <Paragraph className="leading-4">{link.title}</Paragraph>
-                    </Link>
-                  </SheetClose>
-                ))}
-              </nav>
+              <MobileNavigation />
             </SheetHeader>
           </SheetContent>
         </Sheet>
@@ -129,6 +131,9 @@ export function AppHeader() {
 export function AppSidebar() {
   const { pathname } = useLocation();
   const { open } = useAppLayoutContext();
+  const { data } = useLoggedInUser();
+
+  const navLinks = getNavLinks(data?.data?.role || "");
 
   return (
     <div className={cn("hidden w-60 shrink-0 border-r p-4 lg:block", !open && "w-fit")}>
@@ -149,6 +154,32 @@ export function AppSidebar() {
         ))}
       </nav>
     </div>
+  );
+}
+
+function MobileNavigation() {
+  const { pathname } = useLocation();
+  const { data } = useLoggedInUser();
+
+  const navLinks = getNavLinks(data?.data?.role || "");
+
+  return (
+    <nav className="flex flex-col gap-2 py-10">
+      {navLinks.map((link) => (
+        <SheetClose key={link.title} asChild>
+          <Link
+            to={link.href}
+            className={cn(
+              "text-muted-foreground hover:text-primary flex items-center gap-1.5 rounded-md px-3 py-4 text-lg transition-colors",
+              link.pathRegex.test(pathname) && "text-primary bg-muted"
+            )}
+            title={link.title}
+          >
+            <Paragraph className="leading-4">{link.title}</Paragraph>
+          </Link>
+        </SheetClose>
+      ))}
+    </nav>
   );
 }
 

@@ -64,8 +64,8 @@ export function useAdminAuthOnboarding() {
     mutationFn: async (data: { email: string; password: string }) =>
       api.post("user/admin/set-password", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: (_, variables) => {
-      successToast("An OTP has been sent to your email");
-      navigate({ to: "/auth/admin/verify", search: { email: variables.email } });
+      successToast("Password set successfully. Please login.");
+      navigate({ to: "/auth/admin/login", search: { email: variables.email } });
     },
     onError: errorToast,
   });
@@ -106,3 +106,4 @@ export function useSendPasswordResetLink() {
     onError: errorToast,
   });
 }
+

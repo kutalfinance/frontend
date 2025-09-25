@@ -25,12 +25,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Paragraph } from "@/components/ui/text";
 
 import { useCreateAdmin, useCreateAgent } from "@/hooks/data/users";
+import { UserRoles } from "@/lib/types";
 
 export const Route = createFileRoute("/admin/users/create")({
   component: CreateUser,
@@ -38,12 +38,12 @@ export const Route = createFileRoute("/admin/users/create")({
 
 const userTypeOptions = [
   {
-    value: "agent",
+    value: UserRoles.AGENT,
     label: "Agent",
     description: "Limited access to assigned tasks and support tickets",
   },
   {
-    value: "admin",
+    value: UserRoles.ADMIN,
     label: "Administrator",
     description: "Access to administrative panel and user management",
   },
@@ -68,8 +68,8 @@ type OTPForm = z.infer<typeof otpSchema>;
 
 function CreateUser() {
   const navigate = Route.useNavigate();
-  const [step, setStep] = useState<"userType" | "details" | "verification">("userType");
-  const [userType, setUserType] = useState<"agent" | "admin" | (string & {})>("agent");
+  const [step, setStep] = useState<"userType" | "details">("userType");
+  const [userType, setUserType] = useState<UserRoles>(UserRoles.AGENT);
 
   const { mutate: createAdmin, isPending: isPendingAdmin } = useCreateAdmin();
   const { mutate: createAgent, isPending: isPendingAgent } = useCreateAgent();
@@ -86,24 +86,18 @@ function CreateUser() {
 
   const handleClose = () => navigate({ to: ".." });
 
-  const handleUserTypeChange = (value: string) => {
+  const handleUserTypeChange = (value: UserRoles) => {
     setUserType(value);
     detailsForm.reset();
     otpForm.reset();
   };
 
   const handleDetailsSubmit = (data: UserDetailsForm) => {
-    if (userType === "agent") {
-      return createAgent(data, { onSuccess: () => setStep("verification") });
+    if (userType === UserRoles.AGENT) {
+      return createAgent(data, { onSuccess: handleClose });
     }
 
-    createAdmin(data, { onSuccess: () => setStep("verification") });
-  };
-
-  const handleOtpSubmit = (data: OTPForm) => {
-    const userDetails = detailsForm.getValues();
-    console.log("Creating user:", { ...userDetails, otp: data.otp });
-    handleClose();
+    createAdmin(data, { onSuccess: handleClose });
   };
 
   return (
@@ -114,8 +108,6 @@ function CreateUser() {
           <DialogDescription>
             {step === "userType" && "Select the type of user account to create."}
             {step === "details" && "Enter the user details and permissions."}
-            {step === "verification" &&
-              "Enter the verification code sent to your email to complete user creation."}
           </DialogDescription>
         </DialogHeader>
 
@@ -181,7 +173,7 @@ function CreateUser() {
                 )}
               />
 
-              {userType === "admin" && (
+              {userType === UserRoles.ADMIN && (
                 <SuperAdminOnly>
                   <FormField
                     control={detailsForm.control}
@@ -219,64 +211,7 @@ function CreateUser() {
                   Back
                 </Button>
                 <Button isLoading={isPendingAdmin || isPendingAgent} type="submit">
-                  Send Verification Code
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        )}
-
-        {step === "verification" && (
-          <Form {...otpForm}>
-            <form onSubmit={otpForm.handleSubmit(handleOtpSubmit)} className="space-y-3">
-              <FormField
-                control={otpForm.control}
-                name="otp"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Verification Code</FormLabel>
-                    <FormControl>
-                      <InputOTP maxLength={6} value={field.value} onChange={field.onChange}>
-                        <InputOTPGroup>
-                          <InputOTPSlot index={0} />
-                          <InputOTPSlot index={1} />
-                          <InputOTPSlot index={2} />
-                          <InputOTPSlot index={3} />
-                          <InputOTPSlot index={4} />
-                          <InputOTPSlot index={5} />
-                        </InputOTPGroup>
-                      </InputOTP>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="bg-muted rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex-1">
-                    <Paragraph className="text-sm font-medium">Summary</Paragraph>
-                    <Paragraph className="text-muted-foreground text-sm">
-                      Creating {userType} account:&nbsp;
-                      {detailsForm.getValues("email")}
-                    </Paragraph>
-                  </div>
-                </div>
-              </div>
-
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setStep("details");
-                    otpForm.reset();
-                  }}
-                >
-                  Back
-                </Button>
-                <Button type="submit">
-                  Create {detailsForm.getValues("isSuperAdmin") ? "Administrator" : "Agent"}
+                  Create user
                 </Button>
               </DialogFooter>
             </form>

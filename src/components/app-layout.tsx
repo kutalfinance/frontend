@@ -91,7 +91,7 @@ export function AppHeader() {
 
   return (
     <div className="border-b">
-      <header className="container flex min-h-16 items-center gap-10">
+      <header className="container flex min-h-16 items-center gap-10 px-4">
         <Button
           variant="ghost"
           onClick={() => setOpen((open) => !open)}
@@ -170,12 +170,13 @@ function MobileNavigation() {
           <Link
             to={link.href}
             className={cn(
-              "text-muted-foreground hover:text-primary flex items-center gap-1.5 rounded-md px-3 py-4 text-lg transition-colors",
+              "text-muted-foreground hover:text-primary flex items-center gap-2.5 rounded-md px-3 py-4 transition-colors",
               link.pathRegex.test(pathname) && "text-primary bg-muted"
             )}
             title={link.title}
           >
-            <Paragraph className="leading-4">{link.title}</Paragraph>
+            <link.icon className="size-5" />
+            <Paragraph className="text-lg leading-4">{link.title}</Paragraph>
           </Link>
         </SheetClose>
       ))}

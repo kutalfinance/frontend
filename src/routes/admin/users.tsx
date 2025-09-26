@@ -122,7 +122,7 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
+    cell: ({ row }) => <span className="font-medium whitespace-nowrap">{row.original.name}</span>,
   },
   {
     accessorKey: "email",
@@ -135,7 +135,11 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const role = row.original.role;
       if (row.original.isSuperAdmin) {
-        return <Badge variant="destructive">SUPER ADMIN</Badge>;
+        return (
+          <Badge className="whitespace-nowrap" variant="destructive">
+            SUPER ADMIN
+          </Badge>
+        );
       }
 
       return <Badge variant={role === "ADMIN" ? "default" : "accent"}>{role}</Badge>;

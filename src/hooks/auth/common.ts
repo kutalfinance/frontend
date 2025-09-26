@@ -1,5 +1,5 @@
-import { useNavigate } from "@tanstack/react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { redirect, useNavigate } from "@tanstack/react-router";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
 import { authToken } from "@/lib/auth-token";
@@ -7,22 +7,22 @@ import type { APIResponse, User } from "@/lib/types";
 import { errorToast, queryKeys, successToast } from "../data/utils";
 
 // Common auth hooks used by both admin and agent
-export function useLoggedInUser() {
-  const navigate = useNavigate();
+export const loggedInUserQueryOptions = queryOptions({
+  queryKey: queryKeys.users.me(),
+  queryFn: async () => {
+    try {
+      return await api.get("user/me").json<APIResponse<User>>();
+    } catch (e) {
+      redirect({ to: "/auth" });
+      authToken.clear();
+      return;
+    }
+  },
+  staleTime: 1000 * 60 * 5, // 5 minutes
+});
 
-  return useQuery({
-    queryKey: queryKeys.users.me(),
-    queryFn: async () => {
-      try {
-        return await api.get("user/me").json<APIResponse<User>>();
-      } catch (e) {
-        navigate({ to: "/auth" });
-        authToken.clear();
-        return;
-      }
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+export function useLoggedInUser() {
+  return useQuery(loggedInUserQueryOptions);
 }
 
 export function useLogout() {
@@ -41,3 +41,4 @@ export function useLogout() {
     onError: errorToast,
   });
 }
+

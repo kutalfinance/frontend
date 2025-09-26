@@ -1,20 +1,20 @@
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
 import { AppSplashScreen } from "@/components/app-splash-screen";
-import { api } from "@/lib/api";
-import { UserRoles, type APIResponse, type User } from "@/lib/types";
+import { UserRoles } from "@/lib/types";
 import { authToken } from "@/lib/auth-token";
 
 import { AppHeader, AppLayoutProvider, AppSidebar } from "@/components/app-layout";
-import { useLoggedInUser } from "@/hooks/auth/common";
+import { loggedInUserQueryOptions, useLoggedInUser } from "@/hooks/auth/common";
+import { queryClient } from "@/components/query-provider";
 
 export const Route = createFileRoute("/agent")({
   component: AgentLayout,
   pendingComponent: () => <AppSplashScreen />,
   loader: async () => {
     try {
-      const response = await api.get("user/me").json<APIResponse<User>>();
-      if (response.data.role !== UserRoles.AGENT) {
+      const response = await queryClient.ensureQueryData(loggedInUserQueryOptions);
+      if (response?.data.role !== UserRoles.AGENT) {
         return redirect({ to: "/admin" });
       }
     } catch (err) {
@@ -44,4 +44,5 @@ function AgentLayout() {
     </AppLayoutProvider>
   );
 }
+
 

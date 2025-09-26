@@ -8,7 +8,7 @@ function ModuleHeading({ className, ...props }: React.ComponentProps<"hgroup">) 
   return (
     <hgroup
       data-slot="module-heading"
-      className={cn("container mb-6 flex flex-col px-4 lg:px-10", className)}
+      className={cn("container mb-6 flex flex-col", className)}
       {...props}
     />
   );

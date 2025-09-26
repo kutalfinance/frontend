@@ -1,9 +1,10 @@
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
-import { api } from "@/lib/api";
 import { authToken } from "@/lib/auth-token";
-import { type APIResponse, type User, UserRoles } from "@/lib/types";
+import { UserRoles } from "@/lib/types";
 import { AppSplashScreen } from "@/components/app-splash-screen";
+import { queryClient } from "@/components/query-provider";
+import { loggedInUserQueryOptions } from "@/hooks/auth/common";
 
 // Root route handler - authenticates user and redirects based on role
 export const Route = createFileRoute("/")({
@@ -11,8 +12,8 @@ export const Route = createFileRoute("/")({
   pendingComponent: () => <AppSplashScreen />,
   loader: async () => {
     try {
-      const response = await api.get("user/me").json<APIResponse<User>>();
-      if (response.data.role === UserRoles.ADMIN) {
+      const response = await queryClient.ensureQueryData(loggedInUserQueryOptions);
+      if (response?.data.role === UserRoles.ADMIN) {
         return redirect({ to: "/admin" });
       }
       return redirect({ to: "/agent" });

@@ -22,7 +22,7 @@ function AdminDashboard() {
         <ModuleTitle>Welcome {user.name}</ModuleTitle>
       </ModuleHeading>
 
-      <div className="container px-10">
+      <div className="container">
         <DashboardStats />
       </div>
     </>

@@ -30,6 +30,7 @@ import { Input } from "@/components/ui/input";
 
 import { useUsers } from "@/hooks/data/users";
 import type { User } from "@/lib/types";
+import { DeleteUser } from "@/modules/users/delete-user";
 import { EditUser } from "@/modules/users/edit-user";
 
 export const Route = createFileRoute("/admin/users")({
@@ -166,10 +167,12 @@ export const columns: ColumnDef<User>[] = [
             </Button>
           </EditUser>
 
-          <Button variant="ghost" size="icon">
-            <span className="sr-only">Delete</span>
-            <Trash2 className="text-destructive" />
-          </Button>
+          <DeleteUser user={row.original}>
+            <Button variant="ghost" size="icon">
+              <span className="sr-only">Delete</span>
+              <Trash2 className="text-destructive" />
+            </Button>
+          </DeleteUser>
         </div>
       );
     },

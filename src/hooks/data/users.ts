@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
-import type { APIResponse, AdminMetrics, User } from "@/lib/types";
+import { type APIResponse, type AdminMetrics, type User, UserRoles } from "@/lib/types";
 
 import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";
 
@@ -40,6 +40,24 @@ export function useCreateAgent() {
         queryClient.invalidateQueries({ queryKey });
       });
       successToast("Agent created successfully");
+    },
+    onError: errorToast,
+  });
+}
+
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, role }: { id: string; role: UserRoles }) => {
+      const PATH = role === UserRoles.ADMIN ? `user/admin/${id}` : `user/agent/${id}`;
+      return api.delete(PATH).json<APIResponse<unknown>>();
+    },
+    onSuccess: () => {
+      invalidationHelpers.users.related().forEach((queryKey) => {
+        queryClient.invalidateQueries({ queryKey });
+      });
+      successToast("Admin deleted successfully");
     },
     onError: errorToast,
   });

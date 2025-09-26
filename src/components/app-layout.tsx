@@ -1,4 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
+import type { LinkProps } from "@tanstack/react-router";
+import { createContext, useContext, useState } from "react";
+
+import { Coins, History, Menu, PanelLeft } from "lucide-react";
+import { Contact, Home, Landmark, type LucideIcon, Users } from "lucide-react";
+
+import { AppLogo } from "@/components/app-logo";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,10 +16,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import { Coins, History, Menu, PanelLeft } from "lucide-react";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sheet,
   SheetClose,
@@ -21,16 +25,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
-import { cn } from "@/lib/utils";
-
-import { AppLogo } from "@/components/app-logo";
 import { Paragraph } from "@/components/ui/text";
-import { useLoggedInUser, useLogout } from "@/hooks/auth/common";
 
-import type { LinkProps } from "@tanstack/react-router";
-import { Contact, Home, Landmark, Users, type LucideIcon } from "lucide-react";
-import { createContext, useContext, useState } from "react";
+import { useLoggedInUser, useLogout } from "@/hooks/auth/common";
+import { cn } from "@/lib/utils";
 
 const adminNavLinks: {
   title: string;

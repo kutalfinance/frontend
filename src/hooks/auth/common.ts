@@ -1,9 +1,11 @@
 import { redirect, useNavigate } from "@tanstack/react-router";
+
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
 import { authToken } from "@/lib/auth-token";
 import type { APIResponse, User } from "@/lib/types";
+
 import { errorToast, queryKeys, successToast } from "../data/utils";
 
 // Common auth hooks used by both admin and agent
@@ -41,4 +43,3 @@ export function useLogout() {
     onError: errorToast,
   });
 }
-

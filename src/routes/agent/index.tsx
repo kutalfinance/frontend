@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { useLoggedInUser } from "@/hooks/auth/common";
 import { ModuleHeading, ModuleTitle } from "@/components/module-heading";
+
+import { useLoggedInUser } from "@/hooks/auth/common";
 
 export const Route = createFileRoute("/agent/")({
   component: AgentDashboard,

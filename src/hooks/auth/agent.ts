@@ -1,9 +1,11 @@
 import { useNavigate } from "@tanstack/react-router";
+
 import { useMutation } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
 import { authToken } from "@/lib/auth-token";
 import type { APIResponse, VerifyOtp } from "@/lib/types";
+
 import { errorToast, successToast } from "../data/utils";
 
 // Agent authentication hooks

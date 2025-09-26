@@ -10,7 +10,7 @@ export function SuperAdminOnly({ children, fallback = null }: SuperAdminOnlyProp
 
   // Handle loading state - don't show content while loading
   if (isLoading) return fallback;
-  
+
   // Handle error state - don't show content if error occurred
   if (error) return fallback;
 

@@ -1,5 +1,6 @@
 import { type Table as TableType, flexRender } from "@tanstack/react-table";
 import type { Row, RowData } from "@tanstack/react-table";
+import { LoaderCircle } from "lucide-react";
 
 import {
   Table,
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/table";
 
 import { cn } from "@/lib/utils";
-import { LoaderCircle } from "lucide-react";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {

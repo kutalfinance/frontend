@@ -1,9 +1,11 @@
 import { useNavigate } from "@tanstack/react-router";
+
 import { useMutation } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
 import { authToken } from "@/lib/auth-token";
 import type { APIResponse, ResetPassword, SendPasswordResetLink } from "@/lib/types";
+
 import { errorToast, successToast } from "../data/utils";
 
 // Admin authentication hooks
@@ -106,4 +108,3 @@ export function useSendPasswordResetLink() {
     onError: errorToast,
   });
 }
-

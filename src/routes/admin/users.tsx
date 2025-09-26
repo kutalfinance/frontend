@@ -1,6 +1,5 @@
 import { Link, Outlet, createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { format } from "date-fns";
 
 import {
   type ColumnDef,
@@ -13,6 +12,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { SquarePen, Trash2 } from "lucide-react";
 
 import {
   ModuleActions,
@@ -23,13 +24,12 @@ import {
 } from "@/components/module-heading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
 
 import { useUsers } from "@/hooks/data/users";
 import type { User } from "@/lib/types";
-import { SquarePen, Trash2 } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 import { EditUser } from "@/modules/users/edit-user";
 
 export const Route = createFileRoute("/admin/users")({

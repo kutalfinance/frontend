@@ -1,12 +1,12 @@
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
-import { AppSplashScreen } from "@/components/app-splash-screen";
-import { UserRoles } from "@/lib/types";
-import { authToken } from "@/lib/auth-token";
-
 import { AppHeader, AppLayoutProvider, AppSidebar } from "@/components/app-layout";
-import { loggedInUserQueryOptions, useLoggedInUser } from "@/hooks/auth/common";
+import { AppSplashScreen } from "@/components/app-splash-screen";
 import { queryClient } from "@/components/query-provider";
+
+import { loggedInUserQueryOptions, useLoggedInUser } from "@/hooks/auth/common";
+import { authToken } from "@/lib/auth-token";
+import { UserRoles } from "@/lib/types";
 
 export const Route = createFileRoute("/agent")({
   component: AgentLayout,
@@ -44,5 +44,3 @@ function AgentLayout() {
     </AppLayoutProvider>
   );
 }
-
-

@@ -39,7 +39,8 @@ function AgentVerify() {
       <hgroup className="flex flex-col">
         <Heading className="mt-4">Agent Verification</Heading>
         <Paragraph className="text-muted-foreground">
-          We've sent a 6-digit verification code to {email}. Enter it below to access your agent account.
+          We've sent a 6-digit verification code to {email}. Enter it below to access your agent
+          account.
         </Paragraph>
       </hgroup>
 

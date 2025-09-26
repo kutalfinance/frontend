@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { useLoggedInUser } from "@/hooks/auth/common";
 import { ModuleHeading, ModuleTitle } from "@/components/module-heading";
-import { useAdminMetrics } from "@/hooks/data/users";
-import { Heading, Paragraph } from "@/components/ui/text";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Heading, Paragraph } from "@/components/ui/text";
+
+import { useLoggedInUser } from "@/hooks/auth/common";
+import { useAdminMetrics } from "@/hooks/data/users";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,

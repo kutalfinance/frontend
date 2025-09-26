@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 
 import { cn } from "@/lib/utils";
+import { LoaderCircle } from "lucide-react";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -22,7 +23,13 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export function DataTable<TData>({ table }: { table: TableType<TData> }) {
+export function DataTable<TData>({
+  table,
+  isLoading,
+}: {
+  table: TableType<TData>;
+  isLoading?: boolean;
+}) {
   const columns = table.getAllColumns();
 
   return (
@@ -46,7 +53,15 @@ export function DataTable<TData>({ table }: { table: TableType<TData> }) {
         ))}
       </TableHeader>
       <TableBody>
-        {table.getRowModel().rows?.length ? (
+        {isLoading ? (
+          <TableRow>
+            <TableCell colSpan={columns.length} className="h-24 text-center">
+              <div className="flex items-center justify-center py-20">
+                <LoaderCircle className="text-primary size-8 animate-spin" />
+              </div>
+            </TableCell>
+          </TableRow>
+        ) : table.getRowModel().rows?.length ? (
           table.getRowModel().rows.map((row) => (
             <TableRow
               key={row.id}

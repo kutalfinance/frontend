@@ -35,10 +35,11 @@ import {
 import { Input, inputStyles } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-import { useBranches, useCreateCustomer } from "@/hooks/data";
+import { useBranches } from "@/hooks/data/branches";
+import { useCreateCustomer } from "@/hooks/data/customers";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_main/u/customers/create")({
+export const Route = createFileRoute("/admin/customers/create")({
   component: CreateCustomer,
 });
 

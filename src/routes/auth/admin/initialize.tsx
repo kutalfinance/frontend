@@ -16,16 +16,15 @@ import {
 import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAdminAuthInitialize } from "@/hooks/data";
+import { useAdminAuthInitialize } from "@/hooks/auth/admin";
 
-export const Route = createFileRoute("/_auth/auth/u/initialize")({
+export const Route = createFileRoute("/auth/admin/initialize")({
   component: AdminInitialize,
 });
 
 const initSchema = z.object({ name: z.string(), email: z.email(), password: z.string() });
 
-export default function AdminInitialize() {
-  const navigate = Route.useNavigate();
+function AdminInitialize() {
   const { mutate, isPending } = useAdminAuthInitialize();
 
   const form = useForm<z.infer<typeof initSchema>>({
@@ -33,13 +32,8 @@ export default function AdminInitialize() {
     defaultValues: { name: "", email: "", password: "" },
   });
 
-  function onLogin(values: z.infer<typeof initSchema>) {
-    mutate(
-      { ...values, superAdmin: true },
-      {
-        onSuccess: () => navigate({ to: "/auth/u/otp", search: { email: values.email } }),
-      }
-    );
+  function onInitialize(values: z.infer<typeof initSchema>) {
+    mutate({ ...values, superAdmin: true });
   }
 
   return (
@@ -53,7 +47,7 @@ export default function AdminInitialize() {
 
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onLogin)} className="grid gap-2">
+          <form onSubmit={form.handleSubmit(onInitialize)} className="grid gap-2">
             <FormField
               control={form.control}
               name="name"
@@ -87,7 +81,7 @@ export default function AdminInitialize() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder="********" {...field} />
+                    <PasswordInput placeholder="Create your admin password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -95,7 +89,7 @@ export default function AdminInitialize() {
             />
 
             <Button isLoading={isPending} className="mt-2 w-full">
-              Create Administrator Account
+              Create administrator account
             </Button>
           </form>
         </Form>

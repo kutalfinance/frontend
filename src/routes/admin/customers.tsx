@@ -11,10 +11,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { useCustomers } from "@/hooks/data";
+import { useCustomers } from "@/hooks/data/customers";
 import { CustomersTable } from "@/modules/customers/data-table";
 
-export const Route = createFileRoute("/_main/u/customers")({
+export const Route = createFileRoute("/admin/customers")({
   component: Customers,
 });
 
@@ -31,7 +31,7 @@ function Customers() {
           <ModuleTitle>Customer Management</ModuleTitle>
           <ModuleActions>
             <Button asChild>
-              <Link to="/u/customers/create">Create New Customer</Link>
+              <Link to="/admin/customers/create">Create New Customer</Link>
             </Button>
           </ModuleActions>
         </ModuleHeader>

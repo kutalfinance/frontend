@@ -9,172 +9,264 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteRouteImport } from './routes/auth/route'
+import { Route as AgentRouteRouteImport } from './routes/agent/route'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as RouteRouteImport } from './routes/route'
-import { Route as MainURouteRouteImport } from './routes/_main.u/route'
-import { Route as AuthAuthRouteRouteImport } from './routes/_auth.auth/route'
-import { Route as MainUIndexRouteImport } from './routes/_main.u/index'
-import { Route as AuthAuthIndexRouteImport } from './routes/_auth.auth/index'
-import { Route as MainUUsersRouteImport } from './routes/_main.u/users'
-import { Route as MainUCustomersRouteImport } from './routes/_main.u/customers'
-import { Route as MainUUsersCreateRouteImport } from './routes/_main.u/users.create'
-import { Route as MainUCustomersCreateRouteImport } from './routes/_main.u/customers.create'
-import { Route as AuthAuthUOtpRouteImport } from './routes/_auth.auth/u.otp'
-import { Route as AuthAuthULoginRouteImport } from './routes/_auth.auth/u.login'
-import { Route as AuthAuthUInitializeRouteImport } from './routes/_auth.auth/u.initialize'
+import { Route as AuthIndexRouteImport } from './routes/auth/index'
+import { Route as AgentIndexRouteImport } from './routes/agent/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AdminCustomersRouteImport } from './routes/admin/customers'
+import { Route as AuthAgentVerifyRouteImport } from './routes/auth/agent/verify'
+import { Route as AuthAgentLoginRouteImport } from './routes/auth/agent/login'
+import { Route as AuthAdminVerifyRouteImport } from './routes/auth/admin/verify'
+import { Route as AuthAdminSetupRouteImport } from './routes/auth/admin/setup'
+import { Route as AuthAdminLoginRouteImport } from './routes/auth/admin/login'
+import { Route as AuthAdminInitializeRouteImport } from './routes/auth/admin/initialize'
+import { Route as AuthAdminCheckRouteImport } from './routes/auth/admin/check'
+import { Route as AdminUsersCreateRouteImport } from './routes/admin/users.create'
+import { Route as AdminCustomersCreateRouteImport } from './routes/admin/customers.create'
 
+const AuthRouteRoute = AuthRouteRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentRouteRoute = AgentRouteRouteImport.update({
+  id: '/agent',
+  path: '/agent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RouteRoute = RouteRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MainURouteRoute = MainURouteRouteImport.update({
-  id: '/_main/u',
-  path: '/u',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthAuthRouteRoute = AuthAuthRouteRouteImport.update({
-  id: '/_auth/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MainUIndexRoute = MainUIndexRouteImport.update({
+const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => MainURouteRoute,
+  getParentRoute: () => AuthRouteRoute,
 } as any)
-const AuthAuthIndexRoute = AuthAuthIndexRouteImport.update({
+const AgentIndexRoute = AgentIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthAuthRouteRoute,
+  getParentRoute: () => AgentRouteRoute,
 } as any)
-const MainUUsersRoute = MainUUsersRouteImport.update({
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
-  getParentRoute: () => MainURouteRoute,
+  getParentRoute: () => AdminRouteRoute,
 } as any)
-const MainUCustomersRoute = MainUCustomersRouteImport.update({
+const AdminCustomersRoute = AdminCustomersRouteImport.update({
   id: '/customers',
   path: '/customers',
-  getParentRoute: () => MainURouteRoute,
+  getParentRoute: () => AdminRouteRoute,
 } as any)
-const MainUUsersCreateRoute = MainUUsersCreateRouteImport.update({
+const AuthAgentVerifyRoute = AuthAgentVerifyRouteImport.update({
+  id: '/agent/verify',
+  path: '/agent/verify',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthAgentLoginRoute = AuthAgentLoginRouteImport.update({
+  id: '/agent/login',
+  path: '/agent/login',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthAdminVerifyRoute = AuthAdminVerifyRouteImport.update({
+  id: '/admin/verify',
+  path: '/admin/verify',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthAdminSetupRoute = AuthAdminSetupRouteImport.update({
+  id: '/admin/setup',
+  path: '/admin/setup',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthAdminLoginRoute = AuthAdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthAdminInitializeRoute = AuthAdminInitializeRouteImport.update({
+  id: '/admin/initialize',
+  path: '/admin/initialize',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthAdminCheckRoute = AuthAdminCheckRouteImport.update({
+  id: '/admin/check',
+  path: '/admin/check',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AdminUsersCreateRoute = AdminUsersCreateRouteImport.update({
   id: '/create',
   path: '/create',
-  getParentRoute: () => MainUUsersRoute,
+  getParentRoute: () => AdminUsersRoute,
 } as any)
-const MainUCustomersCreateRoute = MainUCustomersCreateRouteImport.update({
+const AdminCustomersCreateRoute = AdminCustomersCreateRouteImport.update({
   id: '/create',
   path: '/create',
-  getParentRoute: () => MainUCustomersRoute,
-} as any)
-const AuthAuthUOtpRoute = AuthAuthUOtpRouteImport.update({
-  id: '/u/otp',
-  path: '/u/otp',
-  getParentRoute: () => AuthAuthRouteRoute,
-} as any)
-const AuthAuthULoginRoute = AuthAuthULoginRouteImport.update({
-  id: '/u/login',
-  path: '/u/login',
-  getParentRoute: () => AuthAuthRouteRoute,
-} as any)
-const AuthAuthUInitializeRoute = AuthAuthUInitializeRouteImport.update({
-  id: '/u/initialize',
-  path: '/u/initialize',
-  getParentRoute: () => AuthAuthRouteRoute,
+  getParentRoute: () => AdminCustomersRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof RouteRoute
-  '/auth': typeof AuthAuthRouteRouteWithChildren
-  '/u': typeof MainURouteRouteWithChildren
-  '/u/customers': typeof MainUCustomersRouteWithChildren
-  '/u/users': typeof MainUUsersRouteWithChildren
-  '/auth/': typeof AuthAuthIndexRoute
-  '/u/': typeof MainUIndexRoute
-  '/auth/u/initialize': typeof AuthAuthUInitializeRoute
-  '/auth/u/login': typeof AuthAuthULoginRoute
-  '/auth/u/otp': typeof AuthAuthUOtpRoute
-  '/u/customers/create': typeof MainUCustomersCreateRoute
-  '/u/users/create': typeof MainUUsersCreateRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/agent': typeof AgentRouteRouteWithChildren
+  '/auth': typeof AuthRouteRouteWithChildren
+  '/admin/customers': typeof AdminCustomersRouteWithChildren
+  '/admin/users': typeof AdminUsersRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
+  '/agent/': typeof AgentIndexRoute
+  '/auth/': typeof AuthIndexRoute
+  '/admin/customers/create': typeof AdminCustomersCreateRoute
+  '/admin/users/create': typeof AdminUsersCreateRoute
+  '/auth/admin/check': typeof AuthAdminCheckRoute
+  '/auth/admin/initialize': typeof AuthAdminInitializeRoute
+  '/auth/admin/login': typeof AuthAdminLoginRoute
+  '/auth/admin/setup': typeof AuthAdminSetupRoute
+  '/auth/admin/verify': typeof AuthAdminVerifyRoute
+  '/auth/agent/login': typeof AuthAgentLoginRoute
+  '/auth/agent/verify': typeof AuthAgentVerifyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof RouteRoute
-  '/u/customers': typeof MainUCustomersRouteWithChildren
-  '/u/users': typeof MainUUsersRouteWithChildren
-  '/auth': typeof AuthAuthIndexRoute
-  '/u': typeof MainUIndexRoute
-  '/auth/u/initialize': typeof AuthAuthUInitializeRoute
-  '/auth/u/login': typeof AuthAuthULoginRoute
-  '/auth/u/otp': typeof AuthAuthUOtpRoute
-  '/u/customers/create': typeof MainUCustomersCreateRoute
-  '/u/users/create': typeof MainUUsersCreateRoute
+  '/admin/customers': typeof AdminCustomersRouteWithChildren
+  '/admin/users': typeof AdminUsersRouteWithChildren
+  '/admin': typeof AdminIndexRoute
+  '/agent': typeof AgentIndexRoute
+  '/auth': typeof AuthIndexRoute
+  '/admin/customers/create': typeof AdminCustomersCreateRoute
+  '/admin/users/create': typeof AdminUsersCreateRoute
+  '/auth/admin/check': typeof AuthAdminCheckRoute
+  '/auth/admin/initialize': typeof AuthAdminInitializeRoute
+  '/auth/admin/login': typeof AuthAdminLoginRoute
+  '/auth/admin/setup': typeof AuthAdminSetupRoute
+  '/auth/admin/verify': typeof AuthAdminVerifyRoute
+  '/auth/agent/login': typeof AuthAgentLoginRoute
+  '/auth/agent/verify': typeof AuthAgentVerifyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof RouteRoute
-  '/_auth/auth': typeof AuthAuthRouteRouteWithChildren
-  '/_main/u': typeof MainURouteRouteWithChildren
-  '/_main/u/customers': typeof MainUCustomersRouteWithChildren
-  '/_main/u/users': typeof MainUUsersRouteWithChildren
-  '/_auth/auth/': typeof AuthAuthIndexRoute
-  '/_main/u/': typeof MainUIndexRoute
-  '/_auth/auth/u/initialize': typeof AuthAuthUInitializeRoute
-  '/_auth/auth/u/login': typeof AuthAuthULoginRoute
-  '/_auth/auth/u/otp': typeof AuthAuthUOtpRoute
-  '/_main/u/customers/create': typeof MainUCustomersCreateRoute
-  '/_main/u/users/create': typeof MainUUsersCreateRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/agent': typeof AgentRouteRouteWithChildren
+  '/auth': typeof AuthRouteRouteWithChildren
+  '/admin/customers': typeof AdminCustomersRouteWithChildren
+  '/admin/users': typeof AdminUsersRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
+  '/agent/': typeof AgentIndexRoute
+  '/auth/': typeof AuthIndexRoute
+  '/admin/customers/create': typeof AdminCustomersCreateRoute
+  '/admin/users/create': typeof AdminUsersCreateRoute
+  '/auth/admin/check': typeof AuthAdminCheckRoute
+  '/auth/admin/initialize': typeof AuthAdminInitializeRoute
+  '/auth/admin/login': typeof AuthAdminLoginRoute
+  '/auth/admin/setup': typeof AuthAdminSetupRoute
+  '/auth/admin/verify': typeof AuthAdminVerifyRoute
+  '/auth/agent/login': typeof AuthAgentLoginRoute
+  '/auth/agent/verify': typeof AuthAgentVerifyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
+    | '/agent'
     | '/auth'
-    | '/u'
-    | '/u/customers'
-    | '/u/users'
+    | '/admin/customers'
+    | '/admin/users'
+    | '/admin/'
+    | '/agent/'
     | '/auth/'
-    | '/u/'
-    | '/auth/u/initialize'
-    | '/auth/u/login'
-    | '/auth/u/otp'
-    | '/u/customers/create'
-    | '/u/users/create'
+    | '/admin/customers/create'
+    | '/admin/users/create'
+    | '/auth/admin/check'
+    | '/auth/admin/initialize'
+    | '/auth/admin/login'
+    | '/auth/admin/setup'
+    | '/auth/admin/verify'
+    | '/auth/agent/login'
+    | '/auth/agent/verify'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/u/customers'
-    | '/u/users'
+    | '/admin/customers'
+    | '/admin/users'
+    | '/admin'
+    | '/agent'
     | '/auth'
-    | '/u'
-    | '/auth/u/initialize'
-    | '/auth/u/login'
-    | '/auth/u/otp'
-    | '/u/customers/create'
-    | '/u/users/create'
+    | '/admin/customers/create'
+    | '/admin/users/create'
+    | '/auth/admin/check'
+    | '/auth/admin/initialize'
+    | '/auth/admin/login'
+    | '/auth/admin/setup'
+    | '/auth/admin/verify'
+    | '/auth/agent/login'
+    | '/auth/agent/verify'
   id:
     | '__root__'
     | '/'
-    | '/_auth/auth'
-    | '/_main/u'
-    | '/_main/u/customers'
-    | '/_main/u/users'
-    | '/_auth/auth/'
-    | '/_main/u/'
-    | '/_auth/auth/u/initialize'
-    | '/_auth/auth/u/login'
-    | '/_auth/auth/u/otp'
-    | '/_main/u/customers/create'
-    | '/_main/u/users/create'
+    | '/admin'
+    | '/agent'
+    | '/auth'
+    | '/admin/customers'
+    | '/admin/users'
+    | '/admin/'
+    | '/agent/'
+    | '/auth/'
+    | '/admin/customers/create'
+    | '/admin/users/create'
+    | '/auth/admin/check'
+    | '/auth/admin/initialize'
+    | '/auth/admin/login'
+    | '/auth/admin/setup'
+    | '/auth/admin/verify'
+    | '/auth/agent/login'
+    | '/auth/agent/verify'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   RouteRoute: typeof RouteRoute
-  AuthAuthRouteRoute: typeof AuthAuthRouteRouteWithChildren
-  MainURouteRoute: typeof MainURouteRouteWithChildren
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  AgentRouteRoute: typeof AgentRouteRouteWithChildren
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent': {
+      id: '/agent'
+      path: '/agent'
+      fullPath: '/agent'
+      preLoaderRoute: typeof AgentRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -182,148 +274,190 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_main/u': {
-      id: '/_main/u'
-      path: '/u'
-      fullPath: '/u'
-      preLoaderRoute: typeof MainURouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_auth/auth': {
-      id: '/_auth/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthAuthRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_main/u/': {
-      id: '/_main/u/'
-      path: '/'
-      fullPath: '/u/'
-      preLoaderRoute: typeof MainUIndexRouteImport
-      parentRoute: typeof MainURouteRoute
-    }
-    '/_auth/auth/': {
-      id: '/_auth/auth/'
+    '/auth/': {
+      id: '/auth/'
       path: '/'
       fullPath: '/auth/'
-      preLoaderRoute: typeof AuthAuthIndexRouteImport
-      parentRoute: typeof AuthAuthRouteRoute
+      preLoaderRoute: typeof AuthIndexRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
-    '/_main/u/users': {
-      id: '/_main/u/users'
+    '/agent/': {
+      id: '/agent/'
+      path: '/'
+      fullPath: '/agent/'
+      preLoaderRoute: typeof AgentIndexRouteImport
+      parentRoute: typeof AgentRouteRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
       path: '/users'
-      fullPath: '/u/users'
-      preLoaderRoute: typeof MainUUsersRouteImport
-      parentRoute: typeof MainURouteRoute
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
-    '/_main/u/customers': {
-      id: '/_main/u/customers'
+    '/admin/customers': {
+      id: '/admin/customers'
       path: '/customers'
-      fullPath: '/u/customers'
-      preLoaderRoute: typeof MainUCustomersRouteImport
-      parentRoute: typeof MainURouteRoute
+      fullPath: '/admin/customers'
+      preLoaderRoute: typeof AdminCustomersRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
-    '/_main/u/users/create': {
-      id: '/_main/u/users/create'
+    '/auth/agent/verify': {
+      id: '/auth/agent/verify'
+      path: '/agent/verify'
+      fullPath: '/auth/agent/verify'
+      preLoaderRoute: typeof AuthAgentVerifyRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/agent/login': {
+      id: '/auth/agent/login'
+      path: '/agent/login'
+      fullPath: '/auth/agent/login'
+      preLoaderRoute: typeof AuthAgentLoginRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/admin/verify': {
+      id: '/auth/admin/verify'
+      path: '/admin/verify'
+      fullPath: '/auth/admin/verify'
+      preLoaderRoute: typeof AuthAdminVerifyRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/admin/setup': {
+      id: '/auth/admin/setup'
+      path: '/admin/setup'
+      fullPath: '/auth/admin/setup'
+      preLoaderRoute: typeof AuthAdminSetupRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/admin/login': {
+      id: '/auth/admin/login'
+      path: '/admin/login'
+      fullPath: '/auth/admin/login'
+      preLoaderRoute: typeof AuthAdminLoginRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/admin/initialize': {
+      id: '/auth/admin/initialize'
+      path: '/admin/initialize'
+      fullPath: '/auth/admin/initialize'
+      preLoaderRoute: typeof AuthAdminInitializeRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/admin/check': {
+      id: '/auth/admin/check'
+      path: '/admin/check'
+      fullPath: '/auth/admin/check'
+      preLoaderRoute: typeof AuthAdminCheckRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/admin/users/create': {
+      id: '/admin/users/create'
       path: '/create'
-      fullPath: '/u/users/create'
-      preLoaderRoute: typeof MainUUsersCreateRouteImport
-      parentRoute: typeof MainUUsersRoute
+      fullPath: '/admin/users/create'
+      preLoaderRoute: typeof AdminUsersCreateRouteImport
+      parentRoute: typeof AdminUsersRoute
     }
-    '/_main/u/customers/create': {
-      id: '/_main/u/customers/create'
+    '/admin/customers/create': {
+      id: '/admin/customers/create'
       path: '/create'
-      fullPath: '/u/customers/create'
-      preLoaderRoute: typeof MainUCustomersCreateRouteImport
-      parentRoute: typeof MainUCustomersRoute
-    }
-    '/_auth/auth/u/otp': {
-      id: '/_auth/auth/u/otp'
-      path: '/u/otp'
-      fullPath: '/auth/u/otp'
-      preLoaderRoute: typeof AuthAuthUOtpRouteImport
-      parentRoute: typeof AuthAuthRouteRoute
-    }
-    '/_auth/auth/u/login': {
-      id: '/_auth/auth/u/login'
-      path: '/u/login'
-      fullPath: '/auth/u/login'
-      preLoaderRoute: typeof AuthAuthULoginRouteImport
-      parentRoute: typeof AuthAuthRouteRoute
-    }
-    '/_auth/auth/u/initialize': {
-      id: '/_auth/auth/u/initialize'
-      path: '/u/initialize'
-      fullPath: '/auth/u/initialize'
-      preLoaderRoute: typeof AuthAuthUInitializeRouteImport
-      parentRoute: typeof AuthAuthRouteRoute
+      fullPath: '/admin/customers/create'
+      preLoaderRoute: typeof AdminCustomersCreateRouteImport
+      parentRoute: typeof AdminCustomersRoute
     }
   }
 }
 
-interface AuthAuthRouteRouteChildren {
-  AuthAuthIndexRoute: typeof AuthAuthIndexRoute
-  AuthAuthUInitializeRoute: typeof AuthAuthUInitializeRoute
-  AuthAuthULoginRoute: typeof AuthAuthULoginRoute
-  AuthAuthUOtpRoute: typeof AuthAuthUOtpRoute
+interface AdminCustomersRouteChildren {
+  AdminCustomersCreateRoute: typeof AdminCustomersCreateRoute
 }
 
-const AuthAuthRouteRouteChildren: AuthAuthRouteRouteChildren = {
-  AuthAuthIndexRoute: AuthAuthIndexRoute,
-  AuthAuthUInitializeRoute: AuthAuthUInitializeRoute,
-  AuthAuthULoginRoute: AuthAuthULoginRoute,
-  AuthAuthUOtpRoute: AuthAuthUOtpRoute,
+const AdminCustomersRouteChildren: AdminCustomersRouteChildren = {
+  AdminCustomersCreateRoute: AdminCustomersCreateRoute,
 }
 
-const AuthAuthRouteRouteWithChildren = AuthAuthRouteRoute._addFileChildren(
-  AuthAuthRouteRouteChildren,
+const AdminCustomersRouteWithChildren = AdminCustomersRoute._addFileChildren(
+  AdminCustomersRouteChildren,
 )
 
-interface MainUCustomersRouteChildren {
-  MainUCustomersCreateRoute: typeof MainUCustomersCreateRoute
+interface AdminUsersRouteChildren {
+  AdminUsersCreateRoute: typeof AdminUsersCreateRoute
 }
 
-const MainUCustomersRouteChildren: MainUCustomersRouteChildren = {
-  MainUCustomersCreateRoute: MainUCustomersCreateRoute,
+const AdminUsersRouteChildren: AdminUsersRouteChildren = {
+  AdminUsersCreateRoute: AdminUsersCreateRoute,
 }
 
-const MainUCustomersRouteWithChildren = MainUCustomersRoute._addFileChildren(
-  MainUCustomersRouteChildren,
+const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
+  AdminUsersRouteChildren,
 )
 
-interface MainUUsersRouteChildren {
-  MainUUsersCreateRoute: typeof MainUUsersCreateRoute
+interface AdminRouteRouteChildren {
+  AdminCustomersRoute: typeof AdminCustomersRouteWithChildren
+  AdminUsersRoute: typeof AdminUsersRouteWithChildren
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
-const MainUUsersRouteChildren: MainUUsersRouteChildren = {
-  MainUUsersCreateRoute: MainUUsersCreateRoute,
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminCustomersRoute: AdminCustomersRouteWithChildren,
+  AdminUsersRoute: AdminUsersRouteWithChildren,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
-const MainUUsersRouteWithChildren = MainUUsersRoute._addFileChildren(
-  MainUUsersRouteChildren,
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
 )
 
-interface MainURouteRouteChildren {
-  MainUCustomersRoute: typeof MainUCustomersRouteWithChildren
-  MainUUsersRoute: typeof MainUUsersRouteWithChildren
-  MainUIndexRoute: typeof MainUIndexRoute
+interface AgentRouteRouteChildren {
+  AgentIndexRoute: typeof AgentIndexRoute
 }
 
-const MainURouteRouteChildren: MainURouteRouteChildren = {
-  MainUCustomersRoute: MainUCustomersRouteWithChildren,
-  MainUUsersRoute: MainUUsersRouteWithChildren,
-  MainUIndexRoute: MainUIndexRoute,
+const AgentRouteRouteChildren: AgentRouteRouteChildren = {
+  AgentIndexRoute: AgentIndexRoute,
 }
 
-const MainURouteRouteWithChildren = MainURouteRoute._addFileChildren(
-  MainURouteRouteChildren,
+const AgentRouteRouteWithChildren = AgentRouteRoute._addFileChildren(
+  AgentRouteRouteChildren,
+)
+
+interface AuthRouteRouteChildren {
+  AuthIndexRoute: typeof AuthIndexRoute
+  AuthAdminCheckRoute: typeof AuthAdminCheckRoute
+  AuthAdminInitializeRoute: typeof AuthAdminInitializeRoute
+  AuthAdminLoginRoute: typeof AuthAdminLoginRoute
+  AuthAdminSetupRoute: typeof AuthAdminSetupRoute
+  AuthAdminVerifyRoute: typeof AuthAdminVerifyRoute
+  AuthAgentLoginRoute: typeof AuthAgentLoginRoute
+  AuthAgentVerifyRoute: typeof AuthAgentVerifyRoute
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthIndexRoute: AuthIndexRoute,
+  AuthAdminCheckRoute: AuthAdminCheckRoute,
+  AuthAdminInitializeRoute: AuthAdminInitializeRoute,
+  AuthAdminLoginRoute: AuthAdminLoginRoute,
+  AuthAdminSetupRoute: AuthAdminSetupRoute,
+  AuthAdminVerifyRoute: AuthAdminVerifyRoute,
+  AuthAgentLoginRoute: AuthAgentLoginRoute,
+  AuthAgentVerifyRoute: AuthAgentVerifyRoute,
+}
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   RouteRoute: RouteRoute,
-  AuthAuthRouteRoute: AuthAuthRouteRouteWithChildren,
-  MainURouteRoute: MainURouteRouteWithChildren,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
+  AgentRouteRoute: AgentRouteRouteWithChildren,
+  AuthRouteRoute: AuthRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

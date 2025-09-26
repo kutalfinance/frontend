@@ -15,7 +15,7 @@ export type User = {
   role: UserRoles;
   createdAt: string; // date-time
   updatedAt: string; // date-time
-  superAdmin?: boolean;
+  isSuperAdmin?: boolean;
 };
 
 export type Agent = {
@@ -72,10 +72,6 @@ export type VerifyOtp = {
 export type LoginResponse = {
   message?: string;
   token?: string;
-};
-
-export type AgentLogin = {
-  email: string;
 };
 
 export type ResetPassword = {

@@ -14,30 +14,27 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input, PasswordInput } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAdminAuthLogin } from "@/hooks/data";
+import { useAgentAuthLogin } from "@/hooks/auth/agent";
 
-export const Route = createFileRoute("/_auth/auth/u/login")({
-  component: AdminLogin,
+export const Route = createFileRoute("/auth/agent/login")({
+  component: AgentLogin,
 });
 
-const loginSchema = z.object({ email: z.email(), password: z.string() });
+const loginSchema = z.object({ email: z.email() });
 
-export default function AdminLogin() {
-  const { mutate, isPending } = useAdminAuthLogin();
-  const navigate = Route.useNavigate();
+function AgentLogin() {
+  const { mutate, isPending } = useAgentAuthLogin();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { email: "" },
   });
 
   function onLogin(values: z.infer<typeof loginSchema>) {
-    mutate(values, {
-      onSuccess: () => navigate({ to: "/auth/u/otp", search: { email: values.email } }),
-    });
+    mutate(values);
   }
 
   return (
@@ -47,9 +44,9 @@ export default function AdminLogin() {
       </Link>
 
       <hgroup className="flex flex-col">
-        <Heading className="mt-4">Welcome Back</Heading>
+        <Heading className="mt-4">Agent Login</Heading>
         <Paragraph className="text-muted-foreground">
-          Enter your credentials to access your account.
+          Enter your email address to continue.
         </Paragraph>
       </hgroup>
 
@@ -69,22 +66,9 @@ export default function AdminLogin() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <PasswordInput placeholder="********" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
-            <Button isLoading={isPending} className="mt-2 w-full">
-              Sign In
+            <Button isLoading={isPending} className="my-2 w-full">
+              Continue
             </Button>
           </form>
         </Form>

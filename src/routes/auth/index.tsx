@@ -6,11 +6,11 @@ import { AppLogo } from "@/components/app-logo";
 import { Button } from "@/components/ui/button";
 import { Paragraph } from "@/components/ui/text";
 
-export const Route = createFileRoute("/_auth/auth/")({
+export const Route = createFileRoute("/auth/")({
   component: AuthHome,
 });
 
-export default function AuthHome() {
+function AuthHome() {
   return (
     <>
       <hgroup className="flex flex-col">
@@ -22,16 +22,16 @@ export default function AuthHome() {
 
       <div className="space-y-3">
         <Button asChild className="w-full">
-          <Link to=".">
+          <Link to="/auth/agent/login">
             <Users />
-            Agent Login
+            Agent login
           </Link>
         </Button>
 
         <Button asChild variant="outline" className="w-full">
-          <Link to="/auth/u/login">
+          <Link to="/auth/admin/check">
             <Shield />
-            Administrator Login
+            Administrator login
           </Link>
         </Button>
       </div>

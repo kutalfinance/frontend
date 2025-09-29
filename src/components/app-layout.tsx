@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import type { LinkProps } from "@tanstack/react-router";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 
 import { Coins, History, Menu, PanelLeft } from "lucide-react";
 import { Contact, Home, Landmark, type LucideIcon, Users } from "lucide-react";
@@ -29,6 +29,10 @@ import { Paragraph } from "@/components/ui/text";
 
 import { useLoggedInUser, useLogout } from "@/hooks/auth/common";
 import { cn } from "@/lib/utils";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+
+const SIDEBAR_STORAGE_KEY = "sidebar-state";
+const SIDEBAR_DEFAULT_OPEN = true;
 
 const adminNavLinks: {
   title: string;
@@ -75,7 +79,7 @@ function useAppLayoutContext() {
 }
 
 export function AppLayoutProvider({ children, ...props }: React.ComponentProps<"div">) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useLocalStorage(SIDEBAR_STORAGE_KEY, SIDEBAR_DEFAULT_OPEN);
 
   return (
     <AppLayoutContext.Provider value={{ open, setOpen }}>
@@ -85,16 +89,12 @@ export function AppLayoutProvider({ children, ...props }: React.ComponentProps<"
 }
 
 export function AppHeader() {
-  const { setOpen } = useAppLayoutContext();
+  const { open, setOpen } = useAppLayoutContext();
 
   return (
     <div className="border-b">
       <header className="container flex min-h-16 items-center gap-10 px-4">
-        <Button
-          variant="ghost"
-          onClick={() => setOpen((open) => !open)}
-          className="hidden lg:inline-flex"
-        >
+        <Button variant="ghost" onClick={() => setOpen(!open)} className="hidden lg:inline-flex">
           <PanelLeft />
         </Button>
 

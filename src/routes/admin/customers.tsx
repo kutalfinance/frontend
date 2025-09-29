@@ -34,7 +34,7 @@ export const Route = createFileRoute("/admin/customers")({
 });
 
 function Customers() {
-  const { data } = useCustomers();
+  const { data, isPending } = useCustomers();
   const customers = data?.data ?? [];
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -91,7 +91,7 @@ function Customers() {
           <Input placeholder="Filter by name or email..." className="w-full max-w-sm" />
         </div>
 
-        <DataTable table={table} />
+        <DataTable table={table} isLoading={isPending} />
       </div>
     </div>
   );

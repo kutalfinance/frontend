@@ -28,9 +28,6 @@ export function DeleteBranch({
     setOpen(false);
   }
 
-  const customerCount = branch.customers?.length ?? 0;
-  const hasCustomers = customerCount > 0;
-
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger {...props} />
@@ -39,17 +36,7 @@ export function DeleteBranch({
           <AlertDialogTitle>Delete branch "{branch.name}"?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete the branch{" "}
-            <strong>{branch.name}</strong> located in <strong>{branch.location}</strong>
-            {hasCustomers && (
-              <>
-                {" "}
-                and remove access for{" "}
-                <strong>
-                  {customerCount} {customerCount === 1 ? "customer" : "customers"}
-                </strong>
-              </>
-            )}
-            .
+            <strong>{branch.name}</strong> located in <strong>{branch.location}</strong>.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

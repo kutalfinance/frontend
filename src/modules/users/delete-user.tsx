@@ -36,7 +36,7 @@ export function DeleteUser({
             Delete {user.isSuperAdmin ? "super admin" : user.role.toLowerCase()} account?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete this account from the system.
+            This action cannot be undone. This will permanently delete {user.name} from the system.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

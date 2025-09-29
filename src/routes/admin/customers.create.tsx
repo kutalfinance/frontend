@@ -89,7 +89,7 @@ function CreateCustomer() {
       phoneNumber: "",
       email: "",
       location: "",
-      branchId: "branch",
+      branchId: "",
     },
   });
 
@@ -107,7 +107,7 @@ function CreateCustomer() {
 
   return (
     <Dialog open onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Create New Customer</DialogTitle>
           <DialogDescription>

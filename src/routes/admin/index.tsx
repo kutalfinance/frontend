@@ -31,7 +31,7 @@ function AdminDashboard() {
 }
 
 function DashboardStats() {
-  const { data, isLoading } = useAdminMetrics();
+  const { data, isPending } = useAdminMetrics();
   const metrics = data?.data;
 
   const metricsData = [
@@ -40,7 +40,7 @@ function DashboardStats() {
     { label: "Total Customers", value: metrics?.totalCustomers ?? 0 },
   ];
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(20rem,auto))] gap-4">

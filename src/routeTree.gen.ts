@@ -18,6 +18,7 @@ import { Route as AgentIndexRouteImport } from './routes/agent/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminCustomersRouteImport } from './routes/admin/customers'
+import { Route as AdminBranchesRouteImport } from './routes/admin/branches'
 import { Route as AuthAgentVerifyRouteImport } from './routes/auth/agent/verify'
 import { Route as AuthAgentLoginRouteImport } from './routes/auth/agent/login'
 import { Route as AuthAdminVerifyRouteImport } from './routes/auth/admin/verify'
@@ -27,6 +28,7 @@ import { Route as AuthAdminInitializeRouteImport } from './routes/auth/admin/ini
 import { Route as AuthAdminCheckRouteImport } from './routes/auth/admin/check'
 import { Route as AdminUsersCreateRouteImport } from './routes/admin/users.create'
 import { Route as AdminCustomersCreateRouteImport } from './routes/admin/customers.create'
+import { Route as AdminBranchesCreateRouteImport } from './routes/admin/branches.create'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
@@ -71,6 +73,11 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
 const AdminCustomersRoute = AdminCustomersRouteImport.update({
   id: '/customers',
   path: '/customers',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminBranchesRoute = AdminBranchesRouteImport.update({
+  id: '/branches',
+  path: '/branches',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AuthAgentVerifyRoute = AuthAgentVerifyRouteImport.update({
@@ -118,17 +125,24 @@ const AdminCustomersCreateRoute = AdminCustomersCreateRouteImport.update({
   path: '/create',
   getParentRoute: () => AdminCustomersRoute,
 } as any)
+const AdminBranchesCreateRoute = AdminBranchesCreateRouteImport.update({
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => AdminBranchesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof RouteRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/agent': typeof AgentRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
+  '/admin/branches': typeof AdminBranchesRouteWithChildren
   '/admin/customers': typeof AdminCustomersRouteWithChildren
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/agent/': typeof AgentIndexRoute
   '/auth/': typeof AuthIndexRoute
+  '/admin/branches/create': typeof AdminBranchesCreateRoute
   '/admin/customers/create': typeof AdminCustomersCreateRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
   '/auth/admin/check': typeof AuthAdminCheckRoute
@@ -141,11 +155,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof RouteRoute
+  '/admin/branches': typeof AdminBranchesRouteWithChildren
   '/admin/customers': typeof AdminCustomersRouteWithChildren
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/admin': typeof AdminIndexRoute
   '/agent': typeof AgentIndexRoute
   '/auth': typeof AuthIndexRoute
+  '/admin/branches/create': typeof AdminBranchesCreateRoute
   '/admin/customers/create': typeof AdminCustomersCreateRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
   '/auth/admin/check': typeof AuthAdminCheckRoute
@@ -162,11 +178,13 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/agent': typeof AgentRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
+  '/admin/branches': typeof AdminBranchesRouteWithChildren
   '/admin/customers': typeof AdminCustomersRouteWithChildren
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/agent/': typeof AgentIndexRoute
   '/auth/': typeof AuthIndexRoute
+  '/admin/branches/create': typeof AdminBranchesCreateRoute
   '/admin/customers/create': typeof AdminCustomersCreateRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
   '/auth/admin/check': typeof AuthAdminCheckRoute
@@ -184,11 +202,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/agent'
     | '/auth'
+    | '/admin/branches'
     | '/admin/customers'
     | '/admin/users'
     | '/admin/'
     | '/agent/'
     | '/auth/'
+    | '/admin/branches/create'
     | '/admin/customers/create'
     | '/admin/users/create'
     | '/auth/admin/check'
@@ -201,11 +221,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin/branches'
     | '/admin/customers'
     | '/admin/users'
     | '/admin'
     | '/agent'
     | '/auth'
+    | '/admin/branches/create'
     | '/admin/customers/create'
     | '/admin/users/create'
     | '/auth/admin/check'
@@ -221,11 +243,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/agent'
     | '/auth'
+    | '/admin/branches'
     | '/admin/customers'
     | '/admin/users'
     | '/admin/'
     | '/agent/'
     | '/auth/'
+    | '/admin/branches/create'
     | '/admin/customers/create'
     | '/admin/users/create'
     | '/auth/admin/check'
@@ -309,6 +333,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCustomersRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/branches': {
+      id: '/admin/branches'
+      path: '/branches'
+      fullPath: '/admin/branches'
+      preLoaderRoute: typeof AdminBranchesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/auth/agent/verify': {
       id: '/auth/agent/verify'
       path: '/agent/verify'
@@ -372,8 +403,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCustomersCreateRouteImport
       parentRoute: typeof AdminCustomersRoute
     }
+    '/admin/branches/create': {
+      id: '/admin/branches/create'
+      path: '/create'
+      fullPath: '/admin/branches/create'
+      preLoaderRoute: typeof AdminBranchesCreateRouteImport
+      parentRoute: typeof AdminBranchesRoute
+    }
   }
 }
+
+interface AdminBranchesRouteChildren {
+  AdminBranchesCreateRoute: typeof AdminBranchesCreateRoute
+}
+
+const AdminBranchesRouteChildren: AdminBranchesRouteChildren = {
+  AdminBranchesCreateRoute: AdminBranchesCreateRoute,
+}
+
+const AdminBranchesRouteWithChildren = AdminBranchesRoute._addFileChildren(
+  AdminBranchesRouteChildren,
+)
 
 interface AdminCustomersRouteChildren {
   AdminCustomersCreateRoute: typeof AdminCustomersCreateRoute
@@ -400,12 +450,14 @@ const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
 )
 
 interface AdminRouteRouteChildren {
+  AdminBranchesRoute: typeof AdminBranchesRouteWithChildren
   AdminCustomersRoute: typeof AdminCustomersRouteWithChildren
   AdminUsersRoute: typeof AdminUsersRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminBranchesRoute: AdminBranchesRouteWithChildren,
   AdminCustomersRoute: AdminCustomersRouteWithChildren,
   AdminUsersRoute: AdminUsersRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,

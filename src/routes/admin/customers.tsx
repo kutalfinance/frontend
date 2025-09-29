@@ -1,5 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link, Outlet } from "@tanstack/react-router";
+import { useState } from "react";
+
+import {
+  type ColumnDef,
+  type ColumnFiltersState,
+  type SortingState,
+  type VisibilityState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { format } from "date-fns";
 
 import {
   ModuleActions,
@@ -9,10 +23,11 @@ import {
   ModuleTitle,
 } from "@/components/module-heading";
 import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
 
 import { useCustomers } from "@/hooks/data/customers";
-import { CustomersTable } from "@/modules/customers/data-table";
+import type { Customer } from "@/lib/types";
 
 export const Route = createFileRoute("/admin/customers")({
   component: Customers,
@@ -21,6 +36,35 @@ export const Route = createFileRoute("/admin/customers")({
 function Customers() {
   const { data } = useCustomers();
   const customers = data?.data ?? [];
+
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+
+  const table = useReactTable({
+    data: customers,
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    // getRowCanExpand: () => true,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+      pagination: {
+        pageIndex: 0,
+        pageSize: 20,
+      },
+    },
+  });
 
   return (
     <div>
@@ -42,13 +86,53 @@ function Customers() {
       </ModuleHeading>
 
       <div className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <div className="container flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <div></div>
           <Input placeholder="Filter by name or email..." className="w-full max-w-sm" />
         </div>
 
-        <CustomersTable customers={customers} />
+        <DataTable table={table} />
       </div>
     </div>
   );
 }
+
+const columns: ColumnDef<Customer>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "phoneNumber",
+    header: "Phone",
+  },
+  {
+    accessorKey: "location",
+    header: "Location",
+  },
+  {
+    accessorKey: "branchName",
+    header: "Branch",
+    cell: ({ row }) => row.original.branchName ?? "No Branch",
+  },
+  {
+    accessorKey: "nextOfKin.name",
+    header: "Next of Kin",
+    cell: ({ row }) => {
+      const nextOfKin = row.original.nextOfKin;
+      return nextOfKin.name || "Not provided";
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => {
+      const date = new Date(row.original.createdAt);
+      return <span className="text-muted-foreground">{format(date, "dd/MM/yyyy - h:mm a")}</span>;
+    },
+  },
+];

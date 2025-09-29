@@ -37,7 +37,7 @@ const adminNavLinks: {
   icon: LucideIcon;
 }[] = [
   { title: "Dashboard", href: "/admin", pathRegex: /^\/admin$/, icon: Home },
-  { title: "Branches", href: ".", pathRegex: /\/admin\/branches/, icon: Landmark },
+  { title: "Branches", href: "/admin/branches", pathRegex: /\/admin\/branches/, icon: Landmark },
   { title: "Customers", href: "/admin/customers", pathRegex: /\/admin\/customers/, icon: Contact },
   { title: "Contributions", href: ".", pathRegex: /\/admin\/contributions/, icon: Coins },
   { title: "Users", href: "/admin/users", pathRegex: /\/admin\/users/, icon: Users },

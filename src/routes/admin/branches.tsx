@@ -22,24 +22,41 @@ import {
   ModuleHeading,
   ModuleTitle,
 } from "@/components/module-heading";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
+import { useBranches } from "@/hooks/data/branches";
 import { useUsers } from "@/hooks/data/users";
-import type { User } from "@/lib/types";
-import { DeleteUser } from "@/modules/users/delete-user";
-import { EditUser } from "@/modules/users/edit-user";
+import type { Branch } from "@/lib/types";
+import { UserRoles } from "@/lib/types";
+import { DeleteBranch } from "@/modules/branches/delete-branch";
+import { EditBranch } from "@/modules/branches/edit-branch";
 
-export const Route = createFileRoute("/admin/users")({
-  component: Users,
+export const Route = createFileRoute("/admin/branches")({
+  component: Branches,
 });
 
-function Users() {
-  const { data, isPending } = useUsers();
-  const users = data?.data ?? [];
+function Branches() {
+  const { data: usersData } = useUsers();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedAgentId, setSelectedAgentId] = useState("all");
+
+  // Use server-side filtering for agent, client-side for search
+  const { data, isPending } = useBranches(
+    selectedAgentId !== "all" ? { agentId: selectedAgentId } : {}
+  );
+
+  const branches = data?.data ?? [];
+  const agents = usersData?.data?.filter((user) => user.role === UserRoles.AGENT) ?? [];
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -47,7 +64,7 @@ function Users() {
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
-    data: users,
+    data: branches,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -75,30 +92,49 @@ function Users() {
 
       <ModuleHeading>
         <ModuleHeader>
-          <ModuleTitle>User Management</ModuleTitle>
+          <ModuleTitle>Branch Management</ModuleTitle>
           <ModuleActions>
             <Button asChild>
-              <Link to="/admin/users/create">Create New User</Link>
+              <Link to="/admin/branches/create">Create New Branch</Link>
             </Button>
           </ModuleActions>
         </ModuleHeader>
         <ModuleDescription>
-          Manage admin and agent accounts. Create new users, view their status, and control access
-          permissions.
+          Manage branch locations and agent assignments. Create new branches, assign agents, and
+          track branch performance.
         </ModuleDescription>
-
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <div></div>
-          <Input placeholder="Filter by name or email..." className="w-full max-w-sm" />
-        </div>
       </ModuleHeading>
 
-      <DataTable table={table} isLoading={isPending} />
+      <div className="space-y-4">
+        <div className="container flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <Select value={selectedAgentId} onValueChange={setSelectedAgentId}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Filter by agent" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Agents</SelectItem>
+              {agents.map((agent) => (
+                <SelectItem key={agent.id} value={agent.id}>
+                  {agent.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Input
+            placeholder="Filter by name or location..."
+            className="w-full max-w-sm"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <DataTable table={table} isLoading={isPending} />
+      </div>
     </div>
   );
 }
 
-export const columns: ColumnDef<User>[] = [
+const columns: ColumnDef<Branch>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -122,29 +158,18 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: "Branch Name",
     cell: ({ row }) => <span className="font-medium whitespace-nowrap">{row.original.name}</span>,
   },
   {
-    accessorKey: "email",
-    header: "Email",
-    cell: ({ row }) => <span className="text-muted-foreground">{row.original.email}</span>,
+    accessorKey: "location",
+    header: "Location",
+    cell: ({ row }) => <span className="text-muted-foreground">{row.original.location}</span>,
   },
   {
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => {
-      const role = row.original.role;
-      if (row.original.isSuperAdmin) {
-        return (
-          <Badge className="whitespace-nowrap" variant="destructive">
-            SUPER ADMIN
-          </Badge>
-        );
-      }
-
-      return <Badge variant={role === "ADMIN" ? "default" : "accent"}>{role}</Badge>;
-    },
+    accessorKey: "agent",
+    header: "Assigned Agent",
+    cell: ({ row }) => row.original.agent,
   },
   {
     accessorKey: "createdAt",
@@ -160,19 +185,19 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-2">
-          <EditUser user={row.original}>
+          <EditBranch branch={row.original}>
             <Button variant="ghost" size="icon">
               <span className="sr-only">Edit</span>
               <SquarePen />
             </Button>
-          </EditUser>
+          </EditBranch>
 
-          <DeleteUser user={row.original}>
+          <DeleteBranch branch={row.original}>
             <Button variant="ghost" size="icon">
               <span className="sr-only">Delete</span>
               <Trash2 className="text-destructive" />
             </Button>
-          </DeleteUser>
+          </DeleteBranch>
         </div>
       );
     },

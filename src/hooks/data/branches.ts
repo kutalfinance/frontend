@@ -6,10 +6,17 @@ import type { APIResponse, Branch } from "@/lib/types";
 import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";
 
 // Branch management hooks
-export function useBranches() {
+export function useBranches(filters: { agentId?: string } = {}) {
   return useQuery({
-    queryKey: queryKeys.branches.all(),
-    queryFn: () => api.get("branch").json<APIResponse<Branch[]>>(),
+    queryKey: queryKeys.branches.all(filters.agentId),
+    queryFn: () => {
+      const searchParams: Record<string, string> = {};
+      if (filters.agentId) {
+        searchParams.agentId = filters.agentId;
+      }
+
+      return api.get("branch", { searchParams }).json<APIResponse<Branch[]>>();
+    },
   });
 }
 

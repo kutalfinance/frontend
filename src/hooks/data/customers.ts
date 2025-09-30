@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
 import type { APIResponse, Customer } from "@/lib/types";
@@ -60,10 +60,12 @@ export function useDeleteCustomer() {
   });
 }
 
+export const customerByIdQueryOptions = (id: string) => ({
+  queryKey: queryKeys.customers.detail(id),
+  queryFn: () => api.get(`customer/${id}`).json<APIResponse<Customer>>(),
+  enabled: !!id,
+});
+
 export function useCustomerById(id: string) {
-  return useQuery({
-    queryKey: queryKeys.customers.detail(id),
-    queryFn: () => api.get(`customer/${id}`).json<APIResponse<Customer>>(),
-    enabled: !!id,
-  });
+  return useSuspenseQuery(customerByIdQueryOptions(id));
 }

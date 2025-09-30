@@ -10,18 +10,14 @@ import { UserRoles } from "@/lib/types";
 // Root route handler - authenticates user and redirects based on role
 export const Route = createFileRoute("/")({
   component: Layout,
-  pendingComponent: () => <AppSplashScreen />,
-  loader: async () => {
-    try {
-      const response = await queryClient.ensureQueryData(loggedInUserQueryOptions);
-      if (response?.data.role === UserRoles.ADMIN) {
-        return redirect({ to: "/admin" });
-      }
-      return redirect({ to: "/agent" });
-    } catch (err) {
-      authToken.clear();
-      return redirect({ to: "/auth" });
+  pendingComponent: AppSplashScreen,
+  beforeLoad: async () => {
+    const response = await queryClient.ensureQueryData(loggedInUserQueryOptions);
+    if (response?.data.role === UserRoles.ADMIN) {
+      return redirect({ to: "/admin" });
     }
+
+    return redirect({ to: "/agent" });
   },
   onError: () => {
     authToken.clear();

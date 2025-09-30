@@ -1,6 +1,5 @@
 import { type Table as TableType, flexRender } from "@tanstack/react-table";
 import type { Row, RowData } from "@tanstack/react-table";
-import { LoaderCircle } from "lucide-react";
 
 import {
   Table,
@@ -12,6 +11,7 @@ import {
 } from "@/components/ui/table";
 
 import { cn } from "@/lib/utils";
+import { Loader } from "@/components/loader";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -56,9 +56,7 @@ export function DataTable<TData>({
         {isLoading ? (
           <TableRow>
             <TableCell colSpan={columns.length} className="h-24 text-center">
-              <div className="flex items-center justify-center py-20">
-                <LoaderCircle className="text-primary size-8 animate-spin" />
-              </div>
+              <Loader />
             </TableCell>
           </TableRow>
         ) : table.getRowModel().rows?.length ? (

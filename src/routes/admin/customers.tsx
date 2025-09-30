@@ -101,6 +101,15 @@ const columns: ColumnDef<Customer>[] = [
   {
     accessorKey: "name",
     header: "Name",
+    cell: ({ row }) => (
+      <Link 
+        to="/admin/customers/$customerId" 
+        params={{ customerId: row.original.id }}
+        className="font-medium text-primary hover:underline"
+      >
+        {row.original.name}
+      </Link>
+    ),
   },
   {
     accessorKey: "email",

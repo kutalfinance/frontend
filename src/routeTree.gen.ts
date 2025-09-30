@@ -27,6 +27,7 @@ import { Route as AuthAdminLoginRouteImport } from './routes/auth/admin/login'
 import { Route as AuthAdminInitializeRouteImport } from './routes/auth/admin/initialize'
 import { Route as AuthAdminCheckRouteImport } from './routes/auth/admin/check'
 import { Route as AdminUsersCreateRouteImport } from './routes/admin/users.create'
+import { Route as AdminCustomersCustomerIdRouteImport } from './routes/admin/customers_.$customerId'
 import { Route as AdminCustomersCreateRouteImport } from './routes/admin/customers.create'
 import { Route as AdminBranchesCreateRouteImport } from './routes/admin/branches.create'
 
@@ -120,6 +121,12 @@ const AdminUsersCreateRoute = AdminUsersCreateRouteImport.update({
   path: '/create',
   getParentRoute: () => AdminUsersRoute,
 } as any)
+const AdminCustomersCustomerIdRoute =
+  AdminCustomersCustomerIdRouteImport.update({
+    id: '/customers_/$customerId',
+    path: '/customers/$customerId',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 const AdminCustomersCreateRoute = AdminCustomersCreateRouteImport.update({
   id: '/create',
   path: '/create',
@@ -144,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/auth/': typeof AuthIndexRoute
   '/admin/branches/create': typeof AdminBranchesCreateRoute
   '/admin/customers/create': typeof AdminCustomersCreateRoute
+  '/admin/customers/$customerId': typeof AdminCustomersCustomerIdRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
   '/auth/admin/check': typeof AuthAdminCheckRoute
   '/auth/admin/initialize': typeof AuthAdminInitializeRoute
@@ -163,6 +171,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthIndexRoute
   '/admin/branches/create': typeof AdminBranchesCreateRoute
   '/admin/customers/create': typeof AdminCustomersCreateRoute
+  '/admin/customers/$customerId': typeof AdminCustomersCustomerIdRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
   '/auth/admin/check': typeof AuthAdminCheckRoute
   '/auth/admin/initialize': typeof AuthAdminInitializeRoute
@@ -186,6 +195,7 @@ export interface FileRoutesById {
   '/auth/': typeof AuthIndexRoute
   '/admin/branches/create': typeof AdminBranchesCreateRoute
   '/admin/customers/create': typeof AdminCustomersCreateRoute
+  '/admin/customers_/$customerId': typeof AdminCustomersCustomerIdRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
   '/auth/admin/check': typeof AuthAdminCheckRoute
   '/auth/admin/initialize': typeof AuthAdminInitializeRoute
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/admin/branches/create'
     | '/admin/customers/create'
+    | '/admin/customers/$customerId'
     | '/admin/users/create'
     | '/auth/admin/check'
     | '/auth/admin/initialize'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin/branches/create'
     | '/admin/customers/create'
+    | '/admin/customers/$customerId'
     | '/admin/users/create'
     | '/auth/admin/check'
     | '/auth/admin/initialize'
@@ -251,6 +263,7 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/admin/branches/create'
     | '/admin/customers/create'
+    | '/admin/customers_/$customerId'
     | '/admin/users/create'
     | '/auth/admin/check'
     | '/auth/admin/initialize'
@@ -396,6 +409,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersCreateRouteImport
       parentRoute: typeof AdminUsersRoute
     }
+    '/admin/customers_/$customerId': {
+      id: '/admin/customers_/$customerId'
+      path: '/customers/$customerId'
+      fullPath: '/admin/customers/$customerId'
+      preLoaderRoute: typeof AdminCustomersCustomerIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/customers/create': {
       id: '/admin/customers/create'
       path: '/create'
@@ -454,6 +474,7 @@ interface AdminRouteRouteChildren {
   AdminCustomersRoute: typeof AdminCustomersRouteWithChildren
   AdminUsersRoute: typeof AdminUsersRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminCustomersCustomerIdRoute: typeof AdminCustomersCustomerIdRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
@@ -461,6 +482,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminCustomersRoute: AdminCustomersRouteWithChildren,
   AdminUsersRoute: AdminUsersRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
+  AdminCustomersCustomerIdRoute: AdminCustomersCustomerIdRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(

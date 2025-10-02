@@ -14,7 +14,7 @@ export const Route = createFileRoute("/agent")({
   beforeLoad: async () => {
     const response = await queryClient.ensureQueryData(loggedInUserQueryOptions);
     if (response?.data.role !== UserRoles.AGENT) {
-      return redirect({ to: "/admin" });
+      return redirect({ to: "/auth" });
     }
   },
   onError: () => {

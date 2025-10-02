@@ -11,10 +11,10 @@ import { UserRoles } from "@/lib/types";
 export const Route = createFileRoute("/admin")({
   component: AdminLayout,
   pendingComponent: AppSplashScreen,
-  loader: async () => {
+  beforeLoad: async () => {
     const response = await queryClient.ensureQueryData(loggedInUserQueryOptions);
     if (response?.data.role !== UserRoles.ADMIN) {
-      return redirect({ to: "/agent" });
+      return redirect({ to: "/auth" });
     }
   },
   onError: () => {

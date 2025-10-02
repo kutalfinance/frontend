@@ -12,14 +12,14 @@ import { errorToast, queryKeys, successToast } from "../data/utils";
 export const loggedInUserQueryOptions = queryOptions({
   queryKey: queryKeys.users.me(),
   queryFn: async () => {
-    const response = await api.get("user/me").json<APIResponse<User>>();
-    if (!response) {
+    try {
+      const response = await api.get("user/me").json<APIResponse<User>>();
+      return response;
+    } catch (err) {
       authToken.clear();
       redirect({ to: "/auth" });
       return null;
     }
-
-    return response;
   },
   staleTime: 1000 * 60 * 5, // 5 minutes
 });

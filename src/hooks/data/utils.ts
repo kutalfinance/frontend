@@ -22,6 +22,7 @@ export async function errorToast(err: any) {
 export const queryKeys = {
   // Auth related queries
   auth: {
+    check: () => ["auth", "check"] as const,
     user: () => ["auth", "user"] as const,
     me: () => ["auth", "me"] as const,
   },

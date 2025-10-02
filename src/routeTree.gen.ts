@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as InitializeRouteImport } from './routes/initialize'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as AgentRouteRouteImport } from './routes/agent/route'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
@@ -24,13 +25,17 @@ import { Route as AuthAgentLoginRouteImport } from './routes/auth/agent/login'
 import { Route as AuthAdminVerifyRouteImport } from './routes/auth/admin/verify'
 import { Route as AuthAdminSetupRouteImport } from './routes/auth/admin/setup'
 import { Route as AuthAdminLoginRouteImport } from './routes/auth/admin/login'
-import { Route as AuthAdminInitializeRouteImport } from './routes/auth/admin/initialize'
 import { Route as AuthAdminCheckRouteImport } from './routes/auth/admin/check'
 import { Route as AdminUsersCreateRouteImport } from './routes/admin/users.create'
 import { Route as AdminCustomersCustomerIdRouteImport } from './routes/admin/customers_.$customerId'
 import { Route as AdminCustomersCreateRouteImport } from './routes/admin/customers.create'
 import { Route as AdminBranchesCreateRouteImport } from './routes/admin/branches.create'
 
+const InitializeRoute = InitializeRouteImport.update({
+  id: '/initialize',
+  path: '/initialize',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -106,11 +111,6 @@ const AuthAdminLoginRoute = AuthAdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const AuthAdminInitializeRoute = AuthAdminInitializeRouteImport.update({
-  id: '/admin/initialize',
-  path: '/admin/initialize',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
 const AuthAdminCheckRoute = AuthAdminCheckRouteImport.update({
   id: '/admin/check',
   path: '/admin/check',
@@ -143,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/agent': typeof AgentRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
+  '/initialize': typeof InitializeRoute
   '/admin/branches': typeof AdminBranchesRouteWithChildren
   '/admin/customers': typeof AdminCustomersRouteWithChildren
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -154,7 +155,6 @@ export interface FileRoutesByFullPath {
   '/admin/customers/$customerId': typeof AdminCustomersCustomerIdRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
   '/auth/admin/check': typeof AuthAdminCheckRoute
-  '/auth/admin/initialize': typeof AuthAdminInitializeRoute
   '/auth/admin/login': typeof AuthAdminLoginRoute
   '/auth/admin/setup': typeof AuthAdminSetupRoute
   '/auth/admin/verify': typeof AuthAdminVerifyRoute
@@ -163,6 +163,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof RouteRoute
+  '/initialize': typeof InitializeRoute
   '/admin/branches': typeof AdminBranchesRouteWithChildren
   '/admin/customers': typeof AdminCustomersRouteWithChildren
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -174,7 +175,6 @@ export interface FileRoutesByTo {
   '/admin/customers/$customerId': typeof AdminCustomersCustomerIdRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
   '/auth/admin/check': typeof AuthAdminCheckRoute
-  '/auth/admin/initialize': typeof AuthAdminInitializeRoute
   '/auth/admin/login': typeof AuthAdminLoginRoute
   '/auth/admin/setup': typeof AuthAdminSetupRoute
   '/auth/admin/verify': typeof AuthAdminVerifyRoute
@@ -187,6 +187,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/agent': typeof AgentRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
+  '/initialize': typeof InitializeRoute
   '/admin/branches': typeof AdminBranchesRouteWithChildren
   '/admin/customers': typeof AdminCustomersRouteWithChildren
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -198,7 +199,6 @@ export interface FileRoutesById {
   '/admin/customers_/$customerId': typeof AdminCustomersCustomerIdRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
   '/auth/admin/check': typeof AuthAdminCheckRoute
-  '/auth/admin/initialize': typeof AuthAdminInitializeRoute
   '/auth/admin/login': typeof AuthAdminLoginRoute
   '/auth/admin/setup': typeof AuthAdminSetupRoute
   '/auth/admin/verify': typeof AuthAdminVerifyRoute
@@ -212,6 +212,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/agent'
     | '/auth'
+    | '/initialize'
     | '/admin/branches'
     | '/admin/customers'
     | '/admin/users'
@@ -223,7 +224,6 @@ export interface FileRouteTypes {
     | '/admin/customers/$customerId'
     | '/admin/users/create'
     | '/auth/admin/check'
-    | '/auth/admin/initialize'
     | '/auth/admin/login'
     | '/auth/admin/setup'
     | '/auth/admin/verify'
@@ -232,6 +232,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/initialize'
     | '/admin/branches'
     | '/admin/customers'
     | '/admin/users'
@@ -243,7 +244,6 @@ export interface FileRouteTypes {
     | '/admin/customers/$customerId'
     | '/admin/users/create'
     | '/auth/admin/check'
-    | '/auth/admin/initialize'
     | '/auth/admin/login'
     | '/auth/admin/setup'
     | '/auth/admin/verify'
@@ -255,6 +255,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/agent'
     | '/auth'
+    | '/initialize'
     | '/admin/branches'
     | '/admin/customers'
     | '/admin/users'
@@ -266,7 +267,6 @@ export interface FileRouteTypes {
     | '/admin/customers_/$customerId'
     | '/admin/users/create'
     | '/auth/admin/check'
-    | '/auth/admin/initialize'
     | '/auth/admin/login'
     | '/auth/admin/setup'
     | '/auth/admin/verify'
@@ -279,10 +279,18 @@ export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   AgentRouteRoute: typeof AgentRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  InitializeRoute: typeof InitializeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/initialize': {
+      id: '/initialize'
+      path: '/initialize'
+      fullPath: '/initialize'
+      preLoaderRoute: typeof InitializeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -386,13 +394,6 @@ declare module '@tanstack/react-router' {
       path: '/admin/login'
       fullPath: '/auth/admin/login'
       preLoaderRoute: typeof AuthAdminLoginRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/auth/admin/initialize': {
-      id: '/auth/admin/initialize'
-      path: '/admin/initialize'
-      fullPath: '/auth/admin/initialize'
-      preLoaderRoute: typeof AuthAdminInitializeRouteImport
       parentRoute: typeof AuthRouteRoute
     }
     '/auth/admin/check': {
@@ -504,7 +505,6 @@ const AgentRouteRouteWithChildren = AgentRouteRoute._addFileChildren(
 interface AuthRouteRouteChildren {
   AuthIndexRoute: typeof AuthIndexRoute
   AuthAdminCheckRoute: typeof AuthAdminCheckRoute
-  AuthAdminInitializeRoute: typeof AuthAdminInitializeRoute
   AuthAdminLoginRoute: typeof AuthAdminLoginRoute
   AuthAdminSetupRoute: typeof AuthAdminSetupRoute
   AuthAdminVerifyRoute: typeof AuthAdminVerifyRoute
@@ -515,7 +515,6 @@ interface AuthRouteRouteChildren {
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthIndexRoute: AuthIndexRoute,
   AuthAdminCheckRoute: AuthAdminCheckRoute,
-  AuthAdminInitializeRoute: AuthAdminInitializeRoute,
   AuthAdminLoginRoute: AuthAdminLoginRoute,
   AuthAdminSetupRoute: AuthAdminSetupRoute,
   AuthAdminVerifyRoute: AuthAdminVerifyRoute,
@@ -532,6 +531,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   AgentRouteRoute: AgentRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
+  InitializeRoute: InitializeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

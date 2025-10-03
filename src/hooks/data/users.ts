@@ -49,9 +49,9 @@ export function useDeleteUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, role }: { id: string; role: UserRoles }) => {
-      const PATH = role === UserRoles.ADMIN ? `user/admin/${id}` : `user/agent/${id}`;
-      return api.delete(PATH).json<APIResponse<unknown>>();
+    mutationFn: (users: string[]) => {
+      const ids = users.join(",");
+      return api.delete("user", { searchParams: { ids } }).json<APIResponse<unknown>>();
     },
     onSuccess: () => {
       invalidationHelpers.users.related().forEach((queryKey) => {

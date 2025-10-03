@@ -1,5 +1,6 @@
-import { cn } from "@/lib/utils";
 import { LoaderCircle } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 
 export function Loader({ className, ...props }: React.ComponentProps<"div">) {
   return (

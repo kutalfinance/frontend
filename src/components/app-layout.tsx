@@ -28,8 +28,8 @@ import {
 import { Paragraph } from "@/components/ui/text";
 
 import { useLoggedInUser, useLogout } from "@/hooks/auth/common";
-import { cn } from "@/lib/utils";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { cn } from "@/lib/utils";
 
 const SIDEBAR_STORAGE_KEY = "sidebar-state";
 const SIDEBAR_DEFAULT_OPEN = true;
@@ -93,7 +93,7 @@ export function AppHeader() {
 
   return (
     <div className="border-b">
-      <header className="container flex min-h-16 items-center gap-10 px-4">
+      <header className="flex min-h-16 items-center gap-10 px-4">
         <Button variant="ghost" onClick={() => setOpen(!open)} className="hidden lg:inline-flex">
           <PanelLeft />
         </Button>

@@ -30,4 +30,3 @@ export function ResourceNotFound({ resourceName, backTo, backLabel }: ResourceNo
     </div>
   );
 }
-

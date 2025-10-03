@@ -1,7 +1,9 @@
+import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
+
 import { AppSplashScreen } from "@/components/app-splash-screen";
 import { queryClient } from "@/components/query-provider";
+
 import { checkQueryOptions, getAdminInitialized, setAdminInitialized } from "@/hooks/auth/admin";
-import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/auth")({
   component: AuthLayout,

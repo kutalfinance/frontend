@@ -1,6 +1,7 @@
 import { type Table as TableType, flexRender } from "@tanstack/react-table";
 import type { Row, RowData } from "@tanstack/react-table";
 
+import { Loader } from "@/components/loader";
 import {
   Table,
   TableBody,
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/table";
 
 import { cn } from "@/lib/utils";
-import { Loader } from "@/components/loader";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {

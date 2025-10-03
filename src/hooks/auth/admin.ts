@@ -1,12 +1,30 @@
 import { useNavigate } from "@tanstack/react-router";
 
-import { useMutation } from "@tanstack/react-query";
+import { queryOptions, useMutation } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
 import { authToken } from "@/lib/auth-token";
 import type { APIResponse, ResetPassword, SendPasswordResetLink } from "@/lib/types";
 
-import { errorToast, successToast } from "../data/utils";
+import { errorToast, queryKeys, successToast } from "../data/utils";
+
+export const ADMIN_INITIALIZED_KEY = "admin_initialized";
+export const setAdminInitialized = (value: boolean) =>
+  localStorage.setItem(ADMIN_INITIALIZED_KEY, value ? "true" : "false");
+export const getAdminInitialized = () => localStorage.getItem(ADMIN_INITIALIZED_KEY) === "true";
+
+export const checkQueryOptions = queryOptions({
+  queryKey: queryKeys.auth.check(),
+  queryFn: async () => {
+    try {
+      return await api.get("check").json<APIResponse<boolean>>();
+    } catch (err) {
+      console.log("Error in auth check:", err);
+      return null;
+    }
+  },
+  staleTime: 1000 * 60 * 5, // 5 minutes
+});
 
 // Admin authentication hooks
 export function useAdminAuthInitialize() {
@@ -20,6 +38,7 @@ export function useAdminAuthInitialize() {
       superAdmin: boolean;
     }) => api.post("user/admin/init", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: (_, variables) => {
+      setAdminInitialized(true);
       successToast("An OTP has been sent to your email");
       navigate({ to: "/auth/admin/verify", search: { email: variables.email } });
     },

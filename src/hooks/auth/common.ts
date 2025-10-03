@@ -8,20 +8,6 @@ import type { APIResponse, User } from "@/lib/types";
 
 import { errorToast, queryKeys, successToast } from "../data/utils";
 
-export const checkQueryOptions = queryOptions({
-  queryKey: queryKeys.auth.check(),
-  queryFn: async () => {
-    try {
-      const response = await api.get("check").json<APIResponse<boolean>>();
-      return response;
-    } catch (err) {
-      console.log("Error in auth check:", err);
-      return null;
-    }
-  },
-  staleTime: 1000 * 60 * 5, // 5 minutes
-});
-
 // Common auth hooks used by both admin and agent
 export const loggedInUserQueryOptions = queryOptions({
   queryKey: queryKeys.users.me(),

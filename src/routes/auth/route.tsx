@@ -1,19 +1,28 @@
 import { AppSplashScreen } from "@/components/app-splash-screen";
 import { queryClient } from "@/components/query-provider";
-import { checkQueryOptions } from "@/hooks/auth/common";
+import { checkQueryOptions, getAdminInitialized, setAdminInitialized } from "@/hooks/auth/admin";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/auth")({
   component: AuthLayout,
   pendingComponent: AppSplashScreen,
   loader: async () => {
-    const response = await queryClient.ensureQueryData(checkQueryOptions);
-    await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulate a short delay
+    const isInitialized = getAdminInitialized();
+    if (isInitialized) return null;
 
-    if (!response?.data) {
+    const response = await queryClient.ensureQueryData(checkQueryOptions);
+
+    if (!response) {
+      // If the response is undefined, we assume a network or server error occurred
+      return null;
+    }
+
+    if (!response.data) {
+      // If the check returns false, we need to initialize the app
       return redirect({ to: "/initialize" });
     }
 
+    setAdminInitialized(true);
     return null;
   },
 });

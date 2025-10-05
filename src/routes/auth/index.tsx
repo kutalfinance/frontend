@@ -29,7 +29,7 @@ function AuthHome() {
         </Button>
 
         <Button asChild variant="outline" className="w-full">
-          <Link to="/auth/admin/check">
+          <Link to="/auth/admin/login">
             <Shield />
             Administrator login
           </Link>

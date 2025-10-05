@@ -1,4 +1,4 @@
-import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -16,15 +16,72 @@ import {
 import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAdminAuthLogin } from "@/hooks/auth/admin";
+import { useAdminAuthIsActive, useAdminAuthLogin } from "@/hooks/auth/admin";
+import { CornerUpLeft } from "lucide-react";
 
 export const Route = createFileRoute("/auth/admin/login")({
-  component: AdminLogin,
-  validateSearch: z.object({ email: z.email() }),
-  beforeLoad: ({ search }) => {
-    if (!search.email) throw redirect({ to: "/auth/admin/check" });
-  },
+  component: AdminAuth,
+  validateSearch: z.object({ email: z.email().optional() }),
 });
+
+function AdminAuth() {
+  const { email } = Route.useSearch();
+  return email ? <AdminLogin /> : <AdminIsActive />;
+}
+
+const isActiveSchema = z.object({ email: z.email() });
+
+function AdminIsActive() {
+  const { mutate, isPending } = useAdminAuthIsActive();
+
+  const form = useForm<z.infer<typeof isActiveSchema>>({
+    resolver: zodResolver(isActiveSchema),
+    defaultValues: { email: "" },
+  });
+
+  function onLogin(values: z.infer<typeof isActiveSchema>) {
+    mutate(values);
+  }
+
+  return (
+    <>
+      <Link to="/auth" className="link">
+        <CornerUpLeft /> Back
+      </Link>
+
+      <hgroup className="flex flex-col">
+        <Heading className="mt-4">Admin Login</Heading>
+        <Paragraph className="text-muted-foreground">
+          Enter your email address to continue.
+        </Paragraph>
+      </hgroup>
+
+      <div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onLogin)} className="grid gap-2">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="Enter your email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button isLoading={isPending} className="mt-2 w-full">
+              Continue
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </>
+  );
+}
 
 const loginSchema = z.object({ email: z.email(), password: z.string() });
 
@@ -84,7 +141,7 @@ function AdminLogin() {
               Sign in
             </Button>
 
-            <Link to="/auth/admin/check" className="link">
+            <Link to="/auth/admin/login" className="link">
               Back to email
             </Link>
           </form>

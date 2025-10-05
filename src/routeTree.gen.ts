@@ -25,7 +25,6 @@ import { Route as AuthAgentLoginRouteImport } from './routes/auth/agent/login'
 import { Route as AuthAdminVerifyRouteImport } from './routes/auth/admin/verify'
 import { Route as AuthAdminSetupRouteImport } from './routes/auth/admin/setup'
 import { Route as AuthAdminLoginRouteImport } from './routes/auth/admin/login'
-import { Route as AuthAdminCheckRouteImport } from './routes/auth/admin/check'
 import { Route as AdminUsersCreateRouteImport } from './routes/admin/users.create'
 import { Route as AdminCustomersCustomerIdRouteImport } from './routes/admin/customers_.$customerId'
 import { Route as AdminCustomersCreateRouteImport } from './routes/admin/customers.create'
@@ -111,11 +110,6 @@ const AuthAdminLoginRoute = AuthAdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const AuthAdminCheckRoute = AuthAdminCheckRouteImport.update({
-  id: '/admin/check',
-  path: '/admin/check',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
 const AdminUsersCreateRoute = AdminUsersCreateRouteImport.update({
   id: '/create',
   path: '/create',
@@ -154,7 +148,6 @@ export interface FileRoutesByFullPath {
   '/admin/customers/create': typeof AdminCustomersCreateRoute
   '/admin/customers/$customerId': typeof AdminCustomersCustomerIdRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
-  '/auth/admin/check': typeof AuthAdminCheckRoute
   '/auth/admin/login': typeof AuthAdminLoginRoute
   '/auth/admin/setup': typeof AuthAdminSetupRoute
   '/auth/admin/verify': typeof AuthAdminVerifyRoute
@@ -174,7 +167,6 @@ export interface FileRoutesByTo {
   '/admin/customers/create': typeof AdminCustomersCreateRoute
   '/admin/customers/$customerId': typeof AdminCustomersCustomerIdRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
-  '/auth/admin/check': typeof AuthAdminCheckRoute
   '/auth/admin/login': typeof AuthAdminLoginRoute
   '/auth/admin/setup': typeof AuthAdminSetupRoute
   '/auth/admin/verify': typeof AuthAdminVerifyRoute
@@ -198,7 +190,6 @@ export interface FileRoutesById {
   '/admin/customers/create': typeof AdminCustomersCreateRoute
   '/admin/customers_/$customerId': typeof AdminCustomersCustomerIdRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
-  '/auth/admin/check': typeof AuthAdminCheckRoute
   '/auth/admin/login': typeof AuthAdminLoginRoute
   '/auth/admin/setup': typeof AuthAdminSetupRoute
   '/auth/admin/verify': typeof AuthAdminVerifyRoute
@@ -223,7 +214,6 @@ export interface FileRouteTypes {
     | '/admin/customers/create'
     | '/admin/customers/$customerId'
     | '/admin/users/create'
-    | '/auth/admin/check'
     | '/auth/admin/login'
     | '/auth/admin/setup'
     | '/auth/admin/verify'
@@ -243,7 +233,6 @@ export interface FileRouteTypes {
     | '/admin/customers/create'
     | '/admin/customers/$customerId'
     | '/admin/users/create'
-    | '/auth/admin/check'
     | '/auth/admin/login'
     | '/auth/admin/setup'
     | '/auth/admin/verify'
@@ -266,7 +255,6 @@ export interface FileRouteTypes {
     | '/admin/customers/create'
     | '/admin/customers_/$customerId'
     | '/admin/users/create'
-    | '/auth/admin/check'
     | '/auth/admin/login'
     | '/auth/admin/setup'
     | '/auth/admin/verify'
@@ -396,13 +384,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdminLoginRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/auth/admin/check': {
-      id: '/auth/admin/check'
-      path: '/admin/check'
-      fullPath: '/auth/admin/check'
-      preLoaderRoute: typeof AuthAdminCheckRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
     '/admin/users/create': {
       id: '/admin/users/create'
       path: '/create'
@@ -504,7 +485,6 @@ const AgentRouteRouteWithChildren = AgentRouteRoute._addFileChildren(
 
 interface AuthRouteRouteChildren {
   AuthIndexRoute: typeof AuthIndexRoute
-  AuthAdminCheckRoute: typeof AuthAdminCheckRoute
   AuthAdminLoginRoute: typeof AuthAdminLoginRoute
   AuthAdminSetupRoute: typeof AuthAdminSetupRoute
   AuthAdminVerifyRoute: typeof AuthAdminVerifyRoute
@@ -514,7 +494,6 @@ interface AuthRouteRouteChildren {
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthIndexRoute: AuthIndexRoute,
-  AuthAdminCheckRoute: AuthAdminCheckRoute,
   AuthAdminLoginRoute: AuthAdminLoginRoute,
   AuthAdminSetupRoute: AuthAdminSetupRoute,
   AuthAdminVerifyRoute: AuthAdminVerifyRoute,

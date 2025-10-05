@@ -15,7 +15,7 @@ export const Route = createFileRoute("/auth/admin/verify")({
   component: AdminVerify,
   validateSearch: z.object({ email: z.email() }),
   beforeLoad: ({ search }) => {
-    if (!search.email) throw redirect({ to: "/auth/admin/check" });
+    if (!search.email) throw redirect({ to: "/auth/admin/login" });
   },
 });
 
@@ -72,7 +72,7 @@ function AdminVerify() {
             Verify & Sign in
           </Button>
 
-          <Link to="/auth/admin/check" className="link">
+          <Link to="/auth/admin/login" className="link">
             Back to email
           </Link>
         </form>

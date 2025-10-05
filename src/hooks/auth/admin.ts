@@ -61,7 +61,7 @@ export function useAdminAuthVerify() {
   });
 }
 
-export function useAdminAuthCheck() {
+export function useAdminAuthIsActive() {
   const navigate = useNavigate();
 
   return useMutation({

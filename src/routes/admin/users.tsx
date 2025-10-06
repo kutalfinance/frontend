@@ -13,7 +13,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { SquarePen, Trash2 } from "lucide-react";
+import { SquarePen, Trash2, XIcon } from "lucide-react";
 
 import {
   ModuleActions,
@@ -26,19 +26,24 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
-import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Paragraph } from "@/components/ui/text";
 
-import { useUsers } from "@/hooks/data/users";
-import type { User } from "@/lib/types";
-import { DeleteUser } from "@/modules/users/delete-user";
+import { useUsers, validateUserSearch } from "@/hooks/data/users";
+import { type User } from "@/lib/types";
+import { DeactivateUser } from "@/modules/users/delete-user";
 import { EditUser } from "@/modules/users/edit-user";
+import { UserFilters } from "@/modules/users/filters";
 
 export const Route = createFileRoute("/admin/users")({
   component: Users,
+  validateSearch: validateUserSearch,
 });
 
 function Users() {
-  const { data, isPending } = useUsers();
+  const searchParams = Route.useSearch();
+
+  const { data, isPending } = useUsers({ searchParams });
   const users = data?.data ?? [];
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -62,12 +67,11 @@ function Users() {
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: {
-        pageIndex: 0,
-        pageSize: 20,
-      },
+      pagination: { pageIndex: 0, pageSize: 20 },
     },
   });
+
+  const selectedUsers = table.getSelectedRowModel().flatRows.map((row) => row.original);
 
   return (
     <div>
@@ -86,14 +90,28 @@ function Users() {
           Manage admin and agent accounts. Create new users, view their status, and control access
           permissions.
         </ModuleDescription>
-
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <div></div>
-          <Input placeholder="Filter by name or email..." className="w-full max-w-sm" />
-        </div>
       </ModuleHeading>
 
+      <UserFilters />
+
       <DataTable table={table} isLoading={isPending} />
+
+      {!!selectedUsers.length && (
+        <div
+          data-state={!!selectedUsers.length ? "open" : "closed"}
+          className="bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed bottom-[5%] left-[50%] z-50 flex w-fit max-w-[calc(100%-2rem)] translate-x-[-50%] items-center gap-2 rounded-lg border px-4 shadow-lg duration-200 sm:max-w-lg"
+        >
+          <Paragraph className="py-4">{selectedUsers.length} users selected</Paragraph>
+          <Separator orientation="vertical" className="data-[orientation=vertical]:h-6" />
+          <DeactivateUser users={selectedUsers}>
+            <Button variant="destructive-outline">Delete</Button>
+          </DeactivateUser>
+          <Separator orientation="vertical" className="data-[orientation=vertical]:h-6" />
+          <Button onClick={() => table.resetRowSelection()} variant="ghost" size="icon">
+            <XIcon className="size-5" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -167,12 +185,12 @@ export const columns: ColumnDef<User>[] = [
             </Button>
           </EditUser>
 
-          <DeleteUser user={row.original}>
-            <Button variant="ghost" size="icon">
+          <DeactivateUser users={[row.original]}>
+            <Button variant="destructive-outline" size="icon">
               <span className="sr-only">Delete</span>
-              <Trash2 className="text-destructive" />
+              <Trash2 />
             </Button>
-          </DeleteUser>
+          </DeactivateUser>
         </div>
       );
     },

@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CornerUpLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -17,7 +18,6 @@ import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useAdminAuthIsActive, useAdminAuthLogin } from "@/hooks/auth/admin";
-import { CornerUpLeft } from "lucide-react";
 
 export const Route = createFileRoute("/auth/admin/login")({
   component: AdminAuth,

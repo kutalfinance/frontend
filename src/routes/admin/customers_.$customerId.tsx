@@ -1,16 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
+
 import { format } from "date-fns";
 import { ArrowLeft, Mail, MapPin, Phone, User } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Heading, Paragraph } from "@/components/ui/text";
-
-import { customerByIdQueryOptions } from "@/hooks/data/customers";
-import { Link } from "@tanstack/react-router";
 import { Loader } from "@/components/loader";
 import { queryClient } from "@/components/query-provider";
 import { ResourceNotFound } from "@/components/resource-not-found";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Heading, Paragraph } from "@/components/ui/text";
+
+import { customerByIdQueryOptions } from "@/hooks/data/customers";
 
 export const Route = createFileRoute("/admin/customers_/$customerId")({
   loader: ({ params }) => queryClient.ensureQueryData(customerByIdQueryOptions(params.customerId)),
@@ -176,4 +177,3 @@ function ContributionsCard({}: { customerId: string }) {
     </div>
   );
 }
-

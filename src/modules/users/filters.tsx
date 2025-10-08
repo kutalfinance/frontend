@@ -1,6 +1,6 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 
-import { ArrowUpDown, SearchIcon } from "lucide-react";
+import { ArrowUpDown, SearchIcon, ShieldBan, ShieldCheck } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -13,14 +13,13 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useDebounce } from "@/hooks/use-debounce";
-import { UserRoles } from "@/lib/types";
 
 export function UserFilters() {
   const search = useSearch({ from: "/admin/users" });
   const navigate = useNavigate({ from: "/admin/users" });
 
   const debouncedSearch = useDebounce((e: React.ChangeEvent<HTMLInputElement>) =>
-    navigate({ search: (old) => ({ ...old, search: e.target.value || undefined }) })
+    navigate({ search: (old) => ({ ...old, q: e.target.value || undefined }) })
   );
 
   return (
@@ -38,12 +37,12 @@ export function UserFilters() {
         </div>
 
         <Select
-          defaultValue={search.sortBy}
+          value={search.sortBy}
           onValueChange={(value) =>
-            navigate({ to: "/admin/users", search: (old) => ({ ...old, sortBy: value }) })
+            navigate({ search: (old) => ({ ...old, sortBy: value || undefined }) })
           }
         >
-          <SelectTrigger className="w-32">
+          <SelectTrigger className="w-36">
             <div className="flex items-center gap-1.5">
               <ArrowUpDown className="size-4" />
               <SelectValue placeholder="Sort By" />
@@ -58,26 +57,16 @@ export function UserFilters() {
         </Select>
       </div>
 
-      <Tabs defaultValue={search.role ?? "all"} className="">
+      <Tabs defaultValue="active" className="">
         <TabsList>
-          <TabsTrigger
-            value="all"
-            className="capitalize"
-            onClick={() => navigate({ search: { role: undefined } })}
-          >
-            All
+          <TabsTrigger value="active" className="capitalize">
+            <ShieldCheck /> Active {/* ({data?.activeCount ?? 0}) */}
           </TabsTrigger>
 
-          {Object.values(UserRoles).map((value) => (
-            <TabsTrigger
-              key={value}
-              value={value}
-              className="capitalize"
-              onClick={() => navigate({ search: { role: value } })}
-            >
-              {value.toLowerCase()}
-            </TabsTrigger>
-          ))}
+          <TabsTrigger value="inactive" className="capitalize">
+            <ShieldBan />
+            Inactive {/* ({data?.inactiveCount ?? 0}) */}
+          </TabsTrigger>
         </TabsList>
       </Tabs>
     </div>

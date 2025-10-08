@@ -30,7 +30,7 @@ export const queryKeys = {
   // Users queries
   users: {
     all: () => ["users"],
-    filters: (filters?: Record<string, unknown>) => ["users", { filters }] as const,
+    filters: (filters?: Record<string, unknown>) => ["users", filters] as const,
     detail: (id: string) => ["users", id] as const,
     me: () => ["users", "me"] as const,
   },

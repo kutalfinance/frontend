@@ -13,7 +13,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { SquarePen, Trash2, XIcon } from "lucide-react";
+import { Plus, SquarePen, Trash2, XIcon } from "lucide-react";
 
 import {
   ModuleActions,
@@ -82,7 +82,9 @@ function Users() {
           <ModuleTitle>User Management</ModuleTitle>
           <ModuleActions>
             <Button asChild>
-              <Link to="/admin/users/create">Create New User</Link>
+              <Link to="/admin/users/create">
+                <Plus /> Create user
+              </Link>
             </Button>
           </ModuleActions>
         </ModuleHeader>
@@ -101,7 +103,9 @@ function Users() {
           data-state={!!selectedUsers.length ? "open" : "closed"}
           className="bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed bottom-[5%] left-[50%] z-50 flex w-fit max-w-[calc(100%-2rem)] translate-x-[-50%] items-center gap-2 rounded-lg border px-4 shadow-lg duration-200 sm:max-w-lg"
         >
-          <Paragraph className="py-4">{selectedUsers.length} users selected</Paragraph>
+          <Paragraph className="text-muted-foreground py-4">
+            {selectedUsers.length} users selected
+          </Paragraph>
           <Separator orientation="vertical" className="data-[orientation=vertical]:h-6" />
           <DeactivateUser users={selectedUsers}>
             <Button variant="destructive-outline">Delete</Button>
@@ -181,7 +185,7 @@ export const columns: ColumnDef<User>[] = [
           <EditUser user={row.original}>
             <Button variant="ghost" size="icon">
               <span className="sr-only">Edit</span>
-              <SquarePen />
+              <SquarePen className="text-muted-foreground" />
             </Button>
           </EditUser>
 

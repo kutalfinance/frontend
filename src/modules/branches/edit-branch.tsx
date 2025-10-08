@@ -60,10 +60,7 @@ export function EditBranch({
   });
 
   function handleSubmit(values: EditBranchForm) {
-    updateBranch({
-      id: branch.id,
-      ...values,
-    });
+    updateBranch({ id: branch.id, ...values });
   }
 
   return (

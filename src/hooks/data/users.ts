@@ -26,6 +26,11 @@ export function useUsers({ searchParams }: { searchParams?: UserSearchParams } =
   return useQuery({
     queryKey: queryKeys.users.filters(searchParams),
     queryFn: () => api.get("user", { searchParams }).json<APIResponse<User[]>>(),
+    /* queryFn: async () => {
+      return axiosApi
+        .get<APIResponse<User[]>>("user", { params: searchParams })
+        .then((res) => res.data);
+    }, */
   });
 }
 

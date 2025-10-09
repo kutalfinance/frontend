@@ -10,7 +10,7 @@ export const validateUserSearch = z
   .object({
     q: z.string(),
     role: z.enum(UserRoles),
-    isActive: z.boolean(),
+    status: z.enum(["ACTIVE", "INACTIVE"]),
     isDeactivated: z.boolean(),
     createdBefore: z.string(), // date-time
     createdAfter: z.string(), // date-time
@@ -26,11 +26,6 @@ export function useUsers({ searchParams }: { searchParams?: UserSearchParams } =
   return useQuery({
     queryKey: queryKeys.users.filters(searchParams),
     queryFn: () => api.get("user", { searchParams }).json<APIResponse<User[]>>(),
-    /* queryFn: async () => {
-      return axiosApi
-        .get<APIResponse<User[]>>("user", { params: searchParams })
-        .then((res) => res.data);
-    }, */
   });
 }
 

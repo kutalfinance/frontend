@@ -11,12 +11,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { useUsers } from "@/hooks/data/users";
 import { useDebounce } from "@/hooks/use-debounce";
+import { UserRoles } from "@/lib/types";
 
-export function UserFilters({ disabled }: { disabled?: boolean }) {
+export function BranchFilters({ disabled }: { disabled?: boolean }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { data: usersData } = useUsers({ searchParams: { role: UserRoles.AGENT } });
+  const agents = usersData?.data ?? [];
+
   const hasFilters = Array.from(searchParams.keys()).some((key) => !["q", "sortBy"].includes(key));
 
   const debouncedSearch = useDebounce((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,7 +38,7 @@ export function UserFilters({ disabled }: { disabled?: boolean }) {
           <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
           <Input
             disabled={disabled}
-            placeholder="Search users..."
+            placeholder="Search branches..."
             type="search"
             className="w-full pl-9"
             defaultValue={searchParams.get("q") || ""}
@@ -42,56 +46,32 @@ export function UserFilters({ disabled }: { disabled?: boolean }) {
           />
         </div>
 
-        <Tabs
-          value={searchParams.get("status") || "all"}
-          onValueChange={(value) => {
-            setSearchParams((prev) => {
-              if (value === "all") value = "";
-
-              if (value) prev.set("status", value);
-              else prev.delete("status");
-              return prev;
-            });
-          }}
-        >
-          <TabsList>
-            <TabsTrigger disabled={disabled} value="all" className="gap-2 capitalize">
-              All <span className="text-muted-foreground">0</span>
-            </TabsTrigger>
-
-            <TabsTrigger disabled={disabled} value="ACTIVE" className="gap-2 capitalize">
-              Active <span className="text-muted-foreground">0</span>
-            </TabsTrigger>
-
-            <TabsTrigger disabled={disabled} value="INACTIVE" className="gap-2 capitalize">
-              Inactive <span className="text-muted-foreground">0</span>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-
         <Select
           disabled={disabled}
-          value={searchParams.get("role") || "all"}
+          value={searchParams.get("agentId") || "all"}
           onValueChange={(value) => {
             setSearchParams((prev) => {
               if (value === "all") value = "";
 
-              if (value) prev.set("role", value);
-              else prev.delete("role");
+              if (value) prev.set("agentId", value);
+              else prev.delete("agentId");
               return prev;
             });
           }}
         >
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-48">
             <div className="flex items-center gap-1.5">
-              <span className="text-muted-foreground">Role:</span>
-              <SelectValue placeholder="Role" />
+              <span className="text-muted-foreground">Agent:</span>
+              <SelectValue placeholder="Agent" />
             </div>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All roles</SelectItem>
-            <SelectItem value="ADMIN">Admin</SelectItem>
-            <SelectItem value="AGENT">Agent</SelectItem>
+            <SelectItem value="all">All agents</SelectItem>
+            {agents.map((agent) => (
+              <SelectItem key={agent.id} value={agent.id}>
+                {agent.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
@@ -100,8 +80,8 @@ export function UserFilters({ disabled }: { disabled?: boolean }) {
             variant="link"
             onClick={() =>
               setSearchParams((prev) => {
-                prev.delete("role");
-                prev.delete("status");
+                prev.delete("agentId");
+                prev.delete("location");
                 return prev;
               })
             }
@@ -133,8 +113,7 @@ export function UserFilters({ disabled }: { disabled?: boolean }) {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="name">Name</SelectItem>
-          <SelectItem value="email">Email</SelectItem>
-          <SelectItem value="role">Role</SelectItem>
+          <SelectItem value="location">Location</SelectItem>
           <SelectItem value="createdAt">Created At</SelectItem>
         </SelectContent>
       </Select>

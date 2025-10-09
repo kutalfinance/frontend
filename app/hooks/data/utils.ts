@@ -38,6 +38,7 @@ export const queryKeys = {
   // Customers queries
   customers: {
     all: () => ["customers"] as const,
+    filters: (filters?: Record<string, unknown>) => ["customers", filters] as const,
     detail: (id: string) => ["customers", id] as const,
     byBranch: (branchId: string) => ["customers", "branch", branchId] as const,
     search: (query: string) => ["customers", "search", query] as const,
@@ -45,7 +46,8 @@ export const queryKeys = {
 
   // Branches queries
   branches: {
-    all: (agentId?: string) => ["branches", agentId] as const,
+    all: () => ["branches"],
+    filters: (filters?: Record<string, unknown>) => ["branches", filters],
     detail: (id: string) => ["branches", id] as const,
     withCustomers: (id: string) => ["branches", id, "customers"] as const,
   },

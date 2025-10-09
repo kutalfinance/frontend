@@ -37,7 +37,7 @@ import { UserFilters } from "@/modules/users/filters";
 
 import type { Route } from "./+types/users";
 
-export async function clientLoader({ request }: Route.ClientLoaderArgs) {
+export function clientLoader({ request }: Route.ClientLoaderArgs) {
   const url = new URL(request.url);
   const params = Object.fromEntries(url.searchParams);
 
@@ -103,7 +103,7 @@ export default function Users({ loaderData }: Route.ComponentProps) {
         </ModuleDescription>
       </ModuleHeading>
 
-      <UserFilters />
+      <UserFilters disabled={isPending} />
 
       <DataTable table={table} isLoading={isPending} />
 

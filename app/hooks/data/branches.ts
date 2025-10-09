@@ -1,20 +1,30 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import z from "zod";
 
 import { api } from "@/lib/api";
 import type { APIResponse, Branch } from "@/lib/types";
 
 import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";
 
-// Branch management hooks
-export function useBranches(filters: { agentId?: string } = {}) {
-  return useQuery({
-    queryKey: queryKeys.branches.all(filters.agentId),
-    queryFn: () => {
-      const searchParams: Record<string, string> = {};
-      if (filters.agentId) {
-        searchParams.agentId = filters.agentId;
-      }
+export const validateBranchSearch = z
+  .object({
+    q: z.string(),
+    location: z.string(),
+    agentId: z.string(),
+    createdBefore: z.string(), // date-time
+    createdAfter: z.string(), // date-time
+    sortBy: z.string(),
+    sortDirection: z.enum(["asc", "desc"]),
+  })
+  .partial();
 
+export type BranchSearchParams = z.infer<typeof validateBranchSearch>;
+
+// Branch management hooks
+export function useBranches({ searchParams }: { searchParams?: BranchSearchParams } = {}) {
+  return useQuery({
+    queryKey: queryKeys.branches.filters(searchParams),
+    queryFn: () => {
       return api.get("branch", { searchParams }).json<APIResponse<Branch[]>>();
     },
   });

@@ -72,7 +72,24 @@ export function useDeactivateUser() {
       invalidationHelpers.users.related().forEach((queryKey) => {
         queryClient.invalidateQueries({ queryKey });
       });
-      successToast("Admin deleted successfully");
+      successToast("User(s) deactivated successfully");
+    },
+    onError: errorToast,
+  });
+}
+
+export function useRestoreUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (users: string[]) => {
+      return api.post("user/reactivate", { json: { ids: users } }).json<APIResponse<unknown>>();
+    },
+    onSuccess: () => {
+      invalidationHelpers.users.related().forEach((queryKey) => {
+        queryClient.invalidateQueries({ queryKey });
+      });
+      successToast("User(s) restored successfully");
     },
     onError: errorToast,
   });

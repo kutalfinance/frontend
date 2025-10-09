@@ -13,8 +13,41 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-import { useDeactivateUser, useDeleteUser } from "@/hooks/data/users";
+import { useDeactivateUser, useDeleteUser, useRestoreUser } from "@/hooks/data/users";
 import type { User } from "@/lib/types";
+
+export function RestoreUser({
+  users,
+  ...props
+}: React.ComponentProps<typeof AlertDialogTrigger> & { users: User[] }) {
+  const [open, setOpen] = useState(false);
+  const { mutate } = useRestoreUser();
+
+  function onRestore() {
+    mutate(users.map((user) => user.id));
+  }
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild {...props} />
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Restore user{users.length > 1 ? "s" : ""}?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This will restore the selected user{users.length > 1 ? "s" : ""}, allowing them to
+            access the system again.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction asChild onClick={onRestore}>
+            <Button>Restore User{users.length > 1 ? "s" : ""}</Button>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
 
 export function DeactivateUser({
   users,

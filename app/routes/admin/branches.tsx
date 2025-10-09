@@ -25,34 +25,33 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
-import { useBranches } from "@/hooks/data/branches";
-import { useUsers } from "@/hooks/data/users";
+import { useBranches, validateBranchSearch } from "@/hooks/data/branches";
 import type { Branch } from "@/lib/types";
-import { UserRoles } from "@/lib/types";
 import { DeleteBranch } from "@/modules/branches/delete-branch";
 import { EditBranch } from "@/modules/branches/edit-branch";
+import { BranchFilters } from "@/modules/branches/filters";
 
-export default function Branches() {
-  const { data: usersData } = useUsers();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedAgentId, setSelectedAgentId] = useState("all");
+import type { Route } from "./+types/branches";
 
-  // Use server-side filtering for agent, client-side for search
-  const { data, isPending } = useBranches(
-    selectedAgentId !== "all" ? { agentId: selectedAgentId } : {}
-  );
+export function clientLoader({ request }: Route.ClientLoaderArgs) {
+  const url = new URL(request.url);
+  const params = Object.fromEntries(url.searchParams);
+
+  try {
+    const validatedParams = validateBranchSearch.parse(params);
+    return { searchParams: validatedParams };
+  } catch {
+    return { searchParams: {} };
+  }
+}
+
+export default function Branches({ loaderData }: Route.ComponentProps) {
+  const { searchParams } = loaderData;
+
+  const { data, isPending } = useBranches({ searchParams });
 
   const branches = data?.data ?? [];
-  const agents = usersData?.data?.filter((user) => user.role === UserRoles.AGENT) ?? [];
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -101,31 +100,9 @@ export default function Branches() {
         </ModuleDescription>
       </ModuleHeading>
 
-      <div className="space-y-4">
-        <div className="container flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <Select value={selectedAgentId} onValueChange={setSelectedAgentId}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filter by agent" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Agents</SelectItem>
-              {agents.map((agent) => (
-                <SelectItem key={agent.id} value={agent.id}>
-                  {agent.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <BranchFilters disabled={isPending} />
 
-          <Input
-            placeholder="Filter by name or location..."
-            className="w-full max-w-sm"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <DataTable table={table} isLoading={isPending} />
-      </div>
+      <DataTable table={table} isLoading={isPending} />
     </div>
   );
 }

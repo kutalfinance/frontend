@@ -20,6 +20,7 @@ export default [
     index("./routes/admin/index.tsx"),
     route("users", "./routes/admin/users.tsx", [
       route("create", "./routes/admin/users-create.tsx"),
+      route("deactivated", "./routes/admin/users-deactivated.tsx"),
     ]),
     route("customers", "./routes/admin/customers.tsx", [
       route("create", "./routes/admin/customers-create.tsx"),

@@ -1,7 +1,6 @@
-import { createContext, useContext } from "react";
 import { Link, type LinkProps, useLocation } from "react-router";
 
-import { Coins, History, Menu, PanelLeft } from "lucide-react";
+import { History, Menu } from "lucide-react";
 import { Contact, Home, Landmark, type LucideIcon, Users } from "lucide-react";
 
 import { AppLogo } from "@/components/app-logo";
@@ -27,11 +26,7 @@ import {
 import { Paragraph } from "@/components/ui/text";
 
 import { useLoggedInUser, useLogout } from "@/hooks/auth/common";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
-
-const SIDEBAR_STORAGE_KEY = "sidebar-state";
-const SIDEBAR_DEFAULT_OPEN = true;
 
 const adminNavLinks: {
   title: string;
@@ -42,9 +37,8 @@ const adminNavLinks: {
   { title: "Dashboard", href: "/admin", pathRegex: /^\/admin$/, icon: Home },
   { title: "Branches", href: "/admin/branches", pathRegex: /\/admin\/branches/, icon: Landmark },
   { title: "Customers", href: "/admin/customers", pathRegex: /\/admin\/customers/, icon: Contact },
-  { title: "Contributions", href: ".", pathRegex: /\/admin\/contributions/, icon: Coins },
   { title: "Users", href: "/admin/users", pathRegex: /\/admin\/users/, icon: Users },
-  { title: "Audit Trail", href: ".", pathRegex: /\/admin\/audit/, icon: History },
+  { title: "Audit Trail", href: "#", pathRegex: /\/admin\/audit/, icon: History },
 ];
 
 const agentNavLinks: {
@@ -54,51 +48,46 @@ const agentNavLinks: {
   icon: LucideIcon;
 }[] = [
   { title: "Dashboard", href: "/agent", pathRegex: /^\/agent$/, icon: Home },
-  { title: "Branches", href: ".", pathRegex: /\/agent\/branches/, icon: Landmark },
-  { title: "Customers", href: ".", pathRegex: /\/agent\/customers/, icon: Contact },
-  { title: "Contributions", href: ".", pathRegex: /\/agent\/contributions/, icon: Coins },
+  { title: "Branches", href: "#", pathRegex: /\/agent\/branches/, icon: Landmark },
+  { title: "Customers", href: "#", pathRegex: /\/agent\/customers/, icon: Contact },
 ];
 
 export function getNavLinks(userRole: string) {
   return userRole === "ADMIN" ? adminNavLinks : agentNavLinks;
 }
 
-type AppLayoutContextType = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
-const AppLayoutContext = createContext<AppLayoutContextType>({} as AppLayoutContextType);
-
-function useAppLayoutContext() {
-  const context = useContext(AppLayoutContext);
-  if (context === undefined) {
-    throw new Error("useAppLayoutContext must be used within a AppLayoutProvider");
-  }
-  return context;
-}
-
 export function AppLayoutProvider({ children, ...props }: React.ComponentProps<"div">) {
-  const [open, setOpen] = useLocalStorage(SIDEBAR_STORAGE_KEY, SIDEBAR_DEFAULT_OPEN);
-
-  return (
-    <AppLayoutContext.Provider value={{ open, setOpen }}>
-      <div {...props}>{children}</div>
-    </AppLayoutContext.Provider>
-  );
+  return <div {...props}>{children}</div>;
 }
 
 export function AppHeader() {
-  const { open, setOpen } = useAppLayoutContext();
+  const { pathname } = useLocation();
+  const { data } = useLoggedInUser();
+
+  const navLinks = getNavLinks(data?.data?.role || "");
 
   return (
     <div className="border-b">
-      <header className="flex min-h-16 items-center gap-10 px-4">
-        <Button variant="ghost" onClick={() => setOpen(!open)} className="hidden lg:inline-flex">
-          <PanelLeft />
-        </Button>
-
-        <div className="lg:hidden">
+      <header className="container flex min-h-16 items-center gap-10">
+        <div className="flex items-center gap-10">
           <AppLogo />
+
+          <nav className="hidden gap-2 lg:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.title}
+                to={link.href}
+                className={cn(
+                  "text-muted-foreground hover:text-primary flex items-center gap-2 rounded-md px-3 py-3 text-sm transition-colors",
+                  link.pathRegex.test(pathname) && "text-primary bg-accent"
+                )}
+                title={link.title}
+              >
+                <link.icon className="size-4" />
+                <Paragraph className="leading-4">{link.title}</Paragraph>
+              </Link>
+            ))}
+          </nav>
         </div>
 
         <div className="hidden lg:contents">
@@ -121,35 +110,6 @@ export function AppHeader() {
           </SheetContent>
         </Sheet>
       </header>
-    </div>
-  );
-}
-
-export function AppSidebar() {
-  const { pathname } = useLocation();
-  const { open } = useAppLayoutContext();
-  const { data } = useLoggedInUser();
-
-  const navLinks = getNavLinks(data?.data?.role || "");
-
-  return (
-    <div className={cn("hidden w-60 shrink-0 border-r p-4 lg:block", !open && "w-fit")}>
-      <nav className="flex flex-col gap-2">
-        {navLinks.map((link) => (
-          <Link
-            key={link.title}
-            to={link.href}
-            className={cn(
-              "text-muted-foreground hover:text-primary flex items-center gap-2 rounded-md px-3 py-3 text-sm transition-colors",
-              link.pathRegex.test(pathname) && "text-primary bg-accent"
-            )}
-            title={link.title}
-          >
-            <link.icon className="size-4" />
-            {open && <Paragraph className="leading-4">{link.title}</Paragraph>}
-          </Link>
-        ))}
-      </nav>
     </div>
   );
 }

@@ -82,22 +82,22 @@ export default function Branches({ loaderData }: Route.ComponentProps) {
   });
 
   return (
-    <div>
+    <div className="container">
       <Outlet />
 
       <ModuleHeading>
         <ModuleHeader>
           <ModuleTitle>Branch Management</ModuleTitle>
-          <ModuleActions>
-            <Button asChild>
-              <Link to="/admin/branches/create">Create New Branch</Link>
-            </Button>
-          </ModuleActions>
+          <ModuleDescription>
+            Manage branch locations and agent assignments. Create new branches, assign agents, and
+            track branch performance.
+          </ModuleDescription>
         </ModuleHeader>
-        <ModuleDescription>
-          Manage branch locations and agent assignments. Create new branches, assign agents, and
-          track branch performance.
-        </ModuleDescription>
+        <ModuleActions>
+          <Button asChild>
+            <Link to="/admin/branches/create">Create New Branch</Link>
+          </Button>
+        </ModuleActions>
       </ModuleHeading>
 
       <BranchFilters disabled={isPending} />

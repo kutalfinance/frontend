@@ -11,6 +11,7 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { AppSplashScreen } from "./components/app-splash-screen";
 import { QueryProvider } from "./components/query-provider";
+import { Toaster } from "./components/ui/sonner";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -47,6 +48,7 @@ export default function App() {
   return (
     <QueryProvider>
       <Outlet />
+      <Toaster />
     </QueryProvider>
   );
 }

@@ -1,0 +1,36 @@
+import { Link, href } from "react-router";
+
+import { Shield, Users } from "lucide-react";
+
+import { AppLogo } from "@/components/app-logo";
+import { Button } from "@/components/ui/button";
+import { Paragraph } from "@/components/ui/text";
+
+export default function AuthHome() {
+  return (
+    <>
+      <hgroup className="flex flex-col">
+        <AppLogo />
+        <Paragraph className="text-muted-foreground">
+          Select your account type to proceed.
+        </Paragraph>
+      </hgroup>
+
+      <div className="space-y-3">
+        <Button asChild className="w-full">
+          <Link to={href("/auth/agent/login")}>
+            <Users />
+            Agent login
+          </Link>
+        </Button>
+
+        <Button asChild variant="outline" className="w-full">
+          <Link to={href("/auth/admin/login")}>
+            <Shield />
+            Administrator login
+          </Link>
+        </Button>
+      </div>
+    </>
+  );
+}

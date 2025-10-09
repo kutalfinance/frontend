@@ -55,7 +55,7 @@ export function useAdminAuthVerify() {
     onSuccess: (response) => {
       authToken.set(response.data.token);
       successToast("Logged in successfully");
-      navigate(href("/"));
+      navigate(href("/admin"));
     },
     onError: errorToast,
   });

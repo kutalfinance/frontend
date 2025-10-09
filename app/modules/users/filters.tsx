@@ -43,34 +43,6 @@ export function UserFilters({ disabled }: { disabled?: boolean }) {
         </div>
 
         <Tabs
-          value={searchParams.get("status") || "all"}
-          onValueChange={(value) => {
-            setSearchParams((prev) => {
-              if (value === "all") value = "";
-
-              if (value) prev.set("status", value);
-              else prev.delete("status");
-              return prev;
-            });
-          }}
-        >
-          <TabsList>
-            <TabsTrigger disabled={disabled} value="all" className="gap-2 capitalize">
-              All <span className="text-muted-foreground">0</span>
-            </TabsTrigger>
-
-            <TabsTrigger disabled={disabled} value="ACTIVE" className="gap-2 capitalize">
-              Active <span className="text-muted-foreground">0</span>
-            </TabsTrigger>
-
-            <TabsTrigger disabled={disabled} value="INACTIVE" className="gap-2 capitalize">
-              Inactive <span className="text-muted-foreground">0</span>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        <Select
-          disabled={disabled}
           value={searchParams.get("role") || "all"}
           onValueChange={(value) => {
             setSearchParams((prev) => {
@@ -82,16 +54,44 @@ export function UserFilters({ disabled }: { disabled?: boolean }) {
             });
           }}
         >
-          <SelectTrigger className="w-36">
+          <TabsList>
+            <TabsTrigger disabled={disabled} value="all">
+              All roles
+            </TabsTrigger>
+
+            <TabsTrigger disabled={disabled} value="ADMIN">
+              Admins
+            </TabsTrigger>
+
+            <TabsTrigger disabled={disabled} value="AGENT">
+              Agents
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        <Select
+          disabled={disabled}
+          value={searchParams.get("status") || "all"}
+          onValueChange={(value) => {
+            setSearchParams((prev) => {
+              if (value === "all") value = "";
+
+              if (value) prev.set("status", value);
+              else prev.delete("status");
+              return prev;
+            });
+          }}
+        >
+          <SelectTrigger>
             <div className="flex items-center gap-1.5">
-              <span className="text-muted-foreground">Role:</span>
-              <SelectValue placeholder="Role" />
+              <span className="text-muted-foreground">Status:</span>
+              <SelectValue placeholder="Status" />
             </div>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All roles</SelectItem>
-            <SelectItem value="ADMIN">Admin</SelectItem>
-            <SelectItem value="AGENT">Agent</SelectItem>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="ACTIVE">Active</SelectItem>
+            <SelectItem value="INACTIVE">Inactive</SelectItem>
           </SelectContent>
         </Select>
 

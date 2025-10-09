@@ -82,7 +82,7 @@ export default function Branches({ loaderData }: Route.ComponentProps) {
   });
 
   return (
-    <div>
+    <div className="container">
       <Outlet />
 
       <ModuleHeading>

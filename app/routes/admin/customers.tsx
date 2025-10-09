@@ -77,7 +77,7 @@ export default function Customers({ loaderData }: Route.ComponentProps) {
   });
 
   return (
-    <div>
+    <div className="container">
       <Outlet />
 
       <ModuleHeading>

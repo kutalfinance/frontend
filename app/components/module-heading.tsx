@@ -6,11 +6,7 @@ import { cn } from "@/lib/utils";
 
 function ModuleHeading({ className, ...props }: React.ComponentProps<"hgroup">) {
   return (
-    <hgroup
-      data-slot="module-heading"
-      className={cn("container mb-6 flex flex-col", className)}
-      {...props}
-    />
+    <hgroup data-slot="module-heading" className={cn("mb-6 flex flex-col", className)} {...props} />
   );
 }
 

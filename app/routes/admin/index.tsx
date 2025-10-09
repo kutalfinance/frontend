@@ -12,15 +12,13 @@ export default function AdminDashboard() {
   if (!user) return null;
 
   return (
-    <>
+    <div className="container">
       <ModuleHeading>
         <ModuleTitle>Welcome {user.name}</ModuleTitle>
       </ModuleHeading>
 
-      <div className="container">
-        <DashboardStats />
-      </div>
-    </>
+      <DashboardStats />
+    </div>
   );
 }
 

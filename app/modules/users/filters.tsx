@@ -28,7 +28,7 @@ export function UserFilters({ disabled }: { disabled?: boolean }) {
   });
 
   return (
-    <div className="container mb-4 flex flex-wrap items-center gap-2 sm:justify-between">
+    <div className="mb-4 flex flex-wrap items-center gap-2 sm:justify-between">
       <div className="contents flex-1 flex-wrap items-center gap-2 sm:flex">
         <div className="relative w-full md:max-w-xs">
           <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />

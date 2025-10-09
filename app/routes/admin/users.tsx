@@ -83,7 +83,7 @@ export default function Users({ loaderData }: Route.ComponentProps) {
   const selectedUsers = table.getSelectedRowModel().flatRows.map((row) => row.original);
 
   return (
-    <div>
+    <div className="container">
       <Outlet />
 
       <ModuleHeading>

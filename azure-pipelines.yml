@@ -60,7 +60,7 @@ stages:
 
 - stage: DockerBuildPush
   displayName: 'Docker Build and Push'
-  dependsOn: Build
+  dependsOn: ScanAndBuild
   condition: in(variables['Build.SourceBranchName'], 'staging', 'main')
   variables:
     - name: CONTAINER_IMAGE_NAME

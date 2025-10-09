@@ -83,16 +83,16 @@ export default function Customers({ loaderData }: Route.ComponentProps) {
       <ModuleHeading>
         <ModuleHeader>
           <ModuleTitle>Customer Management</ModuleTitle>
-          <ModuleActions>
-            <Button asChild>
-              <Link to="/admin/customers/create">Create New Customer</Link>
-            </Button>
-          </ModuleActions>
+          <ModuleDescription>
+            Manage customer accounts and information. Create new customers, view their details, and
+            track customer interactions.
+          </ModuleDescription>
         </ModuleHeader>
-        <ModuleDescription>
-          Manage customer accounts and information. Create new customers, view their details, and
-          track customer interactions.
-        </ModuleDescription>
+        <ModuleActions>
+          <Button asChild>
+            <Link to="/admin/customers/create">Create New Customer</Link>
+          </Button>
+        </ModuleActions>
       </ModuleHeading>
 
       <CustomerFilters disabled={isPending} />

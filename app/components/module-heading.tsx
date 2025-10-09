@@ -6,17 +6,17 @@ import { cn } from "@/lib/utils";
 
 function ModuleHeading({ className, ...props }: React.ComponentProps<"hgroup">) {
   return (
-    <hgroup data-slot="module-heading" className={cn("mb-6 flex flex-col", className)} {...props} />
+    <hgroup
+      data-slot="module-heading"
+      className={cn("mb-6 flex flex-wrap items-start justify-between gap-4", className)}
+      {...props}
+    />
   );
 }
 
 function ModuleHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
-      data-slot="module-header"
-      className={cn("flex min-h-10 justify-between gap-5", className)}
-      {...props}
-    />
+    <div data-slot="module-header" className={cn("flex flex-col gap-1", className)} {...props} />
   );
 }
 

@@ -2,7 +2,7 @@ FROM node:24-alpine AS installer
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 FROM node:24-alpine AS builder
 RUN corepack enable && corepack prepare pnpm@latest --activate

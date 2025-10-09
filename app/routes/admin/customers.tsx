@@ -23,13 +23,28 @@ import {
 } from "@/components/module-heading";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { Input } from "@/components/ui/input";
 
-import { useCustomers } from "@/hooks/data/customers";
+import { useCustomers, validateCustomerSearch } from "@/hooks/data/customers";
 import type { Customer } from "@/lib/types";
+import { CustomerFilters } from "@/modules/customers/filters";
 
-export default function Customers() {
-  const { data, isPending } = useCustomers();
+import type { Route } from "./+types/customers";
+
+export function clientLoader({ request }: Route.ClientLoaderArgs) {
+  const url = new URL(request.url);
+  const params = Object.fromEntries(url.searchParams);
+
+  try {
+    const validatedParams = validateCustomerSearch.parse(params);
+    return { searchParams: validatedParams };
+  } catch {
+    return { searchParams: {} };
+  }
+}
+
+export default function Customers({ loaderData }: Route.ComponentProps) {
+  const { searchParams } = loaderData;
+  const { data, isPending } = useCustomers({ searchParams });
   const customers = data?.data ?? [];
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -80,14 +95,9 @@ export default function Customers() {
         </ModuleDescription>
       </ModuleHeading>
 
-      <div className="space-y-4">
-        <div className="container flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <div></div>
-          <Input placeholder="Filter by name or email..." className="w-full max-w-sm" />
-        </div>
+      <CustomerFilters disabled={isPending} />
 
-        <DataTable table={table} isLoading={isPending} />
-      </div>
+      <DataTable table={table} isLoading={isPending} />
     </div>
   );
 }

@@ -1,15 +1,31 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import z from "zod";
 
 import { api } from "@/lib/api";
 import type { APIResponse, Customer } from "@/lib/types";
 
 import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";
 
+export const validateCustomerSearch = z
+  .object({
+    q: z.string(),
+    branchId: z.string(),
+    createdBefore: z.string(), // date-time
+    createdAfter: z.string(), // date-time
+    sortBy: z.string(),
+    sortDirection: z.enum(["asc", "desc"]),
+  })
+  .partial();
+
+export type CustomerSearchParams = z.infer<typeof validateCustomerSearch>;
+
 // Customer management hooks
-export function useCustomers() {
+export function useCustomers({ searchParams }: { searchParams?: CustomerSearchParams } = {}) {
   return useQuery({
-    queryKey: queryKeys.customers.all(),
-    queryFn: () => api.get("customer").json<APIResponse<Customer[]>>(),
+    queryKey: queryKeys.customers.filters(searchParams),
+    queryFn: () => {
+      return api.get("customer", { searchParams }).json<APIResponse<Customer[]>>();
+    },
   });
 }
 

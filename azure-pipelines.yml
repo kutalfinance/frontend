@@ -1,16 +1,24 @@
 trigger:
   branches:
     include:
-      - dev
-      - staging
-      - main
+    - dev
+    - staging
+    - main
 
 variables:
-  - group: KssFrontend
-  - group: KssGlobal
+- group: KssGlobal
+
+parameters:
+- name: environment
+  displayName: Environment
+  type: string
+  default: KssFrontendDev
+  values:
+  - KssFrontendDev
+  - KssFrontendProd
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 stages:
 - stage: ScanAndBuild
@@ -50,35 +58,73 @@ stages:
         pnpm run build
       displayName: 'Build App'
 
-- stage: BuildAndDeploy
-  displayName: 'Build Image And Deploy'
-  condition: or(
-    eq(variables['Build.SourceBranchName'], 'staging'),
-    eq(variables['Build.SourceBranchName'], 'main')
-    )
-
+- stage: DockerBuildPush
+  displayName: 'Docker Build and Push'
+  dependsOn: Build
+  condition: in(variables['Build.SourceBranchName'], 'staging', 'main')
+  variables:
+    - name: CONTAINER_IMAGE_NAME
+      value: "$(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.SourceVersion)"
+    - group: ${{ parameters.environment }}
   jobs:
-  - job: BuildImage
-    displayName: 'Build Docker Image'
+  - job: BuildPushDockerImage
+    displayName: 'Build and Push Docker Image'
     steps:
     - checkout: self
-    - script: |
-        curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-        az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
-        az acr login --name $(ACR_NAME)
 
-        IMAGE=$(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.BuildId)
-        docker build -t $IMAGE .
-        docker push $IMAGE
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'KssArmConnection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az acr login --name $(ACR_NAME)
+          docker build -t $CONTAINER_IMAGE_NAME .
+          docker push $CONTAINER_IMAGE_NAME
+      displayName: 'Build and Push to ACR'
 
-        if [ "$(Build.SourceBranchName)" = "main" ]; then
-          ENV="production"
-          RESOURCE_GROUP=$(RESOURCE_GROUP_PROD)
-          ACA_NAME=$(ACA_NAME_PROD)
-        elif [ "$(Build.SourceBranchName)" = "staging" ]; then
-          ENV="staging"
-          RESOURCE_GROUP=$(RESOURCE_GROUP_DEV)
-          ACA_NAME=$(ACA_NAME_DEV)
-        fi
+- stage: UpdateContainer
+  displayName: 'Update Container'
+  dependsOn: DockerBuildPush
+  condition: in(variables['Build.SourceBranchName'], 'staging', 'main')
+  variables:
+  - name: CONTAINER_IMAGE_NAME
+    value: "$(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.SourceVersion)"
+  - group: ${{ parameters.environment }}
 
-        az containerapp update --resource-group $RESOURCE_GROUP --name $ACA_NAME --image $IMAGE
+  jobs:
+  - job: UpdateContainerApp
+    displayName: 'Update Container App'
+    variables:
+    - group: ${{ parameters.environment }}
+    steps:
+    - checkout: none
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'KssArmConnection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo "Updating Container App: $(CONTAINER_APP_NAME)"
+          echo "Resource Group: $(RESOURCE_GROUP)"
+          echo "New Image: $(CONTAINER_IMAGE_NAME)"
+
+          # Update the container app with new image
+          az containerapp update \
+            --name $(CONTAINER_APP_NAME) \
+            --resource-group $(RESOURCE_GROUP) \
+            --image $(CONTAINER_IMAGE_NAME) \
+            --set-env-vars \
+              VITE_API_URL="$(CLIENT_URL)"
+
+          echo "Container App updated successfully!"
+
+          # Show the current revision status
+          az containerapp revision list \
+            --name $CONTAINER_APP_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --query '[].{Name:name,CreatedTime:properties.createdTime,Active:properties.active,Image:properties.template.containers[0].image}' \
+            --output table
+
+      displayName: 'Update Container App Image'

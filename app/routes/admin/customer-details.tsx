@@ -1,17 +1,17 @@
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 
 import { format } from "date-fns";
-import { ArrowLeft, Mail, MapPin, Phone, User } from "lucide-react";
+import { Mail, MapPin, Phone, User } from "lucide-react";
 
 import { queryClient } from "@/components/query-provider";
 import { ResourceNotFound } from "@/components/resource-not-found";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Heading, Paragraph } from "@/components/ui/text";
 
 import { customerByIdQueryOptions } from "@/hooks/data/customers";
 
 import type { Route } from "./+types/customer-details";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const data = await queryClient.ensureQueryData(customerByIdQueryOptions(params.customerId));
@@ -24,48 +24,47 @@ export function ErrorBoundary() {
 
 export default function CustomerDetails({ loaderData }: Route.ComponentProps) {
   const { customer } = loaderData;
+  const navigate = useNavigate();
 
   return (
-    <div className="container space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button asChild variant="ghost" size="icon">
-          <Link to="/admin/customers">
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-        </Button>
-        <div>
-          <Heading>{customer.name}</Heading>
-        </div>
-      </div>
+    <Sheet open onOpenChange={() => navigate(-1)}>
+      <SheetContent className="w-full sm:max-w-screen-lg">
+        <SheetHeader>
+          <SheetTitle>{customer.name}</SheetTitle>
+        </SheetHeader>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Customer Information */}
-        <div className="space-y-6 lg:col-span-2">
-          <CustomerInfoCard customer={customer} />
-          <ContributionsCard customerId={customer.id} />
-        </div>
+        <div className="container space-y-6">
+          <div className="grid gap-6 lg:grid-cols-3">
+            {/* Customer Information */}
+            <div className="space-y-6 lg:col-span-2">
+              <CustomerInfoCard customer={customer} />
+              <ContributionsCard customerId={customer.id} />
+            </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          <NextOfKinCard nextOfKin={customer.nextOfKin} />
-          <BranchInfoCard branchName={customer.branchName} />
+            {/* Sidebar */}
+            <div className="space-y-6">
+              <NextOfKinCard nextOfKin={customer.nextOfKin} />
+              <BranchInfoCard branchName={customer.branchName} />
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
 function CustomerInfoCard({ customer }: { customer: any }) {
   return (
     <div className="bg-card rounded-lg border p-6">
-      <Heading className="mb-4">Customer Information</Heading>
+      <Heading variant="h4" className="mb-4">
+        Customer Information
+      </Heading>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex items-center gap-3">
           <User className="text-muted-foreground h-4 w-4" />
           <div>
             <Paragraph className="text-muted-foreground text-sm">Full Name</Paragraph>
-            <Paragraph className="font-medium">{customer.name}</Paragraph>
+            <Paragraph>{customer.name}</Paragraph>
           </div>
         </div>
 
@@ -73,7 +72,7 @@ function CustomerInfoCard({ customer }: { customer: any }) {
           <Mail className="text-muted-foreground h-4 w-4" />
           <div>
             <Paragraph className="text-muted-foreground text-sm">Email</Paragraph>
-            <Paragraph className="font-medium">{customer.email}</Paragraph>
+            <Paragraph>{customer.email}</Paragraph>
           </div>
         </div>
 
@@ -81,7 +80,7 @@ function CustomerInfoCard({ customer }: { customer: any }) {
           <Phone className="text-muted-foreground h-4 w-4" />
           <div>
             <Paragraph className="text-muted-foreground text-sm">Phone Number</Paragraph>
-            <Paragraph className="font-medium">{customer.phoneNumber}</Paragraph>
+            <Paragraph>{customer.phoneNumber}</Paragraph>
           </div>
         </div>
 
@@ -89,15 +88,13 @@ function CustomerInfoCard({ customer }: { customer: any }) {
           <MapPin className="text-muted-foreground h-4 w-4" />
           <div>
             <Paragraph className="text-muted-foreground text-sm">Location</Paragraph>
-            <Paragraph className="font-medium">{customer.location}</Paragraph>
+            <Paragraph>{customer.location}</Paragraph>
           </div>
         </div>
 
         <div className="sm:col-span-2">
           <Paragraph className="text-muted-foreground text-sm">Member Since</Paragraph>
-          <Paragraph className="font-medium">
-            {format(new Date(customer.createdAt), "MMMM dd, yyyy 'at' h:mm a")}
-          </Paragraph>
+          <Paragraph>{format(new Date(customer.createdAt), "MMMM dd, yyyy 'at' h:mm a")}</Paragraph>
         </div>
       </div>
     </div>
@@ -107,21 +104,23 @@ function CustomerInfoCard({ customer }: { customer: any }) {
 function NextOfKinCard({ nextOfKin }: { nextOfKin: any }) {
   return (
     <div className="bg-card rounded-lg border p-6">
-      <Heading className="mb-4">Next of Kin</Heading>
+      <Heading variant="h4" className="mb-4">
+        Next of Kin
+      </Heading>
       <div className="space-y-3">
         <div>
           <Paragraph className="text-muted-foreground text-sm">Name</Paragraph>
-          <Paragraph className="font-medium">{nextOfKin.name}</Paragraph>
+          <Paragraph>{nextOfKin.name}</Paragraph>
         </div>
 
         <div>
           <Paragraph className="text-muted-foreground text-sm">Phone Number</Paragraph>
-          <Paragraph className="font-medium">{nextOfKin.phoneNubmer}</Paragraph>
+          <Paragraph>{nextOfKin.phoneNubmer}</Paragraph>
         </div>
 
         <div>
           <Paragraph className="text-muted-foreground text-sm">Email</Paragraph>
-          <Paragraph className="font-medium">{nextOfKin.email}</Paragraph>
+          <Paragraph>{nextOfKin.email}</Paragraph>
         </div>
       </div>
     </div>
@@ -131,7 +130,9 @@ function NextOfKinCard({ nextOfKin }: { nextOfKin: any }) {
 function BranchInfoCard({ branchName }: { branchName: string }) {
   return (
     <div className="bg-card rounded-lg border p-6">
-      <Heading className="mb-4">Branch Information</Heading>
+      <Heading variant="h4" className="mb-4">
+        Branch Information
+      </Heading>
       <div>
         <Paragraph className="text-muted-foreground text-sm">Assigned Branch</Paragraph>
         <Badge variant="outline" className="mt-1">
@@ -149,7 +150,7 @@ function ContributionsCard({}: { customerId: string }) {
   return (
     <div className="bg-card rounded-lg border p-6">
       <div className="mb-4 flex items-center justify-between">
-        <Heading>Contributions</Heading>
+        <Heading variant="h4">Contributions</Heading>
         <Badge variant="secondary">{contributions.length} Total</Badge>
       </div>
 

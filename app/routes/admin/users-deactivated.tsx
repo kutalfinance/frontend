@@ -34,7 +34,7 @@ export default function DeactivatedUsers({ loaderData }: Route.ComponentProps) {
 
   return (
     <Sheet open onOpenChange={() => navigate(-1)}>
-      <SheetContent className="sm:max-w-screen-lg">
+      <SheetContent className="w-full sm:max-w-screen-lg">
         <SheetHeader>
           <SheetTitle>Deactivated Users</SheetTitle>
           <SheetDescription>

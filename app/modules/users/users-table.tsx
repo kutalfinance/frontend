@@ -141,14 +141,14 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-2">
-          <EditUser user={row.original}>
+          <EditUser asChild user={row.original}>
             <Button variant="ghost" size="icon">
               <span className="sr-only">Edit</span>
               <SquarePen className="text-muted-foreground" />
             </Button>
           </EditUser>
 
-          <DeactivateUser users={[row.original]}>
+          <DeactivateUser asChild users={[row.original]}>
             <Button variant="destructive-outline" size="icon">
               <span className="sr-only">Delete</span>
               <Archive />

@@ -59,7 +59,7 @@ export function EditUser({
 
   return (
     <Dialog>
-      <DialogTrigger asChild {...props} />
+      <DialogTrigger {...props} />
 
       <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>

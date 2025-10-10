@@ -62,7 +62,7 @@ export function DeactivateUser({
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild {...props} />
+      <AlertDialogTrigger {...props} />
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Deactivate user{users.length > 1 ? "s" : ""}?</AlertDialogTitle>

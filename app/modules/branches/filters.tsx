@@ -37,7 +37,6 @@ export function BranchFilters({ disabled }: { disabled?: boolean }) {
         <div className="relative w-full md:max-w-xs">
           <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
           <Input
-            disabled={disabled}
             placeholder="Search branches..."
             type="search"
             className="w-full pl-9"

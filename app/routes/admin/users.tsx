@@ -50,7 +50,7 @@ export default function Users({ loaderData }: Route.ComponentProps) {
         <ModuleActions>
           <Button asChild>
             <Link to="/admin/users/create">
-              <Plus /> Create user
+              <Plus /> Add user
             </Link>
           </Button>
           <Button asChild variant="outline">

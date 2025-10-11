@@ -8,9 +8,17 @@ import {
 
 import { useUsers, validateUserSearch } from "@/hooks/data/users";
 import { DeactivatedUsersTable } from "@/modules/users/deactivated-users-table";
+import { siteConfig } from "@/lib/config";
 
 import type { Route } from "./+types/users-deactivated";
 import { useNavigate } from "react-router";
+
+export function meta() {
+  return [
+    { title: `Deactivated Users - ${siteConfig.name}` },
+    { name: "description", content: "View and restore deactivated users" },
+  ];
+}
 
 export function clientLoader({ request }: Route.ClientLoaderArgs) {
   const url = new URL(request.url);

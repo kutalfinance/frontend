@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Heading, Paragraph } from "@/components/ui/text";
 
 import { customerByIdQueryOptions } from "@/hooks/data/customers";
+import { siteConfig } from "@/lib/config";
 
 import type { Route } from "./+types/customer-details";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -16,6 +17,12 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const data = await queryClient.ensureQueryData(customerByIdQueryOptions(params.customerId));
   return { customer: data.data };
+}
+
+export function meta({ loaderData }: Route.MetaArgs) {
+  const title = `${loaderData?.customer.name ?? "Customer not found"} - ${siteConfig.name}`;
+
+  return [{ title }, { name: "description", content: "View customer information" }];
 }
 
 export function ErrorBoundary() {
@@ -44,7 +51,7 @@ export default function CustomerDetails({ loaderData }: Route.ComponentProps) {
             {/* Sidebar */}
             <div className="space-y-6">
               <NextOfKinCard nextOfKin={customer.nextOfKin} />
-              <BranchInfoCard branchName={customer.branchName} />
+              <BranchInfoCard branch={customer.branch} />
             </div>
           </div>
         </div>
@@ -127,17 +134,15 @@ function NextOfKinCard({ nextOfKin }: { nextOfKin: any }) {
   );
 }
 
-function BranchInfoCard({ branchName }: { branchName: string }) {
+function BranchInfoCard({ branch }: { branch: { id: string; name: string } }) {
   return (
     <div className="bg-card rounded-lg border p-6">
       <Heading variant="h4" className="mb-4">
         Branch Information
       </Heading>
       <div>
-        <Paragraph className="text-muted-foreground text-sm">Assigned Branch</Paragraph>
-        <Badge variant="outline" className="mt-1">
-          {branchName || "No Branch Assigned"}
-        </Badge>
+        <Paragraph className="text-muted-foreground text-sm">Branch name</Paragraph>
+        <Paragraph>{branch.name}</Paragraph>
       </div>
     </div>
   );

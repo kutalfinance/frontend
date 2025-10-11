@@ -18,6 +18,14 @@ import { Input } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useAgentAuthLogin } from "@/hooks/auth/agent";
+import { siteConfig } from "@/lib/config";
+
+export function meta() {
+  return [
+    { title: `Agent Login - ${siteConfig.name}` },
+    { name: "description", content: "Sign in to agent portal" },
+  ];
+}
 
 const loginSchema = z.object({ email: z.email() });
 

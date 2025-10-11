@@ -13,9 +13,17 @@ import { Button } from "@/components/ui/button";
 
 import { useUsers, validateUserSearch } from "@/hooks/data/users";
 import { UserFilters } from "@/modules/users/filters";
+import { siteConfig } from "@/lib/config";
 
 import type { Route } from "./+types/users";
 import { UsersTable } from "@/modules/users/users-table";
+
+export function meta() {
+  return [
+    { title: `Users - ${siteConfig.name}` },
+    { name: "description", content: "Manage admin and agent accounts" },
+  ];
+}
 
 export function clientLoader({ request }: Route.ClientLoaderArgs) {
   const url = new URL(request.url);

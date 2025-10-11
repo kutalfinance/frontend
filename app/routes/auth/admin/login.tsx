@@ -18,6 +18,14 @@ import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useAdminAuthIsActive, useAdminAuthLogin } from "@/hooks/auth/admin";
+import { siteConfig } from "@/lib/config";
+
+export function meta() {
+  return [
+    { title: `Admin Login - ${siteConfig.name}` },
+    { name: "description", content: "Sign in to admin dashboard" },
+  ];
+}
 
 export default function AdminAuth() {
   const [searchParams] = useSearchParams();

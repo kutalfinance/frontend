@@ -31,6 +31,14 @@ import { Paragraph } from "@/components/ui/text";
 
 import { useCreateAdmin, useCreateAgent } from "@/hooks/data/users";
 import { UserRoles } from "@/lib/types";
+import { siteConfig } from "@/lib/config";
+
+export function meta() {
+  return [
+    { title: `Add User - ${siteConfig.name}` },
+    { name: "description", content: "Create new user account" },
+  ];
+}
 
 const userTypeOptions = [
   {

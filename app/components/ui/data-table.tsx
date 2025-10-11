@@ -40,7 +40,10 @@ export function DataTable<TData>({
             {headerGroup.headers.map((header) => {
               return (
                 <TableHead
-                  className={cn("bg-muted", header.column.columnDef.meta?.className)}
+                  className={cn(
+                    "bg-muted whitespace-nowrap",
+                    header.column.columnDef.meta?.className
+                  )}
                   key={header.id}
                 >
                   {header.isPlaceholder

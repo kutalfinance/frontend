@@ -36,7 +36,15 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 import { useBranches } from "@/hooks/data/branches";
 import { useCreateCustomer } from "@/hooks/data/customers";
+import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
+
+export function meta() {
+  return [
+    { title: `Add Customer - ${siteConfig.name}` },
+    { name: "description", content: "Create new customer account" },
+  ];
+}
 
 /**
  * The phone regex supports common international formats like:

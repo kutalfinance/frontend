@@ -17,8 +17,16 @@ import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useAdminAuthOnboarding } from "@/hooks/auth/admin";
+import { siteConfig } from "@/lib/config";
 
 import type { Route } from "./+types/setup";
+
+export function meta() {
+  return [
+    { title: `Admin Setup - ${siteConfig.name}` },
+    { name: "description", content: "Complete your account setup" },
+  ];
+}
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   const url = new URL(request.url);

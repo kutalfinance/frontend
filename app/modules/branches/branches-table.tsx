@@ -85,6 +85,7 @@ const columns: ColumnDef<Branch>[] = [
     accessorKey: "location",
     header: "Location",
     cell: ({ row }) => <span className="text-muted-foreground">{row.original.location}</span>,
+    meta: { className: "min-w-48" },
   },
   {
     accessorKey: "agent",

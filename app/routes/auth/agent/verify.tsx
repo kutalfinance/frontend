@@ -10,8 +10,16 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useAgentAuthVerify } from "@/hooks/auth/agent";
+import { siteConfig } from "@/lib/config";
 
 import type { Route } from "./+types/verify";
+
+export function meta() {
+  return [
+    { title: `Agent Verification - ${siteConfig.name}` },
+    { name: "description", content: "Enter verification code to continue" },
+  ];
+}
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   const url = new URL(request.url);

@@ -43,7 +43,15 @@ import {
 
 import { useCreateBranch } from "@/hooks/data/branches";
 import { useUsers } from "@/hooks/data/users";
+import { siteConfig } from "@/lib/config";
 import { ChevronDown } from "lucide-react";
+
+export function meta() {
+  return [
+    { title: `Add Branch - ${siteConfig.name}` },
+    { name: "description", content: "Create new branch location" },
+  ];
+}
 
 const createBranchFormSchema = z.object({
   name: z.string().min(2, "Branch name must be at least 2 characters long"),

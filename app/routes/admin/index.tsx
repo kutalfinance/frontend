@@ -4,6 +4,14 @@ import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useLoggedInUser } from "@/hooks/auth/common";
 import { useAdminMetrics } from "@/hooks/data/users";
+import { siteConfig } from "@/lib/config";
+
+export function meta() {
+  return [
+    { title: `Dashboard - ${siteConfig.name}` },
+    { name: "description", content: "Admin dashboard overview" },
+  ];
+}
 
 export default function AdminDashboard() {
   const { data } = useLoggedInUser();

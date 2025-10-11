@@ -13,8 +13,16 @@ import { Button } from "@/components/ui/button";
 import { useBranches, validateBranchSearch } from "@/hooks/data/branches";
 import { BranchFilters } from "@/modules/branches/filters";
 import { BranchesTable } from "@/modules/branches/branches-table";
+import { siteConfig } from "@/lib/config";
 
 import type { Route } from "./+types/branches";
+
+export function meta() {
+  return [
+    { title: `Branches - ${siteConfig.name}` },
+    { name: "description", content: "Manage branch locations and agents" },
+  ];
+}
 
 export function clientLoader({ request }: Route.ClientLoaderArgs) {
   const url = new URL(request.url);

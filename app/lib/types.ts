@@ -41,7 +41,7 @@ export type Customer = {
   email: string;
   location: string;
   nextOfKin: CustomerNextOfKin;
-  branchName: string;
+  branch: { id: string; name: string };
   createdAt: string; // date-time
   updatedAt: string; // date-time
 };
@@ -50,7 +50,7 @@ export type Branch = {
   id: string;
   name: string;
   location: string;
-  agent: string;
+  agent: { id: string; name: string };
   createdAt: string; // date-time
   updatedAt: string; // date-time
 };

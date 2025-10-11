@@ -18,7 +18,13 @@ import { DataTable } from "@/components/ui/data-table";
 
 import type { Customer } from "@/lib/types";
 
-export function CustomersTable({ customers, isLoading }: { customers: Customer[]; isLoading: boolean }) {
+export function CustomersTable({
+  customers,
+  isLoading,
+}: {
+  customers: Customer[];
+  isLoading: boolean;
+}) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -76,9 +82,12 @@ const columns: ColumnDef<Customer>[] = [
     header: "Location",
   },
   {
-    accessorKey: "branchName",
+    accessorKey: "branch.name",
     header: "Branch",
-    cell: ({ row }) => row.original.branchName ?? "No Branch",
+    cell: ({ row }) => row.original.branch.name,
+    // cell: ({ row }) => (
+    //   <Link to={href(`/branches/${row.original.branch.id}`)}>{row.original.branch.name}</Link>
+    // ),
   },
   {
     accessorKey: "nextOfKin.name",

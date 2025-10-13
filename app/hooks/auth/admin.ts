@@ -47,15 +47,13 @@ export function useAdminAuthInitialize() {
 }
 
 export function useAdminAuthVerify() {
-  const navigate = useNavigate();
-
   return useMutation({
     mutationFn: async (data: { otp: string; email: string }) =>
       api.post("user/admin/verify-otp", { json: data }).json<APIResponse<{ token: string }>>(),
     onSuccess: (response) => {
       authToken.set(response.data.token);
       successToast("Logged in successfully");
-      navigate(href("/admin"));
+      window.location.href = href("/");
     },
     onError: errorToast,
   });

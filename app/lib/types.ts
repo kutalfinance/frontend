@@ -16,6 +16,7 @@ export type User = {
   createdAt: string; // date-time
   updatedAt: string; // date-time
   isSuperAdmin?: boolean;
+  status: "ACTIVE" | "INACTIVE";
 };
 
 export type Agent = {

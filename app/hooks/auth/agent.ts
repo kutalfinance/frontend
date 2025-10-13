@@ -24,15 +24,13 @@ export function useAgentAuthLogin() {
 }
 
 export function useAgentAuthVerify() {
-  const navigate = useNavigate();
-
   return useMutation({
     mutationFn: (data: VerifyOtp) =>
       api.post("user/agent/verify-otp", { json: data }).json<APIResponse<{ token: string }>>(),
     onSuccess: (response) => {
       authToken.set(response.data.token);
       successToast("Logged in successfully");
-      navigate(href("/"));
+      window.location.href = href("/");
     },
     onError: errorToast,
   });

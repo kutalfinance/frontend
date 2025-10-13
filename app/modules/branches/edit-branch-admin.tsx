@@ -1,5 +1,6 @@
-import { useNavigate } from "react-router";
-
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import {
   Command,
   CommandEmpty,
@@ -10,10 +11,6 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,6 +20,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -34,56 +32,50 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { useCreateBranch } from "@/hooks/data/branches";
+import { useUpdateBranch } from "@/hooks/data/branches";
 import { useUsers } from "@/hooks/data/users";
-import { siteConfig } from "@/lib/config";
+import { UserRoles, type Branch } from "@/lib/types";
 import { ChevronDown } from "lucide-react";
-import { UserRoles } from "@/lib/types";
 
-export function meta() {
-  return [
-    { title: `Add Branch - ${siteConfig.name}` },
-    { name: "description", content: "Create new branch location" },
-  ];
-}
-
-const createBranchFormSchema = z.object({
+const editBranchFormSchema = z.object({
   name: z.string().min(2, "Branch name must be at least 2 characters long"),
   location: z.string().min(5, "Location must be at least 5 characters long"),
   agentId: z.string().min(1, "Please select an agent"),
 });
 
-type CreateBranchForm = z.infer<typeof createBranchFormSchema>;
+type EditBranchForm = z.infer<typeof editBranchFormSchema>;
 
-export default function CreateBranch() {
-  const navigate = useNavigate();
-  const { mutate: createBranch, isPending } = useCreateBranch();
+export function EditBranchAdmin({
+  branch,
+  ...props
+}: React.ComponentProps<typeof DialogTrigger> & { branch: Branch }) {
+  const { mutate: updateBranch, isPending } = useUpdateBranch();
   const { data: usersData } = useUsers({ searchParams: { role: UserRoles.AGENT } });
   const agents = usersData?.data ?? [];
 
-  const form = useForm<CreateBranchForm>({
-    resolver: zodResolver(createBranchFormSchema),
-    defaultValues: { name: "", location: "", agentId: "" },
+  const form = useForm<EditBranchForm>({
+    resolver: zodResolver(editBranchFormSchema),
+    defaultValues: {
+      name: branch.name,
+      location: branch.location,
+      agentId: branch.agent.id || "",
+    },
   });
 
   const selectedAgent = agents.find((agent) => agent.id === form.watch("agentId"));
 
-  function handleSubmit(values: CreateBranchForm) {
-    createBranch(values, {
-      onSuccess: () => {
-        navigate(-1);
-      },
-    });
+  function handleSubmit(values: EditBranchForm) {
+    updateBranch({ id: branch.id, ...values });
   }
 
   return (
-    <Dialog defaultOpen onOpenChange={() => navigate(-1)}>
+    <Dialog>
+      <DialogTrigger {...props} />
+
       <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Create New Branch</DialogTitle>
-          <DialogDescription>
-            Add a new branch location and assign an agent to manage it.
-          </DialogDescription>
+          <DialogTitle>Edit Branch</DialogTitle>
+          <DialogDescription>Update branch details and agent assignment.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
@@ -176,7 +168,7 @@ export default function CreateBranch() {
                 </Button>
               </DialogClose>
               <Button isLoading={isPending} type="submit">
-                Create Branch
+                Update Branch
               </Button>
             </DialogFooter>
           </form>

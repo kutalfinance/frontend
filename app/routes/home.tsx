@@ -14,10 +14,10 @@ export function meta({}: Route.MetaArgs) {
 export async function clientLoader() {
   const response = await queryClient.ensureQueryData(loggedInUserQueryOptions);
   if (response?.data.role === UserRoles.ADMIN) {
-    return redirect(href("/admin"));
+    return redirect(href("/admin/users"));
   }
 
-  return redirect(href("/agent"));
+  return redirect(href("/agent/branches"));
 }
 
 export default function Home() {

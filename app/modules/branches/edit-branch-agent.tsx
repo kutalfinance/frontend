@@ -1,15 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,36 +24,28 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { useUpdateBranch } from "@/hooks/data/branches";
-import { useUsers } from "@/hooks/data/users";
-import { UserRoles, type Branch } from "@/lib/types";
-import { ChevronDown } from "lucide-react";
+import { type Branch } from "@/lib/types";
 
 const editBranchFormSchema = z.object({
   name: z.string().min(2, "Branch name must be at least 2 characters long"),
   location: z.string().min(5, "Location must be at least 5 characters long"),
-  agentId: z.string().min(1, "Please select an agent"),
 });
 
 type EditBranchForm = z.infer<typeof editBranchFormSchema>;
 
-export function EditBranch({
+export function EditBranchAgent({
   branch,
   ...props
 }: React.ComponentProps<typeof DialogTrigger> & { branch: Branch }) {
   const { mutate: updateBranch, isPending } = useUpdateBranch();
-  const { data: usersData } = useUsers({ searchParams: { role: UserRoles.AGENT } });
-  const agents = usersData?.data ?? [];
 
   const form = useForm<EditBranchForm>({
     resolver: zodResolver(editBranchFormSchema),
     defaultValues: {
       name: branch.name,
       location: branch.location,
-      agentId: branch.agent.id || "",
     },
   });
-
-  const selectedAgent = agents.find((agent) => agent.id === form.watch("agentId"));
 
   function handleSubmit(values: EditBranchForm) {
     updateBranch({ id: branch.id, ...values });
@@ -108,58 +91,6 @@ export function EditBranch({
                 )}
               />
             </div>
-
-            <FormField
-              control={form.control}
-              name="agentId"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Assigned agent</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild className="w-full">
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className="w-full justify-between font-normal"
-                        >
-                          {selectedAgent ? (
-                            <>
-                              {selectedAgent.name} - {selectedAgent.email}
-                            </>
-                          ) : (
-                            <span className="text-muted-foreground">Select an agent</span>
-                          )}
-
-                          <ChevronDown className="text-muted-foreground ml-auto" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0">
-                      <Command>
-                        <CommandInput placeholder="Search agents..." />
-                        <CommandList>
-                          <CommandEmpty>No agents found.</CommandEmpty>
-                          <CommandGroup>
-                            {agents.map((agent) => (
-                              <PopoverClose asChild>
-                                <CommandItem
-                                  key={agent.id}
-                                  onSelect={() => field.onChange(agent.id)}
-                                >
-                                  {agent.name} - {agent.email}
-                                </CommandItem>
-                              </PopoverClose>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <DialogFooter>
               <DialogClose asChild>

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 
 import { useBranches, validateBranchSearch } from "@/hooks/data/branches";
 import {
-  BranchAgentFilter,
+  BranchClearFilters,
   BranchFilters,
   BranchSearchFilter,
   BranchSortFilter,
@@ -21,12 +21,13 @@ import { BranchesTable } from "@/modules/branches/branches-table";
 import { siteConfig } from "@/lib/config";
 
 import type { Route } from "./+types/branches";
-import { adminBranchesColumns } from "@/modules/branches/branches-admin";
+import { useLoggedInUser } from "@/hooks/auth/common";
+import { agentBranchesColumns } from "@/modules/branches/branches-agent";
 
 export function meta() {
   return [
     { title: `Branches - ${siteConfig.name}` },
-    { name: "description", content: "Manage branch locations and agents" },
+    { name: "description", content: "Manage your branch locations" },
   ];
 }
 
@@ -35,7 +36,7 @@ export function clientLoader({ request }: Route.ClientLoaderArgs) {
   const params = Object.fromEntries(url.searchParams);
 
   try {
-    const validatedParams = validateBranchSearch.parse(params);
+    const validatedParams = validateBranchSearch.omit({ agentId: true }).parse(params);
     return { searchParams: validatedParams };
   } catch {
     return { searchParams: {} };
@@ -44,7 +45,10 @@ export function clientLoader({ request }: Route.ClientLoaderArgs) {
 
 export default function Branches({ loaderData }: Route.ComponentProps) {
   const { searchParams } = loaderData;
-  const { data, isPending } = useBranches({ searchParams });
+  const { data: loggedInUser } = useLoggedInUser();
+  const { data, isPending } = useBranches({
+    searchParams: { ...searchParams, agentId: loggedInUser?.data.id },
+  });
   const branches = data?.data ?? [];
 
   return (
@@ -61,7 +65,7 @@ export default function Branches({ loaderData }: Route.ComponentProps) {
         </ModuleHeader>
         <ModuleActions>
           <Button asChild>
-            <Link to="/admin/branches/create">
+            <Link to="/agent/branches/create">
               <Plus /> Add branch
             </Link>
           </Button>
@@ -70,11 +74,11 @@ export default function Branches({ loaderData }: Route.ComponentProps) {
 
       <BranchFilters disabled={isPending}>
         <BranchSearchFilter />
-        <BranchAgentFilter />
+        <BranchClearFilters />
         <BranchSortFilter />
       </BranchFilters>
 
-      <BranchesTable columns={adminBranchesColumns} branches={branches} isLoading={isPending} />
+      <BranchesTable columns={agentBranchesColumns} branches={branches} isLoading={isPending} />
     </div>
   );
 }

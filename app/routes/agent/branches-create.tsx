@@ -1,15 +1,5 @@
 import { useNavigate } from "react-router";
 
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -35,10 +25,8 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { useCreateBranch } from "@/hooks/data/branches";
-import { useUsers } from "@/hooks/data/users";
 import { siteConfig } from "@/lib/config";
-import { ChevronDown } from "lucide-react";
-import { UserRoles } from "@/lib/types";
+import { useLoggedInUser } from "@/hooks/auth/common";
 
 export function meta() {
   return [
@@ -58,15 +46,12 @@ type CreateBranchForm = z.infer<typeof createBranchFormSchema>;
 export default function CreateBranch() {
   const navigate = useNavigate();
   const { mutate: createBranch, isPending } = useCreateBranch();
-  const { data: usersData } = useUsers({ searchParams: { role: UserRoles.AGENT } });
-  const agents = usersData?.data ?? [];
+  const { data: loggedInUser } = useLoggedInUser();
 
   const form = useForm<CreateBranchForm>({
     resolver: zodResolver(createBranchFormSchema),
-    defaultValues: { name: "", location: "", agentId: "" },
+    defaultValues: { name: "", location: "", agentId: loggedInUser?.data.id || "" },
   });
-
-  const selectedAgent = agents.find((agent) => agent.id === form.watch("agentId"));
 
   function handleSubmit(values: CreateBranchForm) {
     createBranch(values, {
@@ -116,58 +101,6 @@ export default function CreateBranch() {
                 )}
               />
             </div>
-
-            <FormField
-              control={form.control}
-              name="agentId"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Assigned agent</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild className="w-full">
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className="w-full justify-between font-normal"
-                        >
-                          {selectedAgent ? (
-                            <>
-                              {selectedAgent.name} - {selectedAgent.email}
-                            </>
-                          ) : (
-                            <span className="text-muted-foreground">Select an agent</span>
-                          )}
-
-                          <ChevronDown className="text-muted-foreground ml-auto" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0">
-                      <Command>
-                        <CommandInput placeholder="Search agents..." />
-                        <CommandList>
-                          <CommandEmpty>No agents found.</CommandEmpty>
-                          <CommandGroup>
-                            {agents.map((agent) => (
-                              <PopoverClose asChild>
-                                <CommandItem
-                                  key={agent.id}
-                                  onSelect={() => field.onChange(agent.id)}
-                                >
-                                  {agent.name} - {agent.email}
-                                </CommandItem>
-                              </PopoverClose>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <DialogFooter>
               <DialogClose asChild>

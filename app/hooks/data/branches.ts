@@ -50,7 +50,7 @@ export function useUpdateBranch() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { id: string; name: string; location: string; agentId: string }) =>
+    mutationFn: (data: { id: string; name: string; location: string; agentId?: string }) =>
       api.patch(`branch/${data.id}`, { json: data }).json<APIResponse<Branch>>(),
     onSuccess: () => {
       invalidationHelpers.branches.related().forEach((queryKey) => {

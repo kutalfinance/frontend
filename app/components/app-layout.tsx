@@ -1,7 +1,7 @@
-import { Link, type LinkProps, useLocation } from "react-router";
+import { Link, type LinkProps, useLocation, href } from "react-router";
 
 import { History, Menu } from "lucide-react";
-import { Contact, Home, Landmark, type LucideIcon, Users } from "lucide-react";
+import { Contact, Landmark, type LucideIcon, Users } from "lucide-react";
 
 import { AppLogo } from "@/components/app-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -27,34 +27,6 @@ import { Paragraph } from "@/components/ui/text";
 
 import { useLoggedInUser, useLogout } from "@/hooks/auth/common";
 import { cn } from "@/lib/utils";
-
-const adminNavLinks: {
-  title: string;
-  href: LinkProps["to"];
-  pathRegex: RegExp;
-  icon: LucideIcon;
-}[] = [
-  { title: "Dashboard", href: "/admin", pathRegex: /^\/admin$/, icon: Home },
-  { title: "Branches", href: "/admin/branches", pathRegex: /\/admin\/branches/, icon: Landmark },
-  { title: "Customers", href: "/admin/customers", pathRegex: /\/admin\/customers/, icon: Contact },
-  { title: "Users", href: "/admin/users", pathRegex: /\/admin\/users/, icon: Users },
-  { title: "Audit Trail", href: "#", pathRegex: /\/admin\/audit/, icon: History },
-];
-
-const agentNavLinks: {
-  title: string;
-  href: LinkProps["to"];
-  pathRegex: RegExp;
-  icon: LucideIcon;
-}[] = [
-  { title: "Dashboard", href: "/agent", pathRegex: /^\/agent$/, icon: Home },
-  { title: "Branches", href: "#", pathRegex: /\/agent\/branches/, icon: Landmark },
-  { title: "Customers", href: "#", pathRegex: /\/agent\/customers/, icon: Contact },
-];
-
-export function getNavLinks(userRole: string) {
-  return userRole === "ADMIN" ? adminNavLinks : agentNavLinks;
-}
 
 export function AppLayoutProvider({ children, ...props }: React.ComponentProps<"div">) {
   return <div {...props}>{children}</div>;
@@ -171,4 +143,73 @@ function UserMenu() {
       </DropdownMenu>
     </div>
   );
+}
+
+const adminNavLinks: {
+  title: string;
+  href: LinkProps["to"];
+  pathRegex: RegExp;
+  icon: LucideIcon;
+}[] = [
+  /* {
+    title: "Dashboard",
+    href: href("/admin"),
+    pathRegex: /^\/admin$/,
+    icon: Home,
+  }, */
+  {
+    title: "Users",
+    href: href("/admin/users"),
+    pathRegex: /\/admin\/users/,
+    icon: Users,
+  },
+  {
+    title: "Branches",
+    href: href("/admin/branches"),
+    pathRegex: /\/admin\/branches/,
+    icon: Landmark,
+  },
+  {
+    title: "Customers",
+    href: href("/admin/customers"),
+    pathRegex: /\/admin\/customers/,
+    icon: Contact,
+  },
+  {
+    title: "Audit Trail",
+    href: "#",
+    pathRegex: /\/admin\/audit/,
+    icon: History,
+  },
+];
+
+const agentNavLinks: {
+  title: string;
+  href: LinkProps["to"];
+  pathRegex: RegExp;
+  icon: LucideIcon;
+}[] = [
+  /* {
+    title: "Dashboard",
+    href: href("/agent"),
+    pathRegex: /^\/agent$/,
+    icon: Home,
+  }, */
+  {
+    title: "Branches",
+    href: href("/agent/branches"),
+    pathRegex: /\/agent\/branches/,
+    icon: Landmark,
+  },
+  {
+    title: "Customers",
+    href: "#",
+    // href: href("/agent/customers"),
+    pathRegex: /\/agent\/customers/,
+    icon: Contact,
+  },
+];
+
+export function getNavLinks(userRole: string) {
+  return userRole === "ADMIN" ? adminNavLinks : agentNavLinks;
 }

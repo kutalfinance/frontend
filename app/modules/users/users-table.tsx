@@ -48,6 +48,9 @@ export function UsersTable({ users, isLoading }: { users: User[]; isLoading: boo
       rowSelection,
       pagination: { pageIndex: 0, pageSize: 20 },
     },
+    /* meta: {
+      getRowClassName: (row) => cn(row.original.status === "INACTIVE" && "bg-muted"),
+    }, */
   });
 
   const selectedUsers = table.getSelectedRowModel().flatRows.map((row) => row.original);

@@ -47,6 +47,14 @@ export type Customer = {
   updatedAt: string; // date-time
 };
 
+export type Contribution = {
+  id: string;
+  customer: { id: string; name: string };
+  amount: number;
+  recordedBy: { id: string; name: string };
+  timestamp: string; // date-time
+};
+
 export type Branch = {
   id: string;
   name: string;

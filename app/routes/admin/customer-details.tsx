@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import { Mail, MapPin, Phone, User } from "lucide-react";
 
 import { queryClient } from "@/components/query-provider";
-import { ResourceNotFound } from "@/components/resource-not-found";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Heading, Paragraph } from "@/components/ui/text";
@@ -23,10 +22,6 @@ export function meta({ loaderData }: Route.MetaArgs) {
   const title = `${loaderData?.customer.name ?? "Customer not found"} - ${siteConfig.name}`;
 
   return [{ title }, { name: "description", content: "View customer information" }];
-}
-
-export function ErrorBoundary() {
-  return <ResourceNotFound resourceName="Customer" backTo="/admin/customers" />;
 }
 
 export default function CustomerDetails({ loaderData }: Route.ComponentProps) {

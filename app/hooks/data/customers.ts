@@ -1,8 +1,8 @@
-import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import z from "zod";
 
 import { api } from "@/lib/api";
-import type { APIResponse, Customer } from "@/lib/types";
+import type { APIResponse, Contribution, Customer } from "@/lib/types";
 
 import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";
 
@@ -82,6 +82,25 @@ export const customerByIdQueryOptions = (id: string) => ({
   enabled: !!id,
 });
 
-export function useCustomerById(id: string) {
-  return useSuspenseQuery(customerByIdQueryOptions(id));
-}
+export const validateContributionsSearch = z
+  .object({
+    q: z.string(),
+    customerId: z.string(),
+    userId: z.string(),
+    recordedBefore: z.string(), // date-time
+    recordedAfter: z.string(), // date-time
+    sortBy: z.string(),
+    sortDirection: z.enum(["asc", "desc"]),
+  })
+  .partial();
+
+export type ContributionsSearchParams = z.infer<typeof validateContributionsSearch>;
+
+export const contributionsQueryOptions = ({
+  searchParams,
+}: {
+  searchParams?: ContributionsSearchParams;
+}) => ({
+  queryKey: queryKeys.customers.contributions(searchParams),
+  queryFn: () => api.get("contribution", { searchParams }).json<APIResponse<Contribution[]>>(),
+});

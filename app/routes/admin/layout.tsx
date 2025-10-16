@@ -5,6 +5,13 @@ import { queryClient } from "@/components/query-provider";
 
 import { loggedInUserQueryOptions } from "@/hooks/auth/common";
 import { UserRoles } from "@/lib/types";
+import type { Route } from "./+types/layout";
+
+import { ErrorBoundary as AppErrorBoundary } from "@/components/error-boundary";
+
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  return <AppErrorBoundary error={error} />;
+}
 
 export async function clientLoader() {
   const response = await queryClient.ensureQueryData(loggedInUserQueryOptions);

@@ -40,7 +40,23 @@ export function AppHeader() {
 
   return (
     <div className="border-b">
-      <header className="container flex min-h-16 items-center gap-10">
+      <header className="container flex min-h-16 items-center justify-between gap-10">
+        <Sheet>
+          <SheetTrigger asChild className={cn("lg:hidden", !navLinks.length && "hidden")}>
+            <Button variant="ghost" size="icon">
+              <Menu />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left">
+            <SheetHeader>
+              <SheetTitle />
+              <SheetDescription />
+
+              <MobileNavigation navLinks={navLinks} />
+            </SheetHeader>
+          </SheetContent>
+        </Sheet>
+
         <div className="flex items-center gap-10">
           <AppLogo />
 
@@ -62,35 +78,14 @@ export function AppHeader() {
           </nav>
         </div>
 
-        <div className="hidden lg:contents">
-          <UserMenu />
-        </div>
-
-        <Sheet>
-          <SheetTrigger asChild className="ml-auto lg:hidden">
-            <Button variant="ghost" size="icon">
-              <Menu />
-            </Button>
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle />
-              <SheetDescription />
-
-              <MobileNavigation />
-            </SheetHeader>
-          </SheetContent>
-        </Sheet>
+        <UserMenu />
       </header>
     </div>
   );
 }
 
-function MobileNavigation() {
+function MobileNavigation({ navLinks }: { navLinks: ReturnType<typeof getNavLinks> }) {
   const { pathname } = useLocation();
-  const { data } = useLoggedInUser();
-
-  const navLinks = getNavLinks(data?.data?.role || "");
 
   return (
     <nav className="flex flex-col gap-2 py-10">
@@ -121,7 +116,7 @@ function UserMenu() {
   if (!user) return null;
 
   return (
-    <div className="ml-auto flex items-center gap-4">
+    <div className="flex items-center gap-4">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar>

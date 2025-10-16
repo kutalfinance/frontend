@@ -8,7 +8,7 @@ export function formatMoney(
 
   return new Intl.NumberFormat(locales, {
     currencyDisplay: "symbol",
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
     currency: "GHS",
     style: "currency",
     ...rest,

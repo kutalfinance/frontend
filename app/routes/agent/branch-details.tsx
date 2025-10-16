@@ -1,4 +1,4 @@
-import { Link, Outlet, href } from "react-router";
+import { Link, Outlet, data, href } from "react-router";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
@@ -11,7 +11,6 @@ import {
   ModuleTitle,
 } from "@/components/module-heading";
 import { queryClient } from "@/components/query-provider";
-import { ResourceNotFound } from "@/components/resource-not-found";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -42,33 +41,32 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function clientLoader({ request, params }: Route.ClientLoaderArgs) {
-  const response = await queryClient.ensureQueryData(branchByIdQueryOptions(params.branchId));
+  try {
+    await queryClient.ensureQueryData(branchByIdQueryOptions(params.branchId));
+  } catch (err) {
+    throw data("Branch not found", { status: 404 });
+  }
 
   const url = new URL(request.url);
   const searchParams = Object.fromEntries(url.searchParams);
 
   try {
     const validatedParams = validateCustomerSearch.parse(searchParams);
-    return { branch: response.data, searchParams: validatedParams, branchId: params.branchId };
+    return { searchParams: validatedParams };
   } catch {
-    return { branch: response.data, searchParams: {}, branchId: params.branchId };
+    return { searchParams: {} };
   }
 }
 
-export default function AgentBranchCustomers({ loaderData }: Route.ComponentProps) {
-  const { searchParams, branchId } = loaderData;
-
-  const { data: branchData, isPending: isBranchLoading } = useSuspenseQuery(
-    branchByIdQueryOptions(branchId)
-  );
+export default function AgentBranchCustomers({ loaderData, params }: Route.ComponentProps) {
+  const { searchParams } = loaderData;
+  const { data: branchData } = useSuspenseQuery(branchByIdQueryOptions(params.branchId));
   const branch = branchData.data;
 
-  const { data, isPending } = useCustomers({ searchParams: { ...searchParams, branchId } });
+  const { data, isPending } = useCustomers({
+    searchParams: { ...searchParams, branchId: params.branchId },
+  });
   const customers = data?.data ?? [];
-
-  if (!isBranchLoading && !branch) {
-    return <ResourceNotFound resourceName="Branch" backTo="/agent" />;
-  }
 
   return (
     <div className="container">
@@ -109,7 +107,7 @@ export default function AgentBranchCustomers({ loaderData }: Route.ComponentProp
         <CustomerSortFilter />
       </CustomerFilters>
 
-      <CustomersList customers={customers} isLoading={isPending || isBranchLoading} />
+      <CustomersList customers={customers} isLoading={isPending} />
     </div>
   );
 }

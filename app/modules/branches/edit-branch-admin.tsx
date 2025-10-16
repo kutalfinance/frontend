@@ -1,6 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -9,9 +12,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -31,11 +31,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { useUpdateBranch } from "@/hooks/data/branches";
 import { useUsers } from "@/hooks/data/users";
-import { UserRoles, type Branch } from "@/lib/types";
-import { ChevronDown } from "lucide-react";
+import { type Branch, UserRoles } from "@/lib/types";
 
 const editBranchFormSchema = z.object({
   name: z.string().min(2, "Branch name must be at least 2 characters long"),

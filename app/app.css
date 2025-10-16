@@ -115,7 +115,7 @@
   }
 
   .link {
-    @apply text-muted-foreground hover:text-primary inline-flex items-center gap-1 text-sm underline-offset-4 transition-all hover:underline [&_svg:not([class*='size-'])]:size-4;
+    @apply text-primary inline-flex items-center gap-1 text-sm underline-offset-4 transition-all hover:underline [&_svg:not([class*='size-'])]:size-4;
   }
 
   button {

@@ -1,4 +1,5 @@
 import { Link, Outlet } from "react-router";
+
 import { Plus } from "lucide-react";
 
 import {
@@ -11,9 +12,15 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useCustomers, validateCustomerSearch } from "@/hooks/data/customers";
-import { CustomerFilters } from "@/modules/customers/filters";
-import { CustomersTable } from "@/modules/customers/customers-table";
 import { siteConfig } from "@/lib/config";
+import { CustomersTable } from "@/modules/customers/customers-table";
+import {
+  CustomerBranchFilter,
+  CustomerClearFilters,
+  CustomerFilters,
+  CustomerSearchFilter,
+  CustomerSortFilter,
+} from "@/modules/customers/filters";
 
 import type { Route } from "./+types/customers";
 
@@ -62,7 +69,12 @@ export default function Customers({ loaderData }: Route.ComponentProps) {
         </ModuleActions>
       </ModuleHeading>
 
-      <CustomerFilters disabled={isPending} />
+      <CustomerFilters disabled={isPending}>
+        <CustomerSearchFilter />
+        <CustomerBranchFilter />
+        <CustomerClearFilters />
+        <CustomerSortFilter />
+      </CustomerFilters>
       <CustomersTable customers={customers} isLoading={isPending} />
     </div>
   );

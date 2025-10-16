@@ -1,6 +1,6 @@
-import { href, redirect, useNavigate } from "react-router";
+import { href, useNavigate } from "react-router";
 
-import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
 import { authToken } from "@/lib/auth-token";
@@ -17,15 +17,15 @@ export const loggedInUserQueryOptions = queryOptions({
       return response;
     } catch (err) {
       authToken.clear();
-      redirect(href("/auth"));
-      return null;
+      window.location.href = href("/auth");
+      throw err;
     }
   },
   staleTime: 1000 * 60 * 5, // 5 minutes
 });
 
 export function useLoggedInUser() {
-  return useQuery(loggedInUserQueryOptions);
+  return useSuspenseQuery(loggedInUserQueryOptions);
 }
 
 export function useLogout() {

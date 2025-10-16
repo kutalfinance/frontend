@@ -1,45 +1,21 @@
+import { Link, href } from "react-router";
+
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { SquarePen, Trash2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-
-import type { Branch } from "@/lib/types";
-import { DeleteBranch } from "@/modules/branches/branch-actions";
-import { EditBranchAgent } from "@/modules/branches/edit-branch-agent";
 import { Paragraph } from "@/components/ui/text";
 
+import type { Branch } from "@/lib/types";
+
 export const agentBranchesColumns: ColumnDef<Branch>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: "name",
     header: "Branch Name",
     cell: ({ row }) => (
-      <div>
+      <Link className="link" to={href("/agent/branches/:branchId", { branchId: row.original.id })}>
         <Paragraph className="font-medium whitespace-nowrap">{row.original.name}</Paragraph>
         <Paragraph className="text-muted-foreground sm:hidden">{row.original.location}</Paragraph>
-      </div>
+      </Link>
     ),
   },
   {
@@ -56,29 +32,5 @@ export const agentBranchesColumns: ColumnDef<Branch>[] = [
       return <span className="text-muted-foreground">{format(date, "dd/MM/yyyy - h:mm a")}</span>;
     },
     meta: { className: "hidden sm:table-cell" },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <div className="flex gap-2">
-          <EditBranchAgent asChild branch={row.original}>
-            <Button variant="ghost" size="icon">
-              <span className="sr-only">Edit</span>
-              <SquarePen />
-            </Button>
-          </EditBranchAgent>
-
-          <DeleteBranch asChild branch={row.original}>
-            <Button variant="ghost" size="icon">
-              <span className="sr-only">Delete</span>
-              <Trash2 className="text-destructive" />
-            </Button>
-          </DeleteBranch>
-        </div>
-      );
-    },
-    meta: { className: "w-28" },
   },
 ];

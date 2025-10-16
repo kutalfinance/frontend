@@ -1,7 +1,10 @@
+import { href, redirect } from "react-router";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { queryClient } from "@/components/query-provider";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,12 +18,30 @@ import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useAdminAuthInitialize } from "@/hooks/auth/admin";
+import { checkQueryOptions } from "@/hooks/auth/admin";
 
 const initSchema = z.object({
   name: z.string(),
   email: z.email(),
   password: z.string(),
 });
+
+export async function clientLoader() {
+  const response = await queryClient.ensureQueryData(checkQueryOptions);
+
+  if (!response) {
+    // If the response is undefined, we assume a network or server error occurred
+    return null;
+  }
+
+  if (!response.data) {
+    // If the check returns false, we need to initialize the app
+    return null;
+  }
+
+  // If the check returns true, admin is already initialized
+  redirect(href("/auth"));
+}
 
 export default function AdminInitialize() {
   const { mutate, isPending } = useAdminAuthInitialize();

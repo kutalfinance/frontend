@@ -1,7 +1,7 @@
-import { Link, type LinkProps, useLocation, href } from "react-router";
+import { Link, type LinkProps, href, useLocation } from "react-router";
 
-import { History, Menu } from "lucide-react";
-import { Contact, Landmark, type LucideIcon, Users } from "lucide-react";
+import { Building2, History, Menu } from "lucide-react";
+import { Contact, type LucideIcon, Users } from "lucide-react";
 
 import { AppLogo } from "@/components/app-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -167,7 +167,7 @@ const adminNavLinks: {
     title: "Branches",
     href: href("/admin/branches"),
     pathRegex: /\/admin\/branches/,
-    icon: Landmark,
+    icon: Building2,
   },
   {
     title: "Customers",
@@ -183,33 +183,6 @@ const adminNavLinks: {
   },
 ];
 
-const agentNavLinks: {
-  title: string;
-  href: LinkProps["to"];
-  pathRegex: RegExp;
-  icon: LucideIcon;
-}[] = [
-  /* {
-    title: "Dashboard",
-    href: href("/agent"),
-    pathRegex: /^\/agent$/,
-    icon: Home,
-  }, */
-  {
-    title: "Branches",
-    href: href("/agent/branches"),
-    pathRegex: /\/agent\/branches/,
-    icon: Landmark,
-  },
-  {
-    title: "Customers",
-    href: "#",
-    // href: href("/agent/customers"),
-    pathRegex: /\/agent\/customers/,
-    icon: Contact,
-  },
-];
-
 export function getNavLinks(userRole: string) {
-  return userRole === "ADMIN" ? adminNavLinks : agentNavLinks;
+  return userRole === "ADMIN" ? adminNavLinks : [];
 }

@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router";
+
 import {
   Sheet,
   SheetContent,
@@ -7,11 +9,10 @@ import {
 } from "@/components/ui/sheet";
 
 import { useUsers, validateUserSearch } from "@/hooks/data/users";
-import { DeactivatedUsersTable } from "@/modules/users/deactivated-users-table";
 import { siteConfig } from "@/lib/config";
+import { DeactivatedUsersTable } from "@/modules/users/deactivated-users-table";
 
 import type { Route } from "./+types/users-deactivated";
-import { useNavigate } from "react-router";
 
 export function meta() {
   return [

@@ -33,8 +33,6 @@ export default [
 
   route("/agent", "./routes/agent/layout.tsx", [
     index("./routes/agent/index.tsx"),
-    route("branches", "./routes/agent/branches.tsx", [
-      route("create", "./routes/agent/branches-create.tsx"),
-    ]),
+    route("branches/:branchId", "./routes/agent/branch-details.tsx", []),
   ]),
 ] satisfies RouteConfig;

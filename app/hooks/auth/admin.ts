@@ -8,11 +8,6 @@ import type { APIResponse, ResetPassword, SendPasswordResetLink } from "@/lib/ty
 
 import { errorToast, queryKeys, successToast } from "../data/utils";
 
-export const ADMIN_INITIALIZED_KEY = "admin_initialized";
-export const setAdminInitialized = (value: boolean) =>
-  sessionStorage.setItem(ADMIN_INITIALIZED_KEY, value ? "true" : "false");
-export const getAdminInitialized = () => sessionStorage.getItem(ADMIN_INITIALIZED_KEY) === "true";
-
 export const checkQueryOptions = queryOptions({
   queryKey: queryKeys.auth.check(),
   queryFn: async () => {
@@ -38,9 +33,11 @@ export function useAdminAuthInitialize() {
       superAdmin: boolean;
     }) => api.post("user/admin/init", { json: data }).json<APIResponse<unknown>>(),
     onSuccess: (_, variables) => {
-      setAdminInitialized(true);
       successToast("An OTP has been sent to your email");
-      navigate(href("/auth/admin/verify") + `?email=${encodeURIComponent(variables.email)}`);
+      navigate({
+        pathname: href("/auth/admin/verify"),
+        search: `?email=${encodeURIComponent(variables.email)}`,
+      });
     },
     onError: errorToast,
   });

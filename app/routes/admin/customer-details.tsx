@@ -6,13 +6,13 @@ import { Mail, MapPin, Phone, User } from "lucide-react";
 import { queryClient } from "@/components/query-provider";
 import { ResourceNotFound } from "@/components/resource-not-found";
 import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Heading, Paragraph } from "@/components/ui/text";
 
 import { customerByIdQueryOptions } from "@/hooks/data/customers";
 import { siteConfig } from "@/lib/config";
 
 import type { Route } from "./+types/customer-details";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const data = await queryClient.ensureQueryData(customerByIdQueryOptions(params.customerId));

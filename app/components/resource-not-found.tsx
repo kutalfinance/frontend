@@ -1,7 +1,13 @@
 import { Link, href } from "react-router";
 
 import { Button } from "@/components/ui/button";
-import { Heading, Paragraph } from "@/components/ui/text";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 interface ResourceNotFoundProps {
   resourceName: string;
@@ -14,19 +20,19 @@ export function ResourceNotFound({ resourceName, backTo, backLabel }: ResourceNo
 
   return (
     <div className="container py-20">
-      <div className="mx-auto flex size-32">
-        <img src="/empty-state.svg" className="text-muted-foreground size-full" />
-      </div>
-
-      <div className="grid place-items-center text-center">
-        <Heading variant="h2">{resourceName} not found</Heading>
-        <Paragraph>
-          The {resourceName.toLowerCase()} you're looking for could not be found.
-        </Paragraph>
-        <Button asChild className="mt-4" variant="outline">
-          <Link to={backTo}>{backLabel || defaultBackLabel}</Link>
-        </Button>
-      </div>
+      <Empty>
+        <EmptyHeader>
+          <EmptyTitle>{resourceName} not found</EmptyTitle>
+          <EmptyDescription>
+            The {resourceName.toLowerCase()} you're looking for could not be found.
+          </EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <Button asChild variant="outline">
+            <Link to={backTo}>{backLabel || defaultBackLabel}</Link>
+          </Button>
+        </EmptyContent>
+      </Empty>
     </div>
   );
 }

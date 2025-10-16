@@ -8,7 +8,7 @@ function ModuleHeading({ className, ...props }: React.ComponentProps<"hgroup">) 
   return (
     <hgroup
       data-slot="module-heading"
-      className={cn("mb-6 flex flex-wrap items-start justify-between gap-4", className)}
+      className={cn("mb-6 flex flex-wrap items-end justify-between gap-4", className)}
       {...props}
     />
   );

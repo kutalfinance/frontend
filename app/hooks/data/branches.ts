@@ -78,10 +78,8 @@ export function useDeleteBranch() {
   });
 }
 
-export function useBranchById(id: string) {
-  return useQuery({
-    queryKey: queryKeys.branches.detail(id),
-    queryFn: () => api.get(`branch/${id}`).json<APIResponse<Branch>>(),
-    enabled: !!id,
-  });
-}
+export const branchByIdQueryOptions = (id: string) => ({
+  queryKey: queryKeys.branches.detail(id),
+  queryFn: () => api.get(`branch/${id}`).json<APIResponse<Branch>>(),
+  enabled: !!id,
+});

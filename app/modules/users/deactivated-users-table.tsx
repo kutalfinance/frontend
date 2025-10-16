@@ -23,6 +23,7 @@ import { Paragraph } from "@/components/ui/text";
 
 import { type User } from "@/lib/types";
 import { RestoreUser } from "@/modules/users/user-actions";
+
 import { DeleteUser } from "./user-actions";
 
 export function DeactivatedUsersTable({ users, isLoading }: { users: User[]; isLoading: boolean }) {

@@ -1,21 +1,16 @@
 export function formatMoney(
   value: string | number,
-  options?: { locales: Intl.LocalesArgument; currency: string }
+  options: Intl.NumberFormatOptions & { locales?: Intl.LocalesArgument } = { locales: "en-GH" }
 ) {
   if (isNaN(Number(value))) return "-";
 
-  let currency = "NGN";
-  let locales: Intl.LocalesArgument = "en-NG";
-
-  if (options) {
-    locales = options.locales;
-    currency = options.currency;
-  }
+  const { locales, ...rest } = options;
 
   return new Intl.NumberFormat(locales, {
-    style: "currency",
-    currency,
     currencyDisplay: "symbol",
     maximumFractionDigits: 2,
+    currency: "GHS",
+    style: "currency",
+    ...rest,
   }).format(Number(value));
 }

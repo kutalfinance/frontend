@@ -12,11 +12,11 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useUsers, validateUserSearch } from "@/hooks/data/users";
-import { UserFilters } from "@/modules/users/filters";
 import { siteConfig } from "@/lib/config";
+import { UserFilters } from "@/modules/users/filters";
+import { UsersTable } from "@/modules/users/users-table";
 
 import type { Route } from "./+types/users";
-import { UsersTable } from "@/modules/users/users-table";
 
 export function meta() {
   return [

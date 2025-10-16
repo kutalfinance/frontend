@@ -30,8 +30,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Paragraph } from "@/components/ui/text";
 
 import { useCreateAdmin, useCreateAgent } from "@/hooks/data/users";
-import { UserRoles } from "@/lib/types";
 import { siteConfig } from "@/lib/config";
+import { UserRoles } from "@/lib/types";
 
 export function meta() {
   return [

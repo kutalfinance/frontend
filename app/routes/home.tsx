@@ -17,7 +17,7 @@ export async function clientLoader() {
     return redirect(href("/admin/users"));
   }
 
-  return redirect(href("/agent/branches"));
+  return redirect(href("/agent"));
 }
 
 export default function Home() {

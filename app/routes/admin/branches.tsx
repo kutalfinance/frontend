@@ -1,4 +1,5 @@
 import { Link, Outlet } from "react-router";
+
 import { Plus } from "lucide-react";
 
 import {
@@ -11,17 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useBranches, validateBranchSearch } from "@/hooks/data/branches";
-import {
-  BranchAgentFilter,
-  BranchFilters,
-  BranchSearchFilter,
-  BranchSortFilter,
-} from "@/modules/branches/filters";
-import { BranchesTable } from "@/modules/branches/branches-table";
 import { siteConfig } from "@/lib/config";
+import { adminBranchesColumns } from "@/modules/branches/branches-admin";
+import { BranchesTable } from "@/modules/branches/branches-table";
+import { BranchFilters } from "@/modules/branches/filters";
 
 import type { Route } from "./+types/branches";
-import { adminBranchesColumns } from "@/modules/branches/branches-admin";
 
 export function meta() {
   return [
@@ -68,13 +64,8 @@ export default function Branches({ loaderData }: Route.ComponentProps) {
         </ModuleActions>
       </ModuleHeading>
 
-      <BranchFilters disabled={isPending}>
-        <BranchSearchFilter />
-        <BranchAgentFilter />
-        <BranchSortFilter />
-      </BranchFilters>
-
-      <BranchesTable columns={adminBranchesColumns} branches={branches} isLoading={isPending} />
+      <BranchFilters disabled={isPending} />
+      <BranchesTable branches={branches} isLoading={isPending} columns={adminBranchesColumns} />
     </div>
   );
 }

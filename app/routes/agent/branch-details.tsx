@@ -95,7 +95,7 @@ export default function AgentBranchCustomers({ loaderData, params }: Route.Compo
         </ModuleHeader>
         <ModuleActions>
           <Button asChild>
-            <Link to="#">
+            <Link to={href("/agent/branches/:branchId/customers/create", { branchId: branch.id })}>
               <Plus /> Add customer
             </Link>
           </Button>

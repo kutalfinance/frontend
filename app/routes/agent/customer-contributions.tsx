@@ -75,7 +75,7 @@ export default function CustomerContributions({ loaderData, params }: Route.Comp
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to={href("/agent/branches/:branchId", { branchId: customer.branch.id })}>
+              <Link to={href("/agent/branches/:branchId", { branchId: params.branchId })}>
                 {customer.branch.name}
               </Link>
             </BreadcrumbLink>

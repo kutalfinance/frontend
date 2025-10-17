@@ -1,20 +1,11 @@
 import { useState } from "react";
-import { href, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import {
   Dialog,
   DialogContent,
@@ -31,13 +22,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input, inputStyles } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
 
-import { useBranches } from "@/hooks/data/branches";
 import { useCreateCustomer } from "@/hooks/data/customers";
 import { siteConfig } from "@/lib/config";
-import { cn } from "@/lib/utils";
+import type { Route } from "./+types/customer-create";
 
 export function meta() {
   return [
@@ -63,7 +52,6 @@ const customerDetailsSchema = z.object({
     .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)"),
   email: z.email("Please enter a valid email address"),
   location: z.string().min(1, "Location is required"),
-  branchId: z.string().min(1, "Branch selection is required"),
 });
 
 const nextOfKinSchema = z.object({
@@ -78,11 +66,9 @@ const nextOfKinSchema = z.object({
 type CustomerDetailsForm = z.infer<typeof customerDetailsSchema>;
 type NextOfKinForm = z.infer<typeof nextOfKinSchema>;
 
-export default function CreateCustomer() {
+export default function CreateCustomer({ params }: Route.ComponentProps) {
   const navigate = useNavigate();
   const { mutate: createCustomer, isPending } = useCreateCustomer();
-  const { data } = useBranches();
-  const branches = data?.data || [];
   const [step, setStep] = useState<"customer" | "nextOfKin">("customer");
 
   const customerForm = useForm<CustomerDetailsForm>({
@@ -92,7 +78,6 @@ export default function CreateCustomer() {
       phoneNumber: "",
       email: "",
       location: "",
-      branchId: "",
     },
   });
 
@@ -105,7 +90,10 @@ export default function CreateCustomer() {
 
   const handleFinalSubmit = (data: NextOfKinForm) => {
     const customerData = customerForm.getValues();
-    createCustomer({ ...customerData, nextOfKin: data }, { onSuccess: () => handleClose() });
+    createCustomer(
+      { ...customerData, branchId: params.branchId, nextOfKin: data },
+      { onSuccess: () => handleClose() }
+    );
   };
 
   return (
@@ -169,79 +157,19 @@ export default function CreateCustomer() {
                 />
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <FormField
-                  control={customerForm.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Location</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter customer location" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={customerForm.control}
-                  name="branchId"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Branch</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className={cn(
-                                inputStyles,
-                                "justify-between font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value
-                                ? branches.find((branch) => branch.id === field.value)?.name
-                                : "Select branch"}
-                              <ChevronsUpDown className="opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="p-0">
-                          <Command>
-                            <CommandInput placeholder="Search branches..." className="h-9" />
-                            <CommandList>
-                              <CommandEmpty>No branches found.</CommandEmpty>
-                              <CommandGroup>
-                                {branches.map((branch) => (
-                                  <CommandItem
-                                    value={branch.id}
-                                    key={branch.id}
-                                    onSelect={() => {
-                                      customerForm.setValue("branchId", branch.id);
-                                    }}
-                                  >
-                                    {branch.name}
-                                    <Check
-                                      className={cn(
-                                        "ml-auto",
-                                        branch.id === field.value ? "opacity-100" : "opacity-0"
-                                      )}
-                                    />
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormField
+                control={customerForm.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter customer location" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={handleClose}>

@@ -23,7 +23,7 @@ export default [
       route("deactivated", "./routes/admin/users-deactivated.tsx"),
     ]),
     route("customers", "./routes/admin/customers.tsx", [
-      route("create", "./routes/admin/customers-create.tsx"),
+      route("create", "./routes/admin/customer-create.tsx"),
       route(":customerId", "./routes/admin/customer-details.tsx"),
     ]),
     route("branches", "./routes/admin/branches.tsx", [
@@ -33,7 +33,13 @@ export default [
 
   route("/agent", "./routes/agent/layout.tsx", [
     index("./routes/agent/index.tsx"),
-    route("branches/:branchId", "./routes/agent/branch-details.tsx"),
-    route("customers/:customerId", "./routes/agent/customer-contributions.tsx"),
+
+    ...prefix("branches/:branchId", [
+      route("", "./routes/agent/branch-details.tsx", [
+        route("customers/create", "./routes/agent/customer-create.tsx"),
+      ]),
+
+      route("customers/:customerId", "./routes/agent/customer-contributions.tsx"),
+    ]),
   ]),
 ] satisfies RouteConfig;

@@ -67,7 +67,12 @@ export function CustomerListItem({ customer }: { customer: Customer }) {
 
         <div className="flex items-center gap-2">
           <Button asChild size="sm" variant="outline">
-            <Link to={href("/agent/customers/:customerId", { customerId: customer.id })}>
+            <Link
+              to={href("/agent/branches/:branchId/customers/:customerId", {
+                branchId: customer.branch.id,
+                customerId: customer.id,
+              })}
+            >
               <Coins />
               <span>
                 View<span className="hidden sm:inline">&nbsp;contributions</span>

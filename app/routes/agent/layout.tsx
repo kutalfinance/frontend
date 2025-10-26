@@ -22,7 +22,7 @@ export async function clientLoader() {
 
 export default function AgentLayout() {
   return (
-    <AppLayoutProvider className="flex min-h-dvh flex-col">
+    <AppLayoutProvider className="bg-muted/50 flex min-h-dvh flex-col">
       <AppHeader />
 
       <div className="flex-1 py-5">

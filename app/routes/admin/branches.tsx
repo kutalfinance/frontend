@@ -11,7 +11,7 @@ import {
 } from "@/components/module-heading";
 import { Button } from "@/components/ui/button";
 
-import { useBranches, validateBranchSearch } from "@/hooks/data/branches";
+import { useBranchesAdmin, validateBranchSearch } from "@/hooks/data/branches";
 import { siteConfig } from "@/lib/config";
 import { adminBranchesColumns } from "@/modules/branches/branches-admin";
 import { BranchesTable } from "@/modules/branches/branches-table";
@@ -40,7 +40,7 @@ export function clientLoader({ request }: Route.ClientLoaderArgs) {
 
 export default function Branches({ loaderData }: Route.ComponentProps) {
   const { searchParams } = loaderData;
-  const { data, isPending } = useBranches({ searchParams });
+  const { data, isPending } = useBranchesAdmin({ searchParams });
   const branches = data?.data ?? [];
 
   return (

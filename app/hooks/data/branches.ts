@@ -21,11 +21,20 @@ export const validateBranchSearch = z
 export type BranchSearchParams = z.infer<typeof validateBranchSearch>;
 
 // Branch management hooks
-export function useBranches({ searchParams }: { searchParams?: BranchSearchParams } = {}) {
+export function useBranchesAdmin({ searchParams }: { searchParams?: BranchSearchParams } = {}) {
   return useQuery({
     queryKey: queryKeys.branches.filters(searchParams),
     queryFn: () => {
       return api.get("branch", { searchParams }).json<APIResponse<Branch[]>>();
+    },
+  });
+}
+
+export function useBranchesAgent({ searchParams }: { searchParams?: BranchSearchParams } = {}) {
+  return useQuery({
+    queryKey: queryKeys.branches.filters(searchParams),
+    queryFn: () => {
+      return api.get("user/agent/branches/metrics", { searchParams }).json<APIResponse<Branch[]>>();
     },
   });
 }

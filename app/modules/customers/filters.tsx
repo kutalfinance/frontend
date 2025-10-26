@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useBranches } from "@/hooks/data/branches";
+import { useBranchesAdmin } from "@/hooks/data/branches";
 import { useDebounce } from "@/hooks/use-debounce";
 
 // Context
@@ -87,7 +87,7 @@ export function CustomerSearchFilter() {
 
 export function CustomerBranchFilter() {
   const { searchParams, setSearchParams, disabled } = useCustomerFilters();
-  const { data: branchesData } = useBranches();
+  const { data: branchesData } = useBranchesAdmin();
   const branches = branchesData?.data ?? [];
 
   return (

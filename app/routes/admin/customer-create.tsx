@@ -34,7 +34,7 @@ import {
 import { Input, inputStyles } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-import { useBranches } from "@/hooks/data/branches";
+import { useBranchesAdmin } from "@/hooks/data/branches";
 import { useCreateCustomer } from "@/hooks/data/customers";
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
@@ -81,7 +81,7 @@ type NextOfKinForm = z.infer<typeof nextOfKinSchema>;
 export default function CreateCustomer() {
   const navigate = useNavigate();
   const { mutate: createCustomer, isPending } = useCreateCustomer();
-  const { data } = useBranches();
+  const { data } = useBranchesAdmin();
   const branches = data?.data || [];
   const [step, setStep] = useState<"customer" | "nextOfKin">("customer");
 

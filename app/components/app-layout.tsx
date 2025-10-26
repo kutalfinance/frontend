@@ -28,8 +28,12 @@ import { Paragraph } from "@/components/ui/text";
 import { useLoggedInUser, useLogout } from "@/hooks/auth/common";
 import { cn } from "@/lib/utils";
 
-export function AppLayoutProvider({ children, ...props }: React.ComponentProps<"div">) {
-  return <div {...props}>{children}</div>;
+export function AppLayoutProvider({ children, className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div className={cn("", className)} {...props}>
+      {children}
+    </div>
+  );
 }
 
 export function AppHeader() {

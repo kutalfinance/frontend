@@ -1,4 +1,4 @@
-import { Building2, Coins, Contact } from "lucide-react";
+import { Building2, Coins, Contact, SearchIcon } from "lucide-react";
 
 import {
   ModuleDescription,
@@ -11,13 +11,15 @@ import { Heading, Paragraph } from "@/components/ui/text";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 import { useLoggedInUser } from "@/hooks/auth/common";
-import { useBranches, validateBranchSearch } from "@/hooks/data/branches";
+import { useBranchesAdmin, validateBranchSearch } from "@/hooks/data/branches";
 import { siteConfig } from "@/lib/config";
 import { formatMoney } from "@/lib/utils/money";
-import { agentBranchesColumns } from "@/modules/branches/branches-agent";
-import { BranchesTable } from "@/modules/branches/branches-table";
+import { BranchesGrid } from "@/modules/branches/branches-grid";
 
 import type { Route } from "./+types/index";
+import { Input } from "@/components/ui/input";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useSearchParams } from "react-router";
 
 export function meta() {
   return [
@@ -41,10 +43,19 @@ export function clientLoader({ request }: Route.ClientLoaderArgs) {
 export default function Branches({ loaderData }: Route.ComponentProps) {
   const { searchParams } = loaderData;
   const { data: loggedInUser } = useLoggedInUser();
-  const { data, isPending } = useBranches({
+  const { data, isPending } = useBranchesAdmin({
     searchParams: { ...searchParams, agentId: loggedInUser.data.id },
   });
   const branches = data?.data ?? [];
+
+  const [_, setSearchParams] = useSearchParams();
+  const debouncedSearch = useDebounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams((prev) => {
+      if (e.target.value) prev.set("q", e.target.value);
+      else prev.delete("q");
+      return prev;
+    });
+  });
 
   return (
     <div className="container space-y-10">
@@ -69,8 +80,20 @@ export default function Branches({ loaderData }: Route.ComponentProps) {
       <DashboardStats />
 
       <div className="space-y-2">
-        <Heading variant="h2">Branches</Heading>
-        <BranchesTable branches={branches} isLoading={isPending} columns={agentBranchesColumns} />
+        <hgroup className="flex flex-wrap items-center justify-between gap-2">
+          <Heading variant="h2">Branches</Heading>
+          <div className="relative w-full md:max-w-xs">
+            <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+            <Input
+              placeholder="Search branches..."
+              type="search"
+              className="w-full pl-9"
+              defaultValue={searchParams.q || ""}
+              onChange={debouncedSearch}
+            />
+          </div>
+        </hgroup>
+        <BranchesGrid branches={branches} isLoading={isPending} />
       </div>
     </div>
   );
@@ -94,7 +117,7 @@ function DashboardStats() {
   ];
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(18rem,auto))] gap-4 lg:grid-cols-3">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(18rem,auto))] gap-2 lg:grid-cols-3">
       {metricsData.map((metric) => (
         <Card key={metric.label} className="gap-2">
           <CardHeader>

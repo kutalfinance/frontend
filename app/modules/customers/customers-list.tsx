@@ -56,7 +56,7 @@ export function CustomerListItem({ customer }: { customer: Customer }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-lg border">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="bg-card rounded-lg border">
       <div className="flex items-center justify-between p-4">
         <div className="min-w-0 flex-1">
           <Heading variant="h4" className="truncate">

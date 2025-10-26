@@ -2,7 +2,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import z from "zod";
 
 import { api } from "@/lib/api";
-import { type APIResponse, type AdminMetrics, type User, UserRoles } from "@/lib/types";
+import {
+  type APIResponse,
+  type AdminMetrics,
+  type User,
+  UserRoles,
+  type AgentMetrics,
+} from "@/lib/types";
 
 import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";
 
@@ -116,5 +122,12 @@ export function useAdminMetrics() {
   return useQuery({
     queryKey: queryKeys.metrics.admin(),
     queryFn: () => api.get("user/admin/metrics").json<APIResponse<AdminMetrics>>(),
+  });
+}
+
+export function useAgentMetrics() {
+  return useQuery({
+    queryKey: queryKeys.metrics.agent(),
+    queryFn: () => api.get("user/agent/metrics").json<APIResponse<AgentMetrics>>(),
   });
 }

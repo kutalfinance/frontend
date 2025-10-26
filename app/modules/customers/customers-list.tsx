@@ -120,11 +120,12 @@ export function CustomerListItem({ customer }: { customer: Customer }) {
               <div>
                 <Paragraph className="text-muted-foreground text-xs">Next of Kin</Paragraph>
                 <Paragraph>{customer.nextOfKin.name}</Paragraph>
-                {customer.nextOfKin.phoneNubmer && (
-                  <Paragraph className="text-muted-foreground text-xs">
-                    {customer.nextOfKin.phoneNubmer}
-                  </Paragraph>
-                )}
+                <Paragraph className="text-muted-foreground text-sm">
+                  {customer.nextOfKin.email}
+                </Paragraph>
+                <Paragraph className="text-muted-foreground text-sm">
+                  {customer.nextOfKin.phoneNubmer}
+                </Paragraph>
               </div>
             </div>
           )}

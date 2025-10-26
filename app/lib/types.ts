@@ -72,6 +72,12 @@ export type AdminMetrics = {
   totalCustomers?: number;
 };
 
+export type AgentMetrics = {
+  totalContributions?: number;
+  totalBranches?: number;
+  totalCustomers?: number;
+};
+
 export type VerifyOtp = {
   email: string;
   otp: string;

@@ -54,6 +54,7 @@ export const queryKeys = {
   // Metrics queries
   metrics: {
     admin: () => ["metrics", "admin"] as const,
+    agent: () => ["metrics", "agent"] as const,
   },
 
   // Generic utility for creating scoped keys

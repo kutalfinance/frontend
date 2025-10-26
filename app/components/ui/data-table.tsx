@@ -1,4 +1,11 @@
 import { type Table as TableType, flexRender } from "@tanstack/react-table";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import type { Row, RowData } from "@tanstack/react-table";
 
 import { Loader } from "@/components/loader";
@@ -12,6 +19,7 @@ import {
 } from "@/components/ui/table";
 
 import { cn } from "@/lib/utils";
+import { SearchX } from "lucide-react";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -79,7 +87,17 @@ export function DataTable<TData>({
         ) : (
           <TableRow>
             <TableCell colSpan={columns.length} className="h-40 text-center">
-              No results.
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <SearchX />
+                  </EmptyMedia>
+                  <EmptyTitle>No results found</EmptyTitle>
+                  <EmptyDescription>
+                    No results match your search criteria. Try adjusting your filters.
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
             </TableCell>
           </TableRow>
         )}

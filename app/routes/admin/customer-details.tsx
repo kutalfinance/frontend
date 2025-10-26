@@ -30,7 +30,7 @@ export default function CustomerDetails({ loaderData }: Route.ComponentProps) {
 
   return (
     <Sheet open onOpenChange={() => navigate(-1)}>
-      <SheetContent className="w-full sm:max-w-screen-lg">
+      <SheetContent className="w-full sm:max-w-[calc(100%-1.5rem)] xl:max-w-screen-lg">
         <SheetHeader>
           <SheetTitle>{customer.name}</SheetTitle>
         </SheetHeader>

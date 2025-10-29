@@ -39,7 +39,7 @@ export default [
         route("customers/create", "./routes/agent/customer-create.tsx"),
       ]),
 
-      route("customers/:customerId", "./routes/agent/customer-contributions.tsx"),
+      route("customers/:customerId", "./routes/agent/customer-details.tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;

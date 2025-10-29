@@ -47,6 +47,11 @@ export type Customer = {
   updatedAt: string; // date-time
 };
 
+export enum ContributionTypes {
+  CREDIT = "CREDIT",
+  DEBIT = "DEBIT",
+}
+
 export type Contribution = {
   id: string;
   customer: { id: string; name: string };

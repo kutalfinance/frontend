@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 
 import { useBranchesAdmin, validateBranchSearch } from "@/hooks/data/branches";
 import { siteConfig } from "@/lib/config";
-import { adminBranchesColumns } from "@/modules/branches/branches-admin";
 import { BranchesTable } from "@/modules/branches/branches-table";
 import { BranchFilters } from "@/modules/branches/filters";
 
@@ -65,7 +64,7 @@ export default function Branches({ loaderData }: Route.ComponentProps) {
       </ModuleHeading>
 
       <BranchFilters disabled={isPending} />
-      <BranchesTable branches={branches} isLoading={isPending} columns={adminBranchesColumns} />
+      <BranchesTable branches={branches} isLoading={isPending} />
     </div>
   );
 }

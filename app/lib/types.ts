@@ -48,8 +48,8 @@ export type Customer = {
 };
 
 export enum ContributionTypes {
-  CREDIT = "CREDIT",
-  DEBIT = "DEBIT",
+  DEPOSIT = "DEPOSIT",
+  WITHDRAWAL = "WITHDRAWAL",
 }
 
 export type Contribution = {
@@ -57,6 +57,7 @@ export type Contribution = {
   customer: { id: string; name: string };
   amount: number;
   recordedBy: { id: string; name: string };
+  contributionType: ContributionTypes;
   timestamp: string; // date-time
 };
 

@@ -151,9 +151,9 @@ export const columns: ColumnDef<User>[] = [
           </EditUser> */}
 
           <DeactivateUser asChild users={[row.original]}>
-            <Button variant="destructive-outline" size="icon">
+            <Button variant="ghost" size="icon">
               <span className="sr-only">Deactivate</span>
-              <Archive />
+              <Archive className="text-destructive" />
             </Button>
           </DeactivateUser>
         </div>

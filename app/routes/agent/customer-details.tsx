@@ -25,7 +25,10 @@ import {
 } from "lucide-react";
 import { data, href, Link, Outlet } from "react-router";
 import { queryClient } from "@/components/query-provider";
-import { RecordDeposit, RecordWithdrawal } from "@/modules/customers/contribution-create";
+import {
+  AgentRecordDeposit,
+  AgentRecordWithdrawal,
+} from "@/modules/customers/agent-contribution-create";
 import { Button } from "@/components/ui/button";
 import { Heading, Paragraph } from "@/components/ui/text";
 import {
@@ -111,16 +114,16 @@ export default function CustomerContributions({ loaderData, params }: Route.Comp
           <ModuleDescription>View customer details and contribution history</ModuleDescription>
         </ModuleHeader>
         <ModuleActions>
-          <RecordDeposit asChild customer={customer}>
+          <AgentRecordDeposit asChild customer={customer}>
             <Button>
               <BanknoteArrowUp /> Record deposit
             </Button>
-          </RecordDeposit>
-          <RecordWithdrawal asChild customer={customer}>
+          </AgentRecordDeposit>
+          <AgentRecordWithdrawal asChild customer={customer}>
             <Button variant="destructive-outline">
               <BanknoteArrowDown /> Record withdrawal
             </Button>
-          </RecordWithdrawal>
+          </AgentRecordWithdrawal>
         </ModuleActions>
       </ModuleHeading>
 

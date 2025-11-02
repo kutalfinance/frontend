@@ -29,6 +29,7 @@ export default [
     route("branches", "./routes/admin/branches.tsx", [
       route("create", "./routes/admin/branches-create.tsx"),
     ]),
+    route("contributions", "./routes/admin/contributions.tsx"),
   ]),
 
   route("/agent", "./routes/agent/layout.tsx", [

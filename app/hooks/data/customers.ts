@@ -117,7 +117,7 @@ export const contributionsQueryOptions = ({
 
 export const createWithdrawalOptions = mutationOptions({
   mutationFn: (data: { customerId: string; amount: number }) =>
-    api.post("contribution/withdrawal", { json: data }).json<APIResponse<Contribution>>(),
+    api.post("contribution/withdraw", { json: data }).json<APIResponse<Contribution>>(),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
     successToast("Withdrawal recorded successfully");

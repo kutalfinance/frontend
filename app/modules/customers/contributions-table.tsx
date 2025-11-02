@@ -16,8 +16,9 @@ import { format } from "date-fns";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 
-import type { Contribution } from "@/lib/types";
+import { ContributionTypes, type Contribution } from "@/lib/types";
 import { formatMoney } from "@/lib/utils/money";
+import { BanknoteArrowDown, BanknoteArrowUp } from "lucide-react";
 
 export function ContributionsTable({
   contributions,
@@ -66,9 +67,24 @@ const columns: ColumnDef<Contribution>[] = [
     ),
   },
   {
-    accessorKey: "type",
+    accessorKey: "customer.name",
+    header: "Customer",
+  },
+  {
+    accessorKey: "contributionType",
     header: "Type",
-    cell: () => <Badge variant="default">Deposit</Badge>,
+    cell: ({ row }) =>
+      row.original.contributionType === ContributionTypes.DEPOSIT ? (
+        <Badge>
+          <BanknoteArrowUp />
+          {row.original.contributionType}
+        </Badge>
+      ) : (
+        <Badge variant="destructive">
+          <BanknoteArrowDown />
+          {row.original.contributionType}
+        </Badge>
+      ),
   },
   {
     accessorKey: "recordedBy.name",

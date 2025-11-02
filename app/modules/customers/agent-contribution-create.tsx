@@ -24,22 +24,14 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { createDepositOptions, createWithdrawalOptions } from "@/hooks/data/customers";
-import { siteConfig } from "@/lib/config";
 import type { Customer } from "@/lib/types";
 import { useState } from "react";
-
-export function meta() {
-  return [
-    { title: `Record Contribution - ${siteConfig.name}` },
-    { name: "description", content: "Record a new customer contribution" },
-  ];
-}
 
 const contributionSchema = z.object({ amount: z.coerce.number() as z.ZodNumber });
 
 type ContributionForm = z.infer<typeof contributionSchema>;
 
-export function RecordDeposit({
+export function AgentRecordDeposit({
   customer,
   ...props
 }: React.ComponentProps<typeof DialogTrigger> & { customer: Customer }) {
@@ -107,7 +99,7 @@ export function RecordDeposit({
   );
 }
 
-export function RecordWithdrawal({
+export function AgentRecordWithdrawal({
   customer,
   ...props
 }: React.ComponentProps<typeof DialogTrigger> & { customer: Customer }) {

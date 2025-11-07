@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { ContributionTypes, type Contribution } from "@/lib/types";
 import { formatMoney } from "@/lib/utils/money";
 import { BanknoteArrowDown, BanknoteArrowUp } from "lucide-react";
+import { href, Link } from "react-router";
 
 export function ContributionsTable({
   contributions,
@@ -69,6 +70,14 @@ const columns: ColumnDef<Contribution>[] = [
   {
     accessorKey: "customer.name",
     header: "Customer",
+    cell: ({ row }) => (
+      <Link
+        className="link"
+        to={href("/admin/customers/:customerId", { customerId: row.original.customer.id })}
+      >
+        {row.original.customer.name}
+      </Link>
+    ),
   },
   {
     accessorKey: "contributionType",

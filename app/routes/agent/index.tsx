@@ -1,3 +1,5 @@
+import { useSearchParams } from "react-router";
+
 import { Building2, Coins, Contact, SearchIcon } from "lucide-react";
 
 import {
@@ -7,19 +9,20 @@ import {
   ModuleTitle,
 } from "@/components/module-heading";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Heading, Paragraph } from "@/components/ui/text";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 import { useLoggedInUser } from "@/hooks/auth/common";
 import { useBranchesAdmin, validateBranchSearch } from "@/hooks/data/branches";
+import { useAgentMetrics } from "@/hooks/data/users";
+import { useDebounce } from "@/hooks/use-debounce";
 import { siteConfig } from "@/lib/config";
 import { formatMoney } from "@/lib/utils/money";
 import { BranchesGrid } from "@/modules/branches/branches-grid";
 
 import type { Route } from "./+types/index";
-import { Input } from "@/components/ui/input";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useSearchParams } from "react-router";
 
 export function meta() {
   return [
@@ -107,13 +110,25 @@ const dataRangeOptions = [
 ];
 
 function DashboardStats() {
-  // const { data, isPending } = useAdminMetrics();
-  // const metrics = data?.data;
+  const { data, isPending } = useAgentMetrics();
+  const metrics = data?.data;
 
   const metricsData = [
-    { icon: Coins, label: "Contributions", value: formatMoney(420302) },
-    { icon: Building2, label: "Branches", value: formatMoney(3, { style: "decimal" }) },
-    { icon: Contact, label: "Customers", value: formatMoney(1203, { style: "decimal" }) },
+    {
+      icon: Coins,
+      label: "Contributions",
+      value: formatMoney(metrics?.totalContributions ?? 0),
+    },
+    {
+      icon: Building2,
+      label: "Branches",
+      value: formatMoney(metrics?.totalBranches ?? 0, { style: "decimal" }),
+    },
+    {
+      icon: Contact,
+      label: "Customers",
+      value: formatMoney(metrics?.totalCustomers ?? 0, { style: "decimal" }),
+    },
   ];
 
   return (
@@ -127,7 +142,7 @@ function DashboardStats() {
           </CardHeader>
           <CardContent>
             <Paragraph className="text-muted-foreground text-sm">{metric.label}</Paragraph>
-            <Heading>{metric.value}</Heading>
+            <Heading>{isPending ? <Skeleton className="h-8 w-20" /> : metric.value}</Heading>
           </CardContent>
         </Card>
       ))}

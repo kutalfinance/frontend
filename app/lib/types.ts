@@ -73,15 +73,16 @@ export type Branch = {
 // ========== ADDITIONAL TYPES ==========
 
 export type AdminMetrics = {
-  totalUsers?: number;
-  totalBranches?: number;
-  totalCustomers?: number;
+  totalUsers: number;
+  totalBranches: number;
+  totalCustomers: number;
+  totalContributions: number;
 };
 
 export type AgentMetrics = {
-  totalContributions?: number;
-  totalBranches?: number;
-  totalCustomers?: number;
+  totalContributions: number;
+  totalBranches: number;
+  totalCustomers: number;
 };
 
 export type VerifyOtp = {

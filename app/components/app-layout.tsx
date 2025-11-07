@@ -1,7 +1,7 @@
 import { Link, type LinkProps, href, useLocation } from "react-router";
 
-import { Building2, Coins, History, Menu } from "lucide-react";
-import { Contact, type LucideIcon, Users } from "lucide-react";
+import { Building2, Coins, History, Home, Menu } from "lucide-react";
+import { Contact, type LucideIcon } from "lucide-react";
 
 import { AppLogo } from "@/components/app-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -150,17 +150,11 @@ const adminNavLinks: {
   pathRegex: RegExp;
   icon: LucideIcon;
 }[] = [
-  /* {
-    title: "Dashboard",
+  {
+    title: "Home",
     href: href("/admin"),
     pathRegex: /^\/admin$/,
     icon: Home,
-  }, */
-  {
-    title: "Users",
-    href: href("/admin/users"),
-    pathRegex: /\/admin\/users/,
-    icon: Users,
   },
   {
     title: "Branches",

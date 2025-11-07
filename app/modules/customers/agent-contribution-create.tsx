@@ -156,7 +156,7 @@ export function AgentRecordWithdrawal({
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" isLoading={isPending} variant="destructive">
+              <Button type="submit" isLoading={isPending} variant="destructive-outline">
                 Record Withdrawal
               </Button>
             </DialogFooter>

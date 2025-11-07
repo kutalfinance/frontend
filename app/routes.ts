@@ -17,10 +17,11 @@ export default [
   ]),
 
   route("/admin", "./routes/admin/layout.tsx", [
-    index("./routes/admin/index.tsx"),
-    route("users", "./routes/admin/users.tsx", [
-      route("create", "./routes/admin/users-create.tsx"),
-      route("deactivated", "./routes/admin/users-deactivated.tsx"),
+    route("", "./routes/admin/index.tsx", [
+      ...prefix("users", [
+        route("create", "./routes/admin/users-create.tsx"),
+        route("deactivated", "./routes/admin/users-deactivated.tsx"),
+      ]),
     ]),
     route("customers", "./routes/admin/customers.tsx", [
       route("create", "./routes/admin/customer-create.tsx"),

@@ -151,7 +151,7 @@ const columns: ColumnDef<User>[] = [
       return (
         <div className="flex gap-2">
           <RestoreUser users={[row.original]}>
-            <Button variant="ghost" size="icon">
+            <Button variant="outline" size="icon">
               <span className="sr-only">Restore</span>
               <RotateCcw className="size-4" />
             </Button>

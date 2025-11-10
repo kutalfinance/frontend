@@ -133,7 +133,7 @@ function AdminLogin({ email }: { email: string }) {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder="Enter your password" {...field} />
+                    <PasswordInput autoFocus placeholder="Enter your password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

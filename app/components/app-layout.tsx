@@ -175,8 +175,8 @@ const adminNavLinks: {
     icon: Coins,
   },
   {
-    title: "Audit Trail",
-    href: "#",
+    title: "Audit Logs",
+    href: href("/admin/audit"),
     pathRegex: /\/admin\/audit/,
     icon: History,
   },

@@ -70,6 +70,19 @@ export type Branch = {
   updatedAt: string; // date-time
 };
 
+export type AuditLog = {
+  id: string;
+  authorId: string;
+  authorName: string;
+  action: string;
+  entityType: string;
+  entityId: string;
+  description: string;
+  ipAddress: string;
+  timestamp: string; // date-time
+  metadata: Record<string, string>;
+};
+
 // ========== ADDITIONAL TYPES ==========
 
 export type AdminMetrics = {

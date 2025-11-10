@@ -12,7 +12,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Heading, Paragraph } from "@/components/ui/text";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 import { useLoggedInUser } from "@/hooks/auth/common";
 import { useBranchesAdmin, validateBranchSearch } from "@/hooks/data/branches";
@@ -71,13 +70,13 @@ export default function Branches({ loaderData }: Route.ComponentProps) {
           </ModuleDescription>
         </ModuleHeader>
 
-        <ToggleGroup variant="outline" type="single" defaultValue={dataRangeOptions[1].value}>
+        {/* <ToggleGroup variant="outline" type="single" defaultValue={dataRangeOptions[1].value}>
           {dataRangeOptions.map((option) => (
             <ToggleGroupItem key={option.value} value={option.value}>
               {option.label}
             </ToggleGroupItem>
           ))}
-        </ToggleGroup>
+        </ToggleGroup> */}
       </ModuleHeading>
 
       <DashboardStats />
@@ -102,12 +101,12 @@ export default function Branches({ loaderData }: Route.ComponentProps) {
   );
 }
 
-const dataRangeOptions = [
+/* const dataRangeOptions = [
   { label: "12 months", value: "12m" },
   { label: "30 days", value: "30d" },
   { label: "7 days", value: "7d" },
   { label: "24 hours", value: "24h" },
-];
+]; */
 
 function DashboardStats() {
   const { data, isPending } = useAgentMetrics();

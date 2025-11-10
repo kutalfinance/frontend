@@ -15,9 +15,7 @@ function ModuleHeading({ className, ...props }: React.ComponentProps<"hgroup">) 
 }
 
 function ModuleHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div data-slot="module-header" className={cn("flex flex-col gap-1", className)} {...props} />
-  );
+  return <div data-slot="module-header" className={cn("flex flex-col", className)} {...props} />;
 }
 
 function ModuleTitle({ className, ...props }: React.ComponentProps<typeof Heading>) {

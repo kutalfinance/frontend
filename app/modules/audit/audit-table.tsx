@@ -15,6 +15,7 @@ import { format } from "date-fns";
 
 import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/ui/data-table";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
 import type { AuditLog } from "@/lib/types";
 
@@ -40,14 +41,15 @@ export function AuditTable({ logs, isLoading }: { logs: AuditLog[]; isLoading: b
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: {
-        pageIndex: 0,
-        pageSize: 20,
-      },
     },
   });
 
-  return <DataTable table={table} isLoading={isLoading} />;
+  return (
+    <div className="space-y-4">
+      <DataTable table={table} isLoading={isLoading} />
+      <DataTablePagination table={table} />
+    </div>
+  );
 }
 
 const columns: ColumnDef<AuditLog>[] = [

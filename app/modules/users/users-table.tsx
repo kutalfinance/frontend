@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { Separator } from "@/components/ui/separator";
 import { Paragraph } from "@/components/ui/text";
 
@@ -56,8 +57,9 @@ export function UsersTable({ users, isLoading }: { users: User[]; isLoading: boo
   const selectedUsers = table.getSelectedRowModel().flatRows.map((row) => row.original);
 
   return (
-    <>
+    <div className="space-y-4">
       <DataTable table={table} isLoading={isLoading} />
+      <DataTablePagination table={table} />
 
       {!!selectedUsers.length && (
         <div
@@ -77,7 +79,7 @@ export function UsersTable({ users, isLoading }: { users: User[]; isLoading: boo
           </Button>
         </div>
       )}
-    </>
+    </div>
   );
 }
 

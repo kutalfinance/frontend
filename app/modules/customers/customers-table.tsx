@@ -15,6 +15,7 @@ import {
 import { format } from "date-fns";
 
 import { DataTable } from "@/components/ui/data-table";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { Paragraph } from "@/components/ui/text";
 
 import type { Customer } from "@/lib/types";
@@ -54,7 +55,12 @@ export function CustomersTable({
     },
   });
 
-  return <DataTable table={table} isLoading={isLoading} />;
+  return (
+    <div className="space-y-4">
+      <DataTable table={table} isLoading={isLoading} />
+      <DataTablePagination table={table} />
+    </div>
+  );
 }
 
 const columns: ColumnDef<Customer>[] = [

@@ -93,7 +93,7 @@ export default function CustomerContributions({ loaderData, params }: Route.Comp
   ];
 
   return (
-    <div className="container space-y-10">
+    <div className="container space-y-6">
       <Outlet />
 
       <Breadcrumb>

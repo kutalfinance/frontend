@@ -16,6 +16,7 @@ import { BanknoteArrowDown, BanknoteArrowUp } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/ui/data-table";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
 import { type Contribution, ContributionTypes } from "@/lib/types";
 import { formatMoney } from "@/lib/utils/money";
@@ -48,14 +49,15 @@ export function ContributionsTable({
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: {
-        pageIndex: 0,
-        pageSize: 20,
-      },
     },
   });
 
-  return <DataTable table={table} isLoading={isLoading} />;
+  return (
+    <div className="space-y-4">
+      <DataTable table={table} isLoading={isLoading} />
+      <DataTablePagination table={table} />
+    </div>
+  );
 }
 
 const columns: ColumnDef<Contribution>[] = [

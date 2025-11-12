@@ -12,10 +12,7 @@ import {
 } from "@/components/module-heading";
 import { Button } from "@/components/ui/button";
 
-import {
-  contributionsQueryOptions,
-  validateContributionsSearch,
-} from "@/hooks/data/contributions";
+import { contributionsQueryOptions, validateContributionsSearch } from "@/hooks/data/contributions";
 import { siteConfig } from "@/lib/config";
 import {
   AdminRecordDeposit,

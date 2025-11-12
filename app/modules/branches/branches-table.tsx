@@ -17,6 +17,7 @@ import { SquarePen, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
 import type { Branch } from "@/lib/types";
 import { DeleteBranch } from "@/modules/branches/branch-actions";
@@ -51,7 +52,12 @@ export function BranchesTable({ branches, isLoading }: { branches: Branch[]; isL
     },
   });
 
-  return <DataTable table={table} isLoading={isLoading} />;
+  return (
+    <div className="space-y-4">
+      <DataTable table={table} isLoading={isLoading} />
+      <DataTablePagination table={table} />
+    </div>
+  );
 }
 
 const columns: ColumnDef<Branch>[] = [

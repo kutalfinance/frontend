@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 
 import { useQuery } from "@tanstack/react-query";
+import { BanknoteArrowDown, BanknoteArrowUp } from "lucide-react";
 
 import {
   ModuleActions,
@@ -9,18 +10,25 @@ import {
   ModuleHeading,
   ModuleTitle,
 } from "@/components/module-heading";
+import { Button } from "@/components/ui/button";
 
 import { contributionsQueryOptions, validateContributionsSearch } from "@/hooks/data/customers";
 import { siteConfig } from "@/lib/config";
-import { ContributionsTable } from "@/modules/customers/contributions-table";
-
-import type { Route } from "./+types/contributions";
-import { Button } from "@/components/ui/button";
-import { BanknoteArrowDown, BanknoteArrowUp } from "lucide-react";
 import {
   AdminRecordDeposit,
   AdminRecordWithdrawal,
-} from "@/modules/customers/admin-contribution-create";
+} from "@/modules/contributions/admin-contribution-create";
+import {
+  ContributionFilters,
+  ContributionSearchFilter,
+  ContributionTypeFilter,
+  ContributionCustomerFilter,
+  ContributionClearFilters,
+  ContributionSortFilter,
+} from "@/modules/contributions/contribution-filters";
+import { ContributionsTable } from "@/modules/contributions/contributions-table";
+
+import type { Route } from "./+types/contributions";
 
 export function meta() {
   return [
@@ -71,6 +79,13 @@ export default function Contributions({ loaderData }: Route.ComponentProps) {
         </ModuleActions>
       </ModuleHeading>
 
+      <ContributionFilters disabled={isPending}>
+        <ContributionSearchFilter />
+        <ContributionTypeFilter />
+        <ContributionCustomerFilter />
+        <ContributionClearFilters />
+        <ContributionSortFilter />
+      </ContributionFilters>
       <ContributionsTable contributions={contributions} isLoading={isPending} />
     </div>
   );

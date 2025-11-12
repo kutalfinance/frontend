@@ -71,7 +71,7 @@ const columns: ColumnDef<AuditLog>[] = [
   {
     accessorKey: "action",
     header: "Action",
-    cell: ({ row }) => <Badge variant="outline">{row.original.action}</Badge>,
+    cell: ({ row }) => <Badge variant="accent">{row.original.action}</Badge>,
   },
   {
     accessorKey: "entityType",

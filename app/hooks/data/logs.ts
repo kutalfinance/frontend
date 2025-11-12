@@ -25,6 +25,6 @@ export type AuditSearchParams = z.infer<typeof validateAuditSearch>;
 
 export const listAuditlogsOptions = ({ searchParams }: { searchParams?: AuditSearchParams }) =>
   queryOptions({
-    queryKey: ["audit"],
+    queryKey: ["audit", searchParams],
     queryFn: () => api.get("audit", { searchParams }).json<APIResponse<AuditLog[]>>(),
   });

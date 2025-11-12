@@ -114,7 +114,7 @@ function DashboardStats() {
     {
       icon: Coins,
       label: "Contributions",
-      value: formatMoney(metrics?.totalContributions ?? 0),
+      value: formatMoney(metrics?.netContribution ?? 0),
     },
     {
       icon: Building2,

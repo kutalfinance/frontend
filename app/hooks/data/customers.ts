@@ -7,11 +7,12 @@ import {
 } from "@tanstack/react-query";
 import z from "zod";
 
+import { queryClient } from "@/components/query-provider";
+
 import { api } from "@/lib/api";
 import type { APIResponse, Contribution, Customer } from "@/lib/types";
 
 import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";
-import { queryClient } from "@/components/query-provider";
 
 export const validateCustomerSearch = z
   .object({
@@ -98,6 +99,7 @@ export const validateContributionsSearch = z
     userId: z.string(),
     recordedBefore: z.string(), // date-time
     recordedAfter: z.string(), // date-time
+    contributionType: z.enum(["DEPOSIT", "WITHDRAWAL"]),
     sortBy: z.string(),
     sortDirection: z.enum(["asc", "desc"]),
   })

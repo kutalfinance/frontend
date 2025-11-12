@@ -89,11 +89,11 @@ export type AdminMetrics = {
   totalUsers: number;
   totalBranches: number;
   totalCustomers: number;
-  totalContributions: number;
+  netContribution: number;
 };
 
 export type AgentMetrics = {
-  totalContributions: number;
+  netContribution: number;
   totalBranches: number;
   totalCustomers: number;
 };

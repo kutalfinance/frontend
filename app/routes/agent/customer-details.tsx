@@ -28,7 +28,7 @@ import { queryClient } from "@/components/query-provider";
 import {
   AgentRecordDeposit,
   AgentRecordWithdrawal,
-} from "@/modules/customers/agent-contribution-create";
+} from "@/modules/contributions/agent-contribution-create";
 import { Button } from "@/components/ui/button";
 import { Heading, Paragraph } from "@/components/ui/text";
 import {
@@ -38,7 +38,14 @@ import {
   ModuleHeading,
   ModuleTitle,
 } from "@/components/module-heading";
-import { ContributionsTable } from "@/modules/customers/contributions-table";
+import { ContributionsTable } from "@/modules/contributions/contributions-table";
+import {
+  ContributionFilters,
+  ContributionSearchFilter,
+  ContributionTypeFilter,
+  ContributionClearFilters,
+  ContributionSortFilter,
+} from "@/modules/contributions/contribution-filters";
 import { Card, CardContent } from "@/components/ui/card";
 
 export function meta() {
@@ -171,6 +178,13 @@ export default function CustomerContributions({ loaderData, params }: Route.Comp
             <Heading variant="h3">{formatMoney(totalContributions)}</Heading>
           </div> */}
         </div>
+
+        <ContributionFilters disabled={isPending}>
+          <ContributionSearchFilter />
+          <ContributionTypeFilter />
+          <ContributionClearFilters />
+          <ContributionSortFilter />
+        </ContributionFilters>
 
         <ContributionsTable contributions={contributions} isLoading={isPending} />
       </div>

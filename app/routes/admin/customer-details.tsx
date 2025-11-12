@@ -10,6 +10,7 @@ import { Heading, Paragraph } from "@/components/ui/text";
 
 import { customerByIdQueryOptions } from "@/hooks/data/customers";
 import { siteConfig } from "@/lib/config";
+import type { Customer } from "@/lib/types";
 
 import type { Route } from "./+types/customer-details";
 
@@ -55,7 +56,7 @@ export default function CustomerDetails({ loaderData }: Route.ComponentProps) {
   );
 }
 
-function CustomerInfoCard({ customer }: { customer: any }) {
+function CustomerInfoCard({ customer }: { customer: Customer }) {
   return (
     <div className="bg-card rounded-lg border p-6">
       <Heading variant="h4" className="mb-4">
@@ -103,7 +104,7 @@ function CustomerInfoCard({ customer }: { customer: any }) {
   );
 }
 
-function NextOfKinCard({ nextOfKin }: { nextOfKin: any }) {
+function NextOfKinCard({ nextOfKin }: { nextOfKin: Customer["nextOfKin"] }) {
   return (
     <div className="bg-card rounded-lg border p-6">
       <Heading variant="h4" className="mb-4">
@@ -117,7 +118,7 @@ function NextOfKinCard({ nextOfKin }: { nextOfKin: any }) {
 
         <div>
           <Paragraph className="text-muted-foreground text-sm">Phone Number</Paragraph>
-          <Paragraph>{nextOfKin.phoneNubmer}</Paragraph>
+          <Paragraph>{nextOfKin.phoneNumber}</Paragraph>
         </div>
 
         <div>

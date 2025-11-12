@@ -1,11 +1,12 @@
-import { Building2, Users } from "lucide-react";
 import { useState } from "react";
-import { href, Link } from "react-router";
+import { Link, href } from "react-router";
+
+import { Building2, Users } from "lucide-react";
 import { ChevronDown, Coins, MapPin, Phone, User } from "lucide-react";
+
+import { Loader } from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { cn } from "@/lib/utils";
-import { Loader } from "@/components/loader";
 import {
   Empty,
   EmptyDescription,
@@ -13,8 +14,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import type { Customer } from "@/lib/types";
 import { Heading, Paragraph } from "@/components/ui/text";
+
+import type { Customer } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 export function CustomersList({
   customers,
@@ -124,7 +127,7 @@ export function CustomerListItem({ customer }: { customer: Customer }) {
                   {customer.nextOfKin.email}
                 </Paragraph>
                 <Paragraph className="text-muted-foreground text-sm">
-                  {customer.nextOfKin.phoneNubmer}
+                  {customer.nextOfKin.phoneNumber}
                 </Paragraph>
               </div>
             </div>

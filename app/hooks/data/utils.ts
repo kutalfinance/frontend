@@ -40,7 +40,14 @@ export const queryKeys = {
     all: () => ["customers"],
     filters: (filters?: Record<string, unknown>) => ["customers", filters],
     detail: (id: string) => ["customers", id],
-    contributions: (filters?: Record<string, unknown>) => ["customers", "contributions", filters],
+  },
+
+  // Contributions queries
+  contributions: {
+    metrics: (searchParams?: Record<string, unknown>) =>
+      ["contributions", "metrics", searchParams] as const,
+    all: () => ["contributions"] as const,
+    filters: (filters?: Record<string, unknown>) => ["contributions", filters] as const,
   },
 
   // Branches queries
@@ -90,5 +97,9 @@ export const invalidationHelpers = {
   branches: {
     all: () => queryKeys.branches.all(),
     related: () => [queryKeys.branches.all(), queryKeys.customers.all()] as const,
+  },
+  contributions: {
+    all: () => queryKeys.contributions.all(),
+    related: () => [queryKeys.contributions.all(), queryKeys.customers.all()] as const,
   },
 };

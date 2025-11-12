@@ -1,4 +1,25 @@
-import { siteConfig } from "@/lib/config";
+import { Link, Outlet, data, href } from "react-router";
+
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  BanknoteArrowDown,
+  BanknoteArrowUp,
+  Building2,
+  ChevronDown,
+  Mail,
+  MapPin,
+  Phone,
+  User,
+} from "lucide-react";
+
+import {
+  ModuleActions,
+  ModuleDescription,
+  ModuleHeader,
+  ModuleHeading,
+  ModuleTitle,
+} from "@/components/module-heading";
+import { queryClient } from "@/components/query-provider";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,46 +28,28 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import type { Route } from "./+types/customer-details";
-import {
-  contributionsQueryOptions,
-  customerByIdQueryOptions,
-  validateContributionsSearch,
-} from "@/hooks/data/customers";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import {
-  BanknoteArrowDown,
-  BanknoteArrowUp,
-  Building2,
-  Mail,
-  MapPin,
-  Phone,
-  User,
-} from "lucide-react";
-import { data, href, Link, Outlet } from "react-router";
-import { queryClient } from "@/components/query-provider";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Heading, Paragraph } from "@/components/ui/text";
+
+import { contributionsQueryOptions, validateContributionsSearch } from "@/hooks/data/contributions";
+import { customerByIdQueryOptions } from "@/hooks/data/customers";
+import { siteConfig } from "@/lib/config";
 import {
   AgentRecordDeposit,
   AgentRecordWithdrawal,
 } from "@/modules/contributions/agent-contribution-create";
-import { Button } from "@/components/ui/button";
-import { Heading, Paragraph } from "@/components/ui/text";
 import {
-  ModuleActions,
-  ModuleDescription,
-  ModuleHeader,
-  ModuleHeading,
-  ModuleTitle,
-} from "@/components/module-heading";
-import { ContributionsTable } from "@/modules/contributions/contributions-table";
-import {
+  ContributionClearFilters,
   ContributionFilters,
   ContributionSearchFilter,
-  ContributionTypeFilter,
-  ContributionClearFilters,
   ContributionSortFilter,
+  ContributionTypeFilter,
 } from "@/modules/contributions/contribution-filters";
-import { Card, CardContent } from "@/components/ui/card";
+import { ContributionMetrics } from "@/modules/contributions/contribution-metrics";
+import { ContributionsTable } from "@/modules/contributions/contributions-table";
+
+import type { Route } from "./+types/customer-details";
 
 export function meta() {
   return [
@@ -90,7 +93,7 @@ export default function CustomerContributions({ loaderData, params }: Route.Comp
   ];
 
   return (
-    <div className="container space-y-6">
+    <div className="container space-y-10">
       <Outlet />
 
       <Breadcrumb>
@@ -117,7 +120,52 @@ export default function CustomerContributions({ loaderData, params }: Route.Comp
 
       <ModuleHeading>
         <ModuleHeader>
-          <ModuleTitle>{customer.name}</ModuleTitle>
+          <div className="flex items-center gap-2">
+            <ModuleTitle>{customer.name}</ModuleTitle>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <ChevronDown />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(20rem,auto))] gap-4">
+                  {customerInfo.map((field) => (
+                    <div key={field.label} className="flex items-start gap-2">
+                      <field.icon className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+                      <div>
+                        <Paragraph className="text-muted-foreground text-sm">
+                          {field.label}
+                        </Paragraph>
+                        <Heading variant="h4">{field.value}</Heading>
+                      </div>
+                    </div>
+                  ))}
+
+                  {customer.nextOfKin.name && (
+                    <div className="flex items-start gap-2">
+                      <User className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+                      <div>
+                        <Paragraph className="text-muted-foreground text-sm">Next of Kin</Paragraph>
+                        <Heading variant="h4">{customer.nextOfKin.name}</Heading>
+                        {customer.nextOfKin.phoneNumber && (
+                          <Paragraph className="text-muted-foreground text-sm">
+                            {customer.nextOfKin.phoneNumber}
+                          </Paragraph>
+                        )}
+                        {customer.nextOfKin.email && (
+                          <Paragraph className="text-muted-foreground text-sm">
+                            {customer.nextOfKin.email}
+                          </Paragraph>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
           <ModuleDescription>View customer details and contribution history</ModuleDescription>
         </ModuleHeader>
         <ModuleActions>
@@ -134,50 +182,11 @@ export default function CustomerContributions({ loaderData, params }: Route.Comp
         </ModuleActions>
       </ModuleHeading>
 
-      {/* Customer Info Card */}
-      <Card>
-        <CardContent className="grid grid-cols-[repeat(auto-fill,minmax(20rem,auto))] gap-4">
-          {customerInfo.map((field) => (
-            <div key={field.label} className="flex items-start gap-2">
-              <field.icon className="text-muted-foreground mt-0.5 size-4 shrink-0" />
-              <div>
-                <Paragraph className="text-muted-foreground text-sm">{field.label}</Paragraph>
-                <Heading variant="h4">{field.value}</Heading>
-              </div>
-            </div>
-          ))}
-
-          {customer.nextOfKin.name && (
-            <div className="flex items-start gap-2">
-              <User className="text-muted-foreground mt-0.5 size-4 shrink-0" />
-              <div>
-                <Paragraph className="text-muted-foreground text-sm">Next of Kin</Paragraph>
-                <Heading variant="h4">{customer.nextOfKin.name}</Heading>
-                {customer.nextOfKin.phoneNubmer && (
-                  <Paragraph className="text-muted-foreground text-sm">
-                    {customer.nextOfKin.phoneNubmer}
-                  </Paragraph>
-                )}
-                {customer.nextOfKin.email && (
-                  <Paragraph className="text-muted-foreground text-sm">
-                    {customer.nextOfKin.email}
-                  </Paragraph>
-                )}
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <ContributionMetrics customerId={customer.id} />
 
       {/* Contributions Section */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <Heading variant="h3">Contributions History</Heading>
-          {/* <div className="text-right">
-            <Paragraph className="text-muted-foreground text-sm">Total Contributions</Paragraph>
-            <Heading variant="h3">{formatMoney(totalContributions)}</Heading>
-          </div> */}
-        </div>
+        <Heading variant="h3">Contributions History</Heading>
 
         <ContributionFilters disabled={isPending}>
           <ContributionSearchFilter />

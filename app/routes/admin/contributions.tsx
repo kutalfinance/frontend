@@ -12,20 +12,24 @@ import {
 } from "@/components/module-heading";
 import { Button } from "@/components/ui/button";
 
-import { contributionsQueryOptions, validateContributionsSearch } from "@/hooks/data/customers";
+import {
+  contributionsQueryOptions,
+  validateContributionsSearch,
+} from "@/hooks/data/contributions";
 import { siteConfig } from "@/lib/config";
 import {
   AdminRecordDeposit,
   AdminRecordWithdrawal,
 } from "@/modules/contributions/admin-contribution-create";
 import {
+  ContributionClearFilters,
+  ContributionCustomerFilter,
   ContributionFilters,
   ContributionSearchFilter,
-  ContributionTypeFilter,
-  ContributionCustomerFilter,
-  ContributionClearFilters,
   ContributionSortFilter,
+  ContributionTypeFilter,
 } from "@/modules/contributions/contribution-filters";
+import { ContributionMetrics } from "@/modules/contributions/contribution-metrics";
 import { ContributionsTable } from "@/modules/contributions/contributions-table";
 
 import type { Route } from "./+types/contributions";
@@ -55,7 +59,7 @@ export default function Contributions({ loaderData }: Route.ComponentProps) {
   const contributions = data?.data ?? [];
 
   return (
-    <div className="container">
+    <div className="container space-y-10">
       <Outlet />
 
       <ModuleHeading>
@@ -78,6 +82,8 @@ export default function Contributions({ loaderData }: Route.ComponentProps) {
           </AdminRecordWithdrawal>
         </ModuleActions>
       </ModuleHeading>
+
+      <ContributionMetrics customerId={searchParams.customerId} />
 
       <ContributionFilters disabled={isPending}>
         <ContributionSearchFilter />

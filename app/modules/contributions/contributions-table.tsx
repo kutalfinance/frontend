@@ -12,14 +12,13 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-
-import { DataTable } from "@/components/ui/data-table";
-import { Badge } from "@/components/ui/badge";
-
-import { ContributionTypes, type Contribution } from "@/lib/types";
-import { formatMoney } from "@/lib/utils/money";
 import { BanknoteArrowDown, BanknoteArrowUp } from "lucide-react";
-import { href, Link } from "react-router";
+
+import { Badge } from "@/components/ui/badge";
+import { DataTable } from "@/components/ui/data-table";
+
+import { type Contribution, ContributionTypes } from "@/lib/types";
+import { formatMoney } from "@/lib/utils/money";
 
 export function ContributionsTable({
   contributions,
@@ -70,14 +69,14 @@ const columns: ColumnDef<Contribution>[] = [
   {
     accessorKey: "customer.name",
     header: "Customer",
-    cell: ({ row }) => (
+    /* cell: ({ row }) => (
       <Link
         className="link"
         to={href("/admin/customers/:customerId", { customerId: row.original.customer.id })}
       >
         {row.original.customer.name}
       </Link>
-    ),
+    ), */
   },
   {
     accessorKey: "contributionType",

@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -23,9 +25,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { createDepositOptions, createWithdrawalOptions } from "@/hooks/data/customers";
+import { createDepositOptions, createWithdrawalOptions } from "@/hooks/data/contributions";
 import type { Customer } from "@/lib/types";
-import { useState } from "react";
 
 const contributionSchema = z.object({ amount: z.coerce.number() as z.ZodNumber });
 
@@ -46,7 +47,12 @@ export function AgentRecordDeposit({
   const handleSubmit = (data: ContributionForm) => {
     createContribution(
       { customerId: customer.id, amount: data.amount },
-      { onSuccess: () => setOpen(false) }
+      {
+        onSuccess: () => {
+          setOpen(false);
+          form.reset();
+        },
+      }
     );
   };
 
@@ -114,7 +120,12 @@ export function AgentRecordWithdrawal({
   const handleSubmit = (data: ContributionForm) => {
     createContribution(
       { customerId: customer.id, amount: data.amount },
-      { onSuccess: () => setOpen(false) }
+      {
+        onSuccess: () => {
+          setOpen(false);
+          form.reset();
+        },
+      }
     );
   };
 

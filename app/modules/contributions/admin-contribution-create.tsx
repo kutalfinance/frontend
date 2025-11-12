@@ -23,11 +23,8 @@ import {
 } from "@/components/ui/form";
 import { Input, inputStyles } from "@/components/ui/input";
 
-import {
-  createDepositOptions,
-  createWithdrawalOptions,
-  useCustomers,
-} from "@/hooks/data/customers";
+import { useCustomers } from "@/hooks/data/customers";
+import { createDepositOptions, createWithdrawalOptions } from "@/hooks/data/contributions";
 import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";

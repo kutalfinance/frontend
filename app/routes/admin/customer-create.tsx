@@ -68,7 +68,7 @@ const customerDetailsSchema = z.object({
 
 const nextOfKinSchema = z.object({
   name: z.string().min(1, "Next of kin name is required"),
-  phoneNubmer: z
+  phoneNumber: z
     .string()
     .min(1, "Next of kin phone number is required")
     .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)"),
@@ -98,7 +98,7 @@ export default function CreateCustomer() {
 
   const nextOfKinForm = useForm<NextOfKinForm>({
     resolver: zodResolver(nextOfKinSchema),
-    defaultValues: { name: "", phoneNubmer: "", email: "" },
+    defaultValues: { name: "", phoneNumber: "", email: "" },
   });
 
   const handleClose = () => navigate(-1);
@@ -271,7 +271,7 @@ export default function CreateCustomer() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <FormField
                   control={nextOfKinForm.control}
-                  name="phoneNubmer"
+                  name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Next of Kin Phone</FormLabel>

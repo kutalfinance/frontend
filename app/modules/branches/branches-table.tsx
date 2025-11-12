@@ -1,13 +1,5 @@
 import { useState } from "react";
-
-import { format } from "date-fns";
-import { SquarePen, Trash2 } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-
-import { DeleteBranch } from "@/modules/branches/branch-actions";
-import { EditBranchAdmin } from "@/modules/branches/edit-branch-admin";
+import { Link, href } from "react-router";
 
 import {
   type ColumnDef,
@@ -20,10 +12,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { SquarePen, Trash2 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 
 import type { Branch } from "@/lib/types";
+import { DeleteBranch } from "@/modules/branches/branch-actions";
+import { EditBranchAdmin } from "@/modules/branches/edit-branch-admin";
 
 export function BranchesTable({ branches, isLoading }: { branches: Branch[]; isLoading: boolean }) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -58,7 +55,7 @@ export function BranchesTable({ branches, isLoading }: { branches: Branch[]; isL
 }
 
 const columns: ColumnDef<Branch>[] = [
-  {
+  /* {
     id: "select",
     header: ({ table }) => (
       <Checkbox
@@ -78,11 +75,18 @@ const columns: ColumnDef<Branch>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
-  },
+  }, */
   {
     accessorKey: "name",
     header: "Branch Name",
-    cell: ({ row }) => <span className="font-medium whitespace-nowrap">{row.original.name}</span>,
+    cell: ({ row }) => (
+      <Link
+        to={href("/admin/customers") + `?branchId=${row.original.id}`}
+        className="text-primary font-medium whitespace-nowrap hover:underline"
+      >
+        {row.original.name}
+      </Link>
+    ),
   },
   {
     accessorKey: "location",

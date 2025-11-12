@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, href } from "react-router";
 
 import {
   type ColumnDef,
@@ -15,6 +15,7 @@ import {
 import { format } from "date-fns";
 
 import { DataTable } from "@/components/ui/data-table";
+import { Paragraph } from "@/components/ui/text";
 
 import type { Customer } from "@/lib/types";
 
@@ -62,20 +63,25 @@ const columns: ColumnDef<Customer>[] = [
     header: "Name",
     cell: ({ row }) => (
       <Link
-        to={`/admin/customers/${row.original.id}`}
-        className="text-primary font-medium hover:underline"
+        to={href("/admin/contributions") + `?customerId=${row.original.id}`}
+        className="text-primary font-medium whitespace-nowrap hover:underline"
       >
         {row.original.name}
       </Link>
     ),
   },
   {
-    accessorKey: "email",
-    header: "Email",
-  },
-  {
     accessorKey: "phoneNumber",
-    header: "Phone",
+    header: "Contact",
+    cell: ({ row }) => {
+      const customer = row.original;
+      return (
+        <div>
+          <Paragraph>{customer.phoneNumber}</Paragraph>
+          <Paragraph className="text-muted-foreground text-sm">{customer.email}</Paragraph>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "location",
@@ -94,7 +100,20 @@ const columns: ColumnDef<Customer>[] = [
     header: "Next of Kin",
     cell: ({ row }) => {
       const nextOfKin = row.original.nextOfKin;
-      return nextOfKin.name || "Not provided";
+      return nextOfKin.name;
+    },
+  },
+  {
+    accessorKey: "nextOfKin.phoneNumber",
+    header: "Next of Kin Contact",
+    cell: ({ row }) => {
+      const nextOfKin = row.original.nextOfKin;
+      return (
+        <div>
+          <Paragraph>{nextOfKin.phoneNumber}</Paragraph>
+          <Paragraph className="text-muted-foreground text-sm">{nextOfKin.email}</Paragraph>
+        </div>
+      );
     },
   },
   {

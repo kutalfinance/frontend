@@ -1,7 +1,7 @@
-import { useNavigate } from "react-router";
+import { Link, href, useNavigate } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown } from "lucide-react";
+import { Building, ChevronDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -23,6 +23,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import {
   Form,
   FormControl,
@@ -75,112 +83,136 @@ export default function CreateBranch() {
     });
   }
 
-  return (
-    <Dialog defaultOpen onOpenChange={() => navigate(-1)}>
-      <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle>Create New Branch</DialogTitle>
-          <DialogDescription>
-            Add a new branch location and assign an agent to manage it.
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Branch Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter branch name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Location</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter branch location" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
+  let body = (
+    <>
+      <DialogHeader>
+        <DialogTitle>Create New Branch</DialogTitle>
+        <DialogDescription>
+          Add a new branch location and assign an agent to manage it.
+        </DialogDescription>
+      </DialogHeader>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
-              name="agentId"
+              name="name"
               render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Assigned agent</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild className="w-full">
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className="w-full justify-between font-normal"
-                        >
-                          {selectedAgent ? (
-                            <>
-                              {selectedAgent.name} - {selectedAgent.email}
-                            </>
-                          ) : (
-                            <span className="text-muted-foreground">Select an agent</span>
-                          )}
-
-                          <ChevronDown className="text-muted-foreground ml-auto" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0">
-                      <Command>
-                        <CommandInput placeholder="Search agents..." />
-                        <CommandList>
-                          <CommandEmpty>No agents found.</CommandEmpty>
-                          <CommandGroup>
-                            {agents.map((agent) => (
-                              <PopoverClose asChild>
-                                <CommandItem
-                                  key={agent.id}
-                                  onSelect={() => field.onChange(agent.id)}
-                                >
-                                  {agent.name} - {agent.email}
-                                </CommandItem>
-                              </PopoverClose>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                <FormItem>
+                  <FormLabel>Branch Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter branch name" {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button isLoading={isPending} type="submit">
-                Create Branch
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter branch location" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="agentId"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Assigned agent</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild className="w-full">
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-full justify-between font-normal"
+                      >
+                        {selectedAgent ? (
+                          <>
+                            {selectedAgent.name} - {selectedAgent.email}
+                          </>
+                        ) : (
+                          <span className="text-muted-foreground">Select an agent</span>
+                        )}
+
+                        <ChevronDown className="text-muted-foreground ml-auto" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0">
+                    <Command>
+                      <CommandInput placeholder="Search agents..." />
+                      <CommandList>
+                        <CommandEmpty>No agents found.</CommandEmpty>
+                        <CommandGroup>
+                          {agents.map((agent) => (
+                            <PopoverClose asChild>
+                              <CommandItem key={agent.id} onSelect={() => field.onChange(agent.id)}>
+                                {agent.name} - {agent.email}
+                              </CommandItem>
+                            </PopoverClose>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Cancel
               </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
+            </DialogClose>
+            <Button isLoading={isPending} type="submit">
+              Create Branch
+            </Button>
+          </DialogFooter>
+        </form>
+      </Form>
+    </>
+  );
+
+  if (!agents.length) {
+    body = (
+      <>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Building />
+            </EmptyMedia>
+            <EmptyTitle>No agents available</EmptyTitle>
+            <EmptyDescription>
+              You need to create agents before adding branches. Please add a branch first.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button asChild>
+              <Link to={href("/admin/users/create")}>Go to agents</Link>
+            </Button>
+          </EmptyContent>
+        </Empty>
+      </>
+    );
+  }
+
+  return (
+    <Dialog defaultOpen onOpenChange={() => navigate(-1)}>
+      <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>{body}</DialogContent>
     </Dialog>
   );
 }

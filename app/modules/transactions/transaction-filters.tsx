@@ -12,11 +12,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useCustomers } from "@/hooks/data/customers";
 import { useDebounce } from "@/hooks/use-debounce";
-import { TransactionTypes } from "@/lib/types";
+import { TransactionStatus, TransactionTypes } from "@/lib/types";
 
 // Context
 interface TransactionFiltersContextValue {
@@ -31,7 +30,9 @@ const TransactionFiltersContext = createContext<TransactionFiltersContextValue |
 function useTransactionFilters() {
   const context = useContext(TransactionFiltersContext);
   if (!context) {
-    throw new Error("Transaction filter components must be used within TransactionFilters");
+    throw new Error(
+      `${useTransactionFilters.name} must be used within ${TransactionFilters.name}`
+    );
   }
   return context;
 }
@@ -91,32 +92,32 @@ export function TransactionTypeFilter() {
   const { searchParams, setSearchParams, disabled } = useTransactionFilters();
 
   return (
-    <Tabs
-      value={searchParams.get("transactionType") || "all"}
+    <Select
+      disabled={disabled}
+      value={searchParams.get("type") || "all"}
       onValueChange={(value) => {
         setSearchParams((prev) => {
           if (value === "all") value = "";
 
-          if (value) prev.set("transactionType", value);
-          else prev.delete("transactionType");
+          if (value) prev.set("type", value);
+          else prev.delete("type");
           return prev;
         });
       }}
     >
-      <TabsList>
-        <TabsTrigger disabled={disabled} value="all">
-          All types
-        </TabsTrigger>
-
-        <TabsTrigger disabled={disabled} value={TransactionTypes.DEPOSIT}>
-          Deposits
-        </TabsTrigger>
-
-        <TabsTrigger disabled={disabled} value={TransactionTypes.WITHDRAWAL}>
-          Withdrawals
-        </TabsTrigger>
-      </TabsList>
-    </Tabs>
+      <SelectTrigger>
+        <div className="flex items-center gap-1.5">
+          <span className="text-muted-foreground">Type:</span>
+          <SelectValue placeholder="Type" />
+        </div>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All types</SelectItem>
+        <SelectItem value={TransactionTypes.DEPOSIT}>Deposit</SelectItem>
+        <SelectItem value={TransactionTypes.WITHDRAWAL}>Withdrawal</SelectItem>
+        <SelectItem value={TransactionTypes.SERVICE_CHARGE}>Service Charge</SelectItem>
+      </SelectContent>
+    </Select>
   );
 }
 
@@ -157,6 +158,40 @@ export function TransactionCustomerFilter() {
   );
 }
 
+export function TransactionStatusFilter() {
+  const { searchParams, setSearchParams, disabled } = useTransactionFilters();
+
+  return (
+    <Select
+      disabled={disabled}
+      value={searchParams.get("status") || "all"}
+      onValueChange={(value) => {
+        setSearchParams((prev) => {
+          if (value === "all") value = "";
+
+          if (value) prev.set("status", value);
+          else prev.delete("status");
+          return prev;
+        });
+      }}
+    >
+      <SelectTrigger>
+        <div className="flex items-center gap-1.5">
+          <span className="text-muted-foreground">Status:</span>
+          <SelectValue placeholder="Status" />
+        </div>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All statuses</SelectItem>
+        <SelectItem value={TransactionStatus.COMPLETED}>Completed</SelectItem>
+        <SelectItem value={TransactionStatus.PENDING}>Pending</SelectItem>
+        <SelectItem value={TransactionStatus.REJECTED}>Rejected</SelectItem>
+        <SelectItem value={TransactionStatus.FAILED}>Failed</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+}
+
 export function TransactionSortFilter() {
   const { searchParams, setSearchParams, disabled } = useTransactionFilters();
 
@@ -184,7 +219,8 @@ export function TransactionSortFilter() {
       <SelectContent>
         <SelectItem value="timestamp">Date</SelectItem>
         <SelectItem value="amount">Amount</SelectItem>
-        <SelectItem value="transactionType">Type</SelectItem>
+        <SelectItem value="type">Type</SelectItem>
+        <SelectItem value="status">Status</SelectItem>
       </SelectContent>
     </Select>
   );
@@ -200,7 +236,8 @@ export function TransactionClearFilters() {
       variant="link"
       onClick={() =>
         setSearchParams((prev) => {
-          prev.delete("transactionType");
+          prev.delete("type");
+          prev.delete("status");
           prev.delete("customerId");
           return prev;
         })

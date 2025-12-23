@@ -24,6 +24,7 @@ import {
   TransactionFilters,
   TransactionSearchFilter,
   TransactionSortFilter,
+  TransactionStatusFilter,
   TransactionTypeFilter,
 } from "@/modules/transactions/transaction-filters";
 import { TransactionMetrics } from "@/modules/transactions/transaction-metrics";
@@ -45,7 +46,8 @@ export function clientLoader({ request }: Route.ClientLoaderArgs) {
   try {
     const validatedParams = validateTransactionsSearch.parse(params);
     return { searchParams: validatedParams };
-  } catch {
+  } catch (error) {
+    console.error("Failed to validate search params:", error);
     return { searchParams: {} };
   }
 }
@@ -85,6 +87,7 @@ export default function Transactions({ loaderData }: Route.ComponentProps) {
       <TransactionFilters disabled={isPending}>
         <TransactionSearchFilter />
         <TransactionTypeFilter />
+        <TransactionStatusFilter />
         <TransactionCustomerFilter />
         <TransactionClearFilters />
         <TransactionSortFilter />

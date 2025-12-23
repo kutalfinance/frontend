@@ -15,7 +15,8 @@ export const validateTransactionsSearch = z
     userId: z.string(),
     recordedBefore: z.string(), // date-time
     recordedAfter: z.string(), // date-time
-    transactionType: z.enum(["DEPOSIT", "WITHDRAWAL"]),
+    type: z.enum(["DEPOSIT", "WITHDRAWAL", "SERVICE_CHARGE"]),
+    status: z.enum(["COMPLETED", "REJECTED", "PENDING", "FAILED"]),
     sortBy: z.string(),
     sortDirection: z.enum(["asc", "desc"]),
   })

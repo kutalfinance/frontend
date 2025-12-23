@@ -62,7 +62,7 @@ export default function CreateCustomer() {
   const navigate = useNavigate();
   const { mutate: createCustomer, isPending } = useCreateCustomer();
   const { data } = useBranchesAdmin();
-  const branches = data?.data || [];
+  const branches = data?.data ?? [];
 
   const [step, setStep] = useState<"customer" | "nextOfKin">("customer");
 

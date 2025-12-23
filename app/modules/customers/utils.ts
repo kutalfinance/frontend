@@ -17,9 +17,7 @@ export const customerDetailsSchema = z.object({
     .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)"),
   email: z.email("Please enter a valid email address"),
   location: z.string().min(1, "Location is required"),
-  contributionAmount: z.coerce
-    .number()
-    .min(0, "Contribution amount cannot be negative") as z.ZodNumber,
+  contributionAmount: z.coerce.number<number>().min(0, "Contribution amount cannot be negative"),
   branchId: z.string().min(1, "Branch selection is required"),
 });
 

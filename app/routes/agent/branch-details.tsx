@@ -53,7 +53,8 @@ export async function clientLoader({ request, params }: Route.ClientLoaderArgs) 
   try {
     const validatedParams = validateCustomerSearch.parse(searchParams);
     return { searchParams: validatedParams };
-  } catch {
+  } catch (error) {
+    console.error("Failed to validate search params:", error);
     return { searchParams: {} };
   }
 }

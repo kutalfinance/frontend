@@ -25,7 +25,6 @@ export default [
     ]),
     route("customers", "./routes/admin/customers.tsx", [
       route("create", "./routes/admin/customer-create.tsx"),
-      route(":customerId", "./routes/admin/customer-details.tsx"),
     ]),
     route("branches", "./routes/admin/branches.tsx", [
       route("create", "./routes/admin/branches-create.tsx"),

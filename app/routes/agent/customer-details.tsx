@@ -44,6 +44,7 @@ import {
   TransactionFilters,
   TransactionSearchFilter,
   TransactionSortFilter,
+  TransactionStatusFilter,
   TransactionTypeFilter,
 } from "@/modules/transactions/transaction-filters";
 import { TransactionMetrics } from "@/modules/transactions/transaction-metrics";
@@ -72,7 +73,8 @@ export async function clientLoader({ request, params }: Route.ClientLoaderArgs) 
     searchParams.customerId = params.customerId;
     const validatedParams = validateTransactionsSearch.parse(searchParams);
     return { searchParams: validatedParams };
-  } catch {
+  } catch (error) {
+    console.error("Failed to validate search params:", error);
     return { searchParams: {} };
   }
 }
@@ -83,7 +85,7 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
 
   const { searchParams } = loaderData;
   const { data, isPending } = useQuery(transactionsQueryOptions({ searchParams }));
-  const transactions = data?.data || [];
+  const transactions = data?.data ?? [];
 
   const customerInfo = [
     { icon: Phone, label: "Phone Number", value: customer.phoneNumber },
@@ -191,6 +193,7 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
         <TransactionFilters disabled={isPending}>
           <TransactionSearchFilter />
           <TransactionTypeFilter />
+          <TransactionStatusFilter />
           <TransactionClearFilters />
           <TransactionSortFilter />
         </TransactionFilters>

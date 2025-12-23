@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, href } from "react-router";
 
 import {
   type ColumnDef,
@@ -18,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
-import { type Transaction, TransactionTypes } from "@/lib/types";
+import { type Transaction, TransactionStatus, TransactionTypes } from "@/lib/types";
 import { formatMoney } from "@/lib/utils/money";
 
 export function TransactionsTable({
@@ -71,30 +72,49 @@ const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "customer.name",
     header: "Customer",
-    /* cell: ({ row }) => (
-      <Link
-        className="link"
-        to={href("/admin/customers/:customerId", { customerId: row.original.customer.id })}
-      >
+    cell: ({ row }) => (
+      <Link className="link" to={href("/admin/customers") + `?q=${row.original.customer.name}`}>
         {row.original.customer.name}
       </Link>
-    ), */
+    ),
   },
   {
     accessorKey: "type",
     header: "Type",
-    cell: ({ row }) =>
-      row.original.type === TransactionTypes.DEPOSIT ? (
-        <Badge>
-          <BanknoteArrowUp />
-          {row.original.type}
-        </Badge>
-      ) : (
-        <Badge variant="destructive">
-          <BanknoteArrowDown />
-          {row.original.type}
-        </Badge>
-      ),
+    cell: ({ row }) => {
+      const type = row.original.type;
+      if (type === TransactionTypes.DEPOSIT) {
+        return (
+          <Badge>
+            <BanknoteArrowUp />
+            {type}
+          </Badge>
+        );
+      } else if (type === TransactionTypes.WITHDRAWAL) {
+        return (
+          <Badge variant="destructive">
+            <BanknoteArrowDown />
+            {type}
+          </Badge>
+        );
+      } else {
+        return <Badge variant="outline">{type}</Badge>;
+      }
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status;
+      const variantMap: Record<TransactionStatus, "default" | "secondary" | "destructive" | "outline"> = {
+        [TransactionStatus.COMPLETED]: "default",
+        [TransactionStatus.PENDING]: "secondary",
+        [TransactionStatus.REJECTED]: "destructive",
+        [TransactionStatus.FAILED]: "destructive",
+      };
+      return <Badge variant={variantMap[status]}>{status}</Badge>;
+    },
   },
   {
     accessorKey: "recordedBy.name",

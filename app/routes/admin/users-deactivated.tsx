@@ -28,7 +28,8 @@ export function clientLoader({ request }: Route.ClientLoaderArgs) {
   try {
     const validatedParams = validateUserSearch.parse(params);
     return { searchParams: { ...validatedParams, isDeactivated: true } };
-  } catch {
+  } catch (error) {
+    console.error("Failed to validate search params:", error);
     return { searchParams: { isDeactivated: true } };
   }
 }

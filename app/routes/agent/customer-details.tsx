@@ -32,29 +32,29 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { contributionsQueryOptions, validateContributionsSearch } from "@/hooks/data/contributions";
+import { transactionsQueryOptions, validateTransactionsSearch } from "@/hooks/data/transactions";
 import { customerByIdQueryOptions } from "@/hooks/data/customers";
 import { siteConfig } from "@/lib/config";
 import {
   AgentRecordDeposit,
   AgentRecordWithdrawal,
-} from "@/modules/contributions/agent-contribution-create";
+} from "@/modules/transactions/agent-transaction-create";
 import {
-  ContributionClearFilters,
-  ContributionFilters,
-  ContributionSearchFilter,
-  ContributionSortFilter,
-  ContributionTypeFilter,
-} from "@/modules/contributions/contribution-filters";
-import { ContributionMetrics } from "@/modules/contributions/contribution-metrics";
-import { ContributionsTable } from "@/modules/contributions/contributions-table";
+  TransactionClearFilters,
+  TransactionFilters,
+  TransactionSearchFilter,
+  TransactionSortFilter,
+  TransactionTypeFilter,
+} from "@/modules/transactions/transaction-filters";
+import { TransactionMetrics } from "@/modules/transactions/transaction-metrics";
+import { TransactionsTable } from "@/modules/transactions/transactions-table";
 
 import type { Route } from "./+types/customer-details";
 
 export function meta() {
   return [
-    { title: `Customer Contributions - ${siteConfig.name}` },
-    { name: "description", content: "View and manage customer contributions" },
+    { title: `Customer Transactions - ${siteConfig.name}` },
+    { name: "description", content: "View and manage customer transactions" },
   ];
 }
 
@@ -70,20 +70,20 @@ export async function clientLoader({ request, params }: Route.ClientLoaderArgs) 
 
   try {
     searchParams.customerId = params.customerId;
-    const validatedParams = validateContributionsSearch.parse(searchParams);
+    const validatedParams = validateTransactionsSearch.parse(searchParams);
     return { searchParams: validatedParams };
   } catch {
     return { searchParams: {} };
   }
 }
 
-export default function CustomerContributions({ loaderData, params }: Route.ComponentProps) {
+export default function CustomerTransactions({ loaderData, params }: Route.ComponentProps) {
   const { data: customerResponse } = useSuspenseQuery(customerByIdQueryOptions(params.customerId));
   const customer = customerResponse.data;
 
   const { searchParams } = loaderData;
-  const { data, isPending } = useQuery(contributionsQueryOptions({ searchParams }));
-  const contributions = data?.data || [];
+  const { data, isPending } = useQuery(transactionsQueryOptions({ searchParams }));
+  const transactions = data?.data || [];
 
   const customerInfo = [
     { icon: Phone, label: "Phone Number", value: customer.phoneNumber },
@@ -129,7 +129,7 @@ export default function CustomerContributions({ loaderData, params }: Route.Comp
                   <ChevronDown />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent>
+              <PopoverContent className="w-fit">
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(20rem,auto))] gap-4">
                   {customerInfo.map((field) => (
                     <div key={field.label} className="flex items-start gap-2">
@@ -166,7 +166,7 @@ export default function CustomerContributions({ loaderData, params }: Route.Comp
               </PopoverContent>
             </Popover>
           </div>
-          <ModuleDescription>View customer details and contribution history</ModuleDescription>
+          <ModuleDescription>View customer details and transaction history</ModuleDescription>
         </ModuleHeader>
         <ModuleActions>
           <AgentRecordDeposit asChild customer={customer}>
@@ -182,20 +182,20 @@ export default function CustomerContributions({ loaderData, params }: Route.Comp
         </ModuleActions>
       </ModuleHeading>
 
-      <ContributionMetrics customerId={customer.id} />
+      <TransactionMetrics customerId={customer.id} />
 
-      {/* Contributions Section */}
+      {/* Transactions Section */}
       <div className="space-y-3">
-        <Heading variant="h3">Contributions History</Heading>
+        <Heading variant="h3">Transactions History</Heading>
 
-        <ContributionFilters disabled={isPending}>
-          <ContributionSearchFilter />
-          <ContributionTypeFilter />
-          <ContributionClearFilters />
-          <ContributionSortFilter />
-        </ContributionFilters>
+        <TransactionFilters disabled={isPending}>
+          <TransactionSearchFilter />
+          <TransactionTypeFilter />
+          <TransactionClearFilters />
+          <TransactionSortFilter />
+        </TransactionFilters>
 
-        <ContributionsTable contributions={contributions} isLoading={isPending} />
+        <TransactionsTable transactions={transactions} isLoading={isPending} />
       </div>
     </div>
   );

@@ -1,0 +1,70 @@
+import { mutationOptions, queryOptions } from "@tanstack/react-query";
+import z from "zod";
+
+import { queryClient } from "@/components/query-provider";
+
+import { api } from "@/lib/api";
+import type { APIResponse, Transaction } from "@/lib/types";
+
+import { queryKeys, successToast } from "./utils";
+
+export const validateTransactionsSearch = z
+  .object({
+    q: z.string(),
+    customerId: z.string(),
+    userId: z.string(),
+    recordedBefore: z.string(), // date-time
+    recordedAfter: z.string(), // date-time
+    transactionType: z.enum(["DEPOSIT", "WITHDRAWAL"]),
+    sortBy: z.string(),
+    sortDirection: z.enum(["asc", "desc"]),
+  })
+  .partial();
+
+export type TransactionsSearchParams = z.infer<typeof validateTransactionsSearch>;
+
+export const transactionsQueryOptions = ({
+  searchParams,
+}: {
+  searchParams?: TransactionsSearchParams;
+}) =>
+  queryOptions({
+    queryKey: queryKeys.transactions.filters(searchParams),
+    queryFn: () => api.get("transaction", { searchParams }).json<APIResponse<Transaction[]>>(),
+  });
+
+export const createWithdrawalOptions = mutationOptions({
+  mutationFn: (data: { customerId: string; amount?: number }) =>
+    api.post("transaction/withdraw", { json: data }).json<APIResponse<Transaction>>(),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
+    queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
+    successToast("Withdrawal recorded successfully");
+  },
+});
+
+export const createDepositOptions = mutationOptions({
+  mutationFn: (data: { customerId: string; amount?: number }) =>
+    api.post("transaction/deposit", { json: data }).json<APIResponse<Transaction>>(),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
+    queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
+    successToast("Deposit recorded successfully");
+  },
+});
+
+const validateMetricsSearch = validateTransactionsSearch.pick({ customerId: true });
+type TransactionsMetricsSearchParams = z.infer<typeof validateMetricsSearch>;
+
+export const transactionsMetricsOptions = ({
+  searchParams,
+}: {
+  searchParams: TransactionsMetricsSearchParams;
+}) =>
+  queryOptions({
+    queryKey: queryKeys.transactions.metrics(searchParams),
+    queryFn: () =>
+      api
+        .get("transaction/metrics", { searchParams })
+        .json<APIResponse<{ totalDeposited: number; totalWithdrawn: number; net: number }>>(),
+  });

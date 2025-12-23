@@ -17,7 +17,7 @@ export const loggedInUserQueryOptions = queryOptions({
       return response;
     } catch (err) {
       authToken.clear();
-      window.location.href = href("/auth");
+      window.location.replace(href("/auth"));
       throw err;
     }
   },

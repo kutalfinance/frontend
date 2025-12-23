@@ -26,6 +26,10 @@ import { Input } from "@/components/ui/input";
 
 import { useCreateCustomer } from "@/hooks/data/customers";
 import { siteConfig } from "@/lib/config";
+import {
+  customerDetailsSchema as customerSchema,
+  nextOfKinSchema,
+} from "@/modules/customers/utils";
 
 import type { Route } from "./+types/customer-create";
 
@@ -36,33 +40,7 @@ export function meta() {
   ];
 }
 
-/**
- * The phone regex supports common international formats like:
- * - +1 (555) 123-4567
- * - +44 20 7123 4567
- * - 555-123-4567
- * - (555) 123 4567
- * */
-const phoneRegex = /^[\+]?[\d\s\-\(\)]+$/;
-
-const customerDetailsSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  phoneNumber: z
-    .string()
-    .min(1, "Phone number is required")
-    .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)"),
-  email: z.email("Please enter a valid email address"),
-  location: z.string().min(1, "Location is required"),
-});
-
-const nextOfKinSchema = z.object({
-  name: z.string().min(1, "Next of kin name is required"),
-  phoneNumber: z
-    .string()
-    .min(1, "Next of kin phone number is required")
-    .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)"),
-  email: z.email("Please enter a valid next of kin email address"),
-});
+const customerDetailsSchema = customerSchema.omit({ branchId: true });
 
 type CustomerDetailsForm = z.infer<typeof customerDetailsSchema>;
 type NextOfKinForm = z.infer<typeof nextOfKinSchema>;
@@ -166,6 +144,26 @@ export default function CreateCustomer({ params }: Route.ComponentProps) {
                     <FormLabel>Location</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter customer location" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={customerForm.control}
+                name="contributionAmount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contribution Amount</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        step={0.01}
+                        placeholder="Enter contribution amount"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

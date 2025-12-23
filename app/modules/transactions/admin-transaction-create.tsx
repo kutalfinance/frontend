@@ -1,9 +1,20 @@
+import { useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Dialog,
   DialogContent,
@@ -22,42 +33,32 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input, inputStyles } from "@/components/ui/input";
+import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
+import { createDepositOptions, createWithdrawalOptions } from "@/hooks/data/transactions";
 import { useCustomers } from "@/hooks/data/customers";
-import { createDepositOptions, createWithdrawalOptions } from "@/hooks/data/contributions";
-import { useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown } from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 
-const contributionSchema = z.object({
-  amount: z.coerce.number() as z.ZodNumber,
+const transactionSchema = z.object({
+  amount: z.coerce.number().optional() as z.ZodOptional<z.ZodNumber>,
   customerId: z.string(),
 });
 
-type ContributionForm = z.infer<typeof contributionSchema>;
+type TransactionForm = z.infer<typeof transactionSchema>;
 
 export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof DialogTrigger>) {
   const [open, setOpen] = useState(false);
-  const { mutate: createContribution, isPending } = useMutation(createDepositOptions);
+  const { mutate: createTransaction, isPending } = useMutation(createDepositOptions);
   const { data } = useCustomers();
   const customers = data?.data ?? [];
 
-  const form = useForm<ContributionForm>({
-    resolver: zodResolver(contributionSchema),
+  const form = useForm<TransactionForm>({
+    resolver: zodResolver(transactionSchema),
     defaultValues: { amount: undefined },
   });
 
-  const handleSubmit = (data: ContributionForm) => {
-    createContribution(data, { onSuccess: () => setOpen(false) });
+  const handleSubmit = (data: TransactionForm) => {
+    createTransaction(data, { onSuccess: () => setOpen(false) });
   };
 
   return (
@@ -105,19 +106,21 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
                           <CommandGroup>
                             {customers.map((customer) => (
                               <CommandItem
-                                value={customer.id}
                                 key={customer.id}
                                 onSelect={() => {
                                   form.setValue("customerId", customer.id);
                                 }}
+                                asChild
                               >
-                                {customer.name}
-                                <Check
-                                  className={cn(
-                                    "ml-auto",
-                                    customer.id === field.value ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
+                                <PopoverClose className="w-full">
+                                  {customer.name}
+                                  <Check
+                                    className={cn(
+                                      "ml-auto",
+                                      customer.id === field.value ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                </PopoverClose>
                               </CommandItem>
                             ))}
                           </CommandGroup>
@@ -167,17 +170,17 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
 
 export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof DialogTrigger>) {
   const [open, setOpen] = useState(false);
-  const { mutate: createContribution, isPending } = useMutation(createWithdrawalOptions);
+  const { mutate: createTransaction, isPending } = useMutation(createWithdrawalOptions);
   const { data } = useCustomers();
   const customers = data?.data ?? [];
 
-  const form = useForm<ContributionForm>({
-    resolver: zodResolver(contributionSchema),
+  const form = useForm<TransactionForm>({
+    resolver: zodResolver(transactionSchema),
     defaultValues: { amount: undefined },
   });
 
-  const handleSubmit = (data: ContributionForm) => {
-    createContribution(data, { onSuccess: () => setOpen(false) });
+  const handleSubmit = (data: TransactionForm) => {
+    createTransaction(data, { onSuccess: () => setOpen(false) });
   };
 
   return (

@@ -38,7 +38,8 @@ import { type User, UserRoles } from "@/lib/types";
 const editUserFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters long"),
   role: z.enum(UserRoles),
-  isSuperAdmin: z.boolean().optional(),
+  superAdmin: z.boolean().optional(),
+  approver: z.boolean().optional(),
 });
 
 type EditUserForm = z.infer<typeof editUserFormSchema>;
@@ -50,7 +51,7 @@ export function EditUser({
   const isPending = false;
   const editForm = useForm<EditUserForm>({
     resolver: zodResolver(editUserFormSchema),
-    defaultValues: { name: user.name, role: user.role, isSuperAdmin: user.isSuperAdmin },
+    defaultValues: { name: user.name, role: user.role, superAdmin: user.superAdmin },
   });
 
   function handleSubmit(values: EditUserForm) {
@@ -113,7 +114,7 @@ export function EditUser({
               <SuperAdminOnly>
                 <FormField
                   control={editForm.control}
-                  name="isSuperAdmin"
+                  name="superAdmin"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>

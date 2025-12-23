@@ -18,14 +18,14 @@ import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
-import { type Contribution, ContributionTypes } from "@/lib/types";
+import { type Transaction, TransactionTypes } from "@/lib/types";
 import { formatMoney } from "@/lib/utils/money";
 
-export function ContributionsTable({
-  contributions,
+export function TransactionsTable({
+  transactions,
   isLoading,
 }: {
-  contributions: Contribution[];
+  transactions: Transaction[];
   isLoading: boolean;
 }) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -34,7 +34,7 @@ export function ContributionsTable({
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
-    data: contributions,
+    data: transactions,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -60,7 +60,7 @@ export function ContributionsTable({
   );
 }
 
-const columns: ColumnDef<Contribution>[] = [
+const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "amount",
     header: "Amount",
@@ -81,18 +81,18 @@ const columns: ColumnDef<Contribution>[] = [
     ), */
   },
   {
-    accessorKey: "contributionType",
+    accessorKey: "type",
     header: "Type",
     cell: ({ row }) =>
-      row.original.contributionType === ContributionTypes.DEPOSIT ? (
+      row.original.type === TransactionTypes.DEPOSIT ? (
         <Badge>
           <BanknoteArrowUp />
-          {row.original.contributionType}
+          {row.original.type}
         </Badge>
       ) : (
         <Badge variant="destructive">
           <BanknoteArrowDown />
-          {row.original.contributionType}
+          {row.original.type}
         </Badge>
       ),
   },
@@ -104,10 +104,10 @@ const columns: ColumnDef<Contribution>[] = [
     ),
   },
   {
-    accessorKey: "timestamp",
+    accessorKey: "createdAt",
     header: "Date & Time",
     cell: ({ row }) => {
-      const date = new Date(row.original.timestamp);
+      const date = new Date(row.original.createdAt);
       return (
         <span className="text-muted-foreground whitespace-nowrap">
           {format(date, "MMM dd, yyyy 'at' h:mm a")}

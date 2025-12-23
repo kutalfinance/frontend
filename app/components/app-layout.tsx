@@ -169,9 +169,9 @@ const adminNavLinks: {
     icon: Contact,
   },
   {
-    title: "Contributions",
-    href: href("/admin/contributions"),
-    pathRegex: /\/admin\/contributions/,
+    title: "Transactions",
+    href: href("/admin/transactions"),
+    pathRegex: /\/admin\/transactions/,
     icon: Coins,
   },
   {

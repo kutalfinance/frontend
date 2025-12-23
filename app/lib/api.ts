@@ -6,6 +6,9 @@ import { API_URL } from "./config";
 
 export const api = ky.extend({
   prefixUrl: `${API_URL}/api/v1`,
+  headers: {
+    "ngrok-skip-browser-warning": "true",
+  },
   timeout: 1000 * 60,
   hooks: {
     beforeRequest: [

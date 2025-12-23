@@ -30,7 +30,7 @@ export default [
     route("branches", "./routes/admin/branches.tsx", [
       route("create", "./routes/admin/branches-create.tsx"),
     ]),
-    route("contributions", "./routes/admin/contributions.tsx"),
+    route("transactions", "./routes/admin/transactions.tsx"),
     route("audit", "./routes/admin/audit.tsx"),
   ]),
 

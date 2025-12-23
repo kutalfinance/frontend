@@ -54,7 +54,8 @@ const userTypeOptions = [
 ];
 
 const userDetailsSchema = z.object({
-  isSuperAdmin: z.boolean().optional(),
+  superAdmin: z.boolean().optional(),
+  approver: z.boolean().optional(),
   name: z.string("Name is required"),
   email: z.email("Please enter a valid email address"),
 });
@@ -80,7 +81,7 @@ export default function CreateUser() {
 
   const detailsForm = useForm<UserDetailsForm>({
     resolver: zodResolver(userDetailsSchema),
-    defaultValues: { isSuperAdmin: false, email: "" },
+    defaultValues: { approver: true, superAdmin: false, email: "" },
   });
 
   const otpForm = useForm<OTPForm>({
@@ -120,7 +121,10 @@ export default function CreateUser() {
             <div>
               <RadioGroup onValueChange={handleUserTypeChange} value={userType}>
                 {userTypeOptions.map((option) => (
-                  <div className="border-input has-data-[state=checked]:border-primary relative flex w-full items-start gap-2 rounded-md border p-4 shadow-xs outline-none">
+                  <div
+                    key={option.label}
+                    className="border-input has-data-[state=checked]:border-primary relative flex w-full items-start gap-2 rounded-md border p-4 shadow-xs outline-none"
+                  >
                     <div className="grid flex-1 gap-1">
                       <Label htmlFor={option.value}>{option.label}</Label>
                       <Paragraph className="text-muted-foreground text-xs">
@@ -178,25 +182,23 @@ export default function CreateUser() {
               />
 
               {userType === UserRoles.ADMIN && (
-                <SuperAdminOnly>
+                <>
                   <FormField
                     control={detailsForm.control}
-                    name="isSuperAdmin"
+                    name="approver"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
                           <div className="hover:bg-muted relative flex items-start justify-between gap-2 rounded-lg border p-3 transition-colors">
                             <div className="flex-1 space-y-1">
-                              <FormLabel htmlFor="super-admin-switch">
-                                Super Administrator
-                              </FormLabel>
+                              <FormLabel htmlFor="super-admin-switch">Approver Access</FormLabel>
                               <Paragraph className="text-muted-foreground text-xs">
-                                Grant full administrative privileges and user management
-                                capabilities
+                                Allow this administrator to approve transactions and critical
+                                actions
                               </Paragraph>
                             </div>
                             <Checkbox
-                              id="super-admin-switch"
+                              id="approver-switch"
                               checked={field.value}
                               onCheckedChange={field.onChange}
                               className="after:absolute after:inset-0"
@@ -207,7 +209,38 @@ export default function CreateUser() {
                       </FormItem>
                     )}
                   />
-                </SuperAdminOnly>
+
+                  <SuperAdminOnly>
+                    <FormField
+                      control={detailsForm.control}
+                      name="superAdmin"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="hover:bg-muted relative flex items-start justify-between gap-2 rounded-lg border p-3 transition-colors">
+                              <div className="flex-1 space-y-1">
+                                <FormLabel htmlFor="super-admin-switch">
+                                  Super Administrator
+                                </FormLabel>
+                                <Paragraph className="text-muted-foreground text-xs">
+                                  Grant full administrative privileges and user management
+                                  capabilities
+                                </Paragraph>
+                              </div>
+                              <Checkbox
+                                id="super-admin-switch"
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                className="after:absolute after:inset-0"
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </SuperAdminOnly>
+                </>
               )}
 
               <DialogFooter>

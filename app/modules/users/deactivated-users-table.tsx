@@ -105,23 +105,18 @@ const columns: ColumnDef<User>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => (
-      <span className="text-muted-foreground font-medium whitespace-nowrap">
-        {row.original.name}
-      </span>
-    ),
+    cell: ({ row }) => <span className="font-medium whitespace-nowrap">{row.original.name}</span>,
   },
   {
     accessorKey: "email",
     header: "Email",
-    cell: ({ row }) => <span className="text-muted-foreground">{row.original.email}</span>,
   },
   {
     accessorKey: "role",
     header: "Role",
     cell: ({ row }) => {
       const role = row.original.role;
-      if (row.original.isSuperAdmin) {
+      if (row.original.superAdmin) {
         return (
           <Badge className="whitespace-nowrap opacity-60" variant="destructive">
             SUPER ADMIN
@@ -129,11 +124,7 @@ const columns: ColumnDef<User>[] = [
         );
       }
 
-      return (
-        <Badge className="opacity-60" variant={role === "ADMIN" ? "default" : "accent"}>
-          {role}
-        </Badge>
-      );
+      return <Badge variant={role === "ADMIN" ? "default" : "accent"}>{role}</Badge>;
     },
   },
   {

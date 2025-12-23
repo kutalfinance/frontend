@@ -120,7 +120,7 @@ export const columns: ColumnDef<User>[] = [
     header: "Role",
     cell: ({ row }) => {
       const role = row.original.role;
-      if (row.original.isSuperAdmin) {
+      if (row.original.superAdmin) {
         return (
           <Badge className="whitespace-nowrap" variant="destructive">
             SUPER ADMIN

@@ -15,7 +15,7 @@ export function SuperAdminOnly({ children, fallback = null }: SuperAdminOnlyProp
   if (error) return fallback;
 
   // Only show content if user is explicitly a super admin
-  if (!data?.data?.isSuperAdmin) return fallback;
+  if (!data?.data?.superAdmin) return fallback;
 
   return <>{children}</>;
 }

@@ -25,27 +25,29 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { createDepositOptions, createWithdrawalOptions } from "@/hooks/data/contributions";
+import { createDepositOptions, createWithdrawalOptions } from "@/hooks/data/transactions";
 import type { Customer } from "@/lib/types";
 
-const contributionSchema = z.object({ amount: z.coerce.number() as z.ZodNumber });
+const transactionSchema = z.object({
+  amount: z.coerce.number().optional() as z.ZodOptional<z.ZodNumber>,
+});
 
-type ContributionForm = z.infer<typeof contributionSchema>;
+type TransactionForm = z.infer<typeof transactionSchema>;
 
 export function AgentRecordDeposit({
   customer,
   ...props
 }: React.ComponentProps<typeof DialogTrigger> & { customer: Customer }) {
   const [open, setOpen] = useState(false);
-  const { mutate: createContribution, isPending } = useMutation(createDepositOptions);
+  const { mutate: createTransaction, isPending } = useMutation(createDepositOptions);
 
-  const form = useForm<ContributionForm>({
-    resolver: zodResolver(contributionSchema),
+  const form = useForm<TransactionForm>({
+    resolver: zodResolver(transactionSchema),
     defaultValues: { amount: undefined },
   });
 
-  const handleSubmit = (data: ContributionForm) => {
-    createContribution(
+  const handleSubmit = (data: TransactionForm) => {
+    createTransaction(
       { customerId: customer.id, amount: data.amount },
       {
         onSuccess: () => {
@@ -110,15 +112,15 @@ export function AgentRecordWithdrawal({
   ...props
 }: React.ComponentProps<typeof DialogTrigger> & { customer: Customer }) {
   const [open, setOpen] = useState(false);
-  const { mutate: createContribution, isPending } = useMutation(createWithdrawalOptions);
+  const { mutate: createTransaction, isPending } = useMutation(createWithdrawalOptions);
 
-  const form = useForm<ContributionForm>({
-    resolver: zodResolver(contributionSchema),
+  const form = useForm<TransactionForm>({
+    resolver: zodResolver(transactionSchema),
     defaultValues: { amount: undefined },
   });
 
-  const handleSubmit = (data: ContributionForm) => {
-    createContribution(
+  const handleSubmit = (data: TransactionForm) => {
+    createTransaction(
       { customerId: customer.id, amount: data.amount },
       {
         onSuccess: () => {

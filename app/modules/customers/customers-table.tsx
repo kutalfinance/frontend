@@ -69,7 +69,7 @@ const columns: ColumnDef<Customer>[] = [
     header: "Name",
     cell: ({ row }) => (
       <Link
-        to={href("/admin/contributions") + `?customerId=${row.original.id}`}
+        to={href("/admin/transactions") + `?customerId=${row.original.id}`}
         className="text-primary font-medium whitespace-nowrap hover:underline"
       >
         {row.original.name}

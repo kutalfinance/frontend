@@ -5,9 +5,9 @@ import { api } from "@/lib/api";
 import {
   type APIResponse,
   type AdminMetrics,
+  type AgentMetrics,
   type User,
   UserRoles,
-  type AgentMetrics,
 } from "@/lib/types";
 
 import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";
@@ -17,6 +17,8 @@ export const validateUserSearch = z
     q: z.string(),
     role: z.enum(UserRoles),
     status: z.enum(["ACTIVE", "INACTIVE"]),
+    superAdmin: z.boolean(),
+    approver: z.boolean(),
     isDeactivated: z.boolean(),
     createdBefore: z.string(), // date-time
     createdAfter: z.string(), // date-time

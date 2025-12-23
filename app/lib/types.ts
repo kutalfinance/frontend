@@ -15,7 +15,8 @@ export type User = {
   role: UserRoles;
   createdAt: string; // date-time
   updatedAt: string; // date-time
-  isSuperAdmin?: boolean;
+  superAdmin?: boolean;
+  approver?: boolean;
   status: "ACTIVE" | "INACTIVE";
 };
 
@@ -47,18 +48,27 @@ export type Customer = {
   updatedAt: string; // date-time
 };
 
-export enum ContributionTypes {
+export enum TransactionTypes {
   DEPOSIT = "DEPOSIT",
   WITHDRAWAL = "WITHDRAWAL",
+  SERVICE_CHARGE = "SERVICE_CHARGE",
 }
 
-export type Contribution = {
+export enum TransactionStatus {
+  COMPLETED = "COMPLETED",
+  REJECTED = "REJECTED",
+  PENDING = "PENDING",
+  FAILED = "FAILED",
+}
+
+export type Transaction = {
   id: string;
   customer: { id: string; name: string };
   amount: number;
   recordedBy: { id: string; name: string };
-  contributionType: ContributionTypes;
-  timestamp: string; // date-time
+  type: TransactionTypes;
+  status: TransactionStatus;
+  createdAt: string; // date-time
 };
 
 export type Branch = {

@@ -5,20 +5,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { contributionsMetricsOptions } from "@/hooks/data/contributions";
+import { transactionsMetricsOptions } from "@/hooks/data/transactions";
 import { cn } from "@/lib/utils";
 import { formatMoney } from "@/lib/utils/money";
 
-export function ContributionMetrics({ customerId }: { customerId?: string }) {
+export function TransactionMetrics({ customerId }: { customerId?: string }) {
   const { data, isPending } = useQuery(
-    contributionsMetricsOptions({ searchParams: { customerId } })
+    transactionsMetricsOptions({ searchParams: { customerId } })
   );
   const metrics = data?.data;
 
   const metricsData = [
     {
       icon: Coins,
-      label: "Net Contributions",
+      label: "Net Transactions",
       value: formatMoney(metrics?.net ?? 0),
       className: "text-muted-foreground",
     },

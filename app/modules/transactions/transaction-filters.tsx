@@ -14,30 +14,30 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { useDebounce } from "@/hooks/use-debounce";
 import { useCustomers } from "@/hooks/data/customers";
-import { ContributionTypes } from "@/lib/types";
+import { useDebounce } from "@/hooks/use-debounce";
+import { TransactionTypes } from "@/lib/types";
 
 // Context
-interface ContributionFiltersContextValue {
+interface TransactionFiltersContextValue {
   searchParams: URLSearchParams;
   setSearchParams: (params: URLSearchParams | ((prev: URLSearchParams) => URLSearchParams)) => void;
   disabled?: boolean;
   hasFilters: boolean;
 }
 
-const ContributionFiltersContext = createContext<ContributionFiltersContextValue | null>(null);
+const TransactionFiltersContext = createContext<TransactionFiltersContextValue | null>(null);
 
-function useContributionFilters() {
-  const context = useContext(ContributionFiltersContext);
+function useTransactionFilters() {
+  const context = useContext(TransactionFiltersContext);
   if (!context) {
-    throw new Error("Contribution filter components must be used within ContributionFilters");
+    throw new Error("Transaction filter components must be used within TransactionFilters");
   }
   return context;
 }
 
 // Main container component
-export function ContributionFilters({
+export function TransactionFilters({
   children,
   disabled,
 }: {
@@ -52,17 +52,17 @@ export function ContributionFilters({
   );
 
   return (
-    <ContributionFiltersContext.Provider
+    <TransactionFiltersContext.Provider
       value={{ searchParams, setSearchParams, disabled, hasFilters }}
     >
       <div className="mb-4 flex flex-wrap items-center gap-2">{children}</div>
-    </ContributionFiltersContext.Provider>
+    </TransactionFiltersContext.Provider>
   );
 }
 
 // Individual filter components
-export function ContributionSearchFilter() {
-  const { searchParams, setSearchParams, disabled } = useContributionFilters();
+export function TransactionSearchFilter() {
+  const { searchParams, setSearchParams, disabled } = useTransactionFilters();
 
   const debouncedSearch = useDebounce((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchParams((prev) => {
@@ -76,7 +76,7 @@ export function ContributionSearchFilter() {
     <div className="relative w-full md:max-w-xs">
       <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
       <Input
-        placeholder="Search contributions..."
+        placeholder="Search transactions..."
         type="search"
         className="w-full pl-9"
         defaultValue={searchParams.get("q") || ""}
@@ -87,18 +87,18 @@ export function ContributionSearchFilter() {
   );
 }
 
-export function ContributionTypeFilter() {
-  const { searchParams, setSearchParams, disabled } = useContributionFilters();
+export function TransactionTypeFilter() {
+  const { searchParams, setSearchParams, disabled } = useTransactionFilters();
 
   return (
     <Tabs
-      value={searchParams.get("contributionType") || "all"}
+      value={searchParams.get("transactionType") || "all"}
       onValueChange={(value) => {
         setSearchParams((prev) => {
           if (value === "all") value = "";
 
-          if (value) prev.set("contributionType", value);
-          else prev.delete("contributionType");
+          if (value) prev.set("transactionType", value);
+          else prev.delete("transactionType");
           return prev;
         });
       }}
@@ -108,11 +108,11 @@ export function ContributionTypeFilter() {
           All types
         </TabsTrigger>
 
-        <TabsTrigger disabled={disabled} value={ContributionTypes.DEPOSIT}>
+        <TabsTrigger disabled={disabled} value={TransactionTypes.DEPOSIT}>
           Deposits
         </TabsTrigger>
 
-        <TabsTrigger disabled={disabled} value={ContributionTypes.WITHDRAWAL}>
+        <TabsTrigger disabled={disabled} value={TransactionTypes.WITHDRAWAL}>
           Withdrawals
         </TabsTrigger>
       </TabsList>
@@ -120,8 +120,8 @@ export function ContributionTypeFilter() {
   );
 }
 
-export function ContributionCustomerFilter() {
-  const { searchParams, setSearchParams, disabled } = useContributionFilters();
+export function TransactionCustomerFilter() {
+  const { searchParams, setSearchParams, disabled } = useTransactionFilters();
   const { data: customersData } = useCustomers();
   const customers = customersData?.data ?? [];
 
@@ -157,8 +157,8 @@ export function ContributionCustomerFilter() {
   );
 }
 
-export function ContributionSortFilter() {
-  const { searchParams, setSearchParams, disabled } = useContributionFilters();
+export function TransactionSortFilter() {
+  const { searchParams, setSearchParams, disabled } = useTransactionFilters();
 
   return (
     <Select
@@ -184,14 +184,14 @@ export function ContributionSortFilter() {
       <SelectContent>
         <SelectItem value="timestamp">Date</SelectItem>
         <SelectItem value="amount">Amount</SelectItem>
-        <SelectItem value="contributionType">Type</SelectItem>
+        <SelectItem value="transactionType">Type</SelectItem>
       </SelectContent>
     </Select>
   );
 }
 
-export function ContributionClearFilters() {
-  const { hasFilters, setSearchParams } = useContributionFilters();
+export function TransactionClearFilters() {
+  const { hasFilters, setSearchParams } = useTransactionFilters();
 
   if (!hasFilters) return null;
 
@@ -200,7 +200,7 @@ export function ContributionClearFilters() {
       variant="link"
       onClick={() =>
         setSearchParams((prev) => {
-          prev.delete("contributionType");
+          prev.delete("transactionType");
           prev.delete("customerId");
           return prev;
         })

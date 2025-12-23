@@ -90,7 +90,7 @@ export default function AgentBranchCustomers({ loaderData, params }: Route.Compo
         <ModuleHeader>
           <ModuleTitle>{branch.name}</ModuleTitle>
           <ModuleDescription>
-            Manage customers and their contributions in {branch?.name ?? "this branch"}
+            Manage customers and their transactions in {branch?.name ?? "this branch"}
           </ModuleDescription>
         </ModuleHeader>
         <ModuleActions>

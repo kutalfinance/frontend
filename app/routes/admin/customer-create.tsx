@@ -40,12 +40,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input, inputStyles } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { useBranchesAdmin } from "@/hooks/data/branches";
 import { useCreateCustomer } from "@/hooks/data/customers";
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
+import { customerDetailsSchema, nextOfKinSchema } from "@/modules/customers/utils";
 
 export function meta() {
   return [
@@ -53,35 +54,6 @@ export function meta() {
     { name: "description", content: "Create new customer account" },
   ];
 }
-
-/**
- * The phone regex supports common international formats like:
- * - +1 (555) 123-4567
- * - +44 20 7123 4567
- * - 555-123-4567
- * - (555) 123 4567
- * */
-const phoneRegex = /^[\+]?[\d\s\-\(\)]+$/;
-
-const customerDetailsSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  phoneNumber: z
-    .string()
-    .min(1, "Phone number is required")
-    .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)"),
-  email: z.email("Please enter a valid email address"),
-  location: z.string().min(1, "Location is required"),
-  branchId: z.string().min(1, "Branch selection is required"),
-});
-
-const nextOfKinSchema = z.object({
-  name: z.string().min(1, "Next of kin name is required"),
-  phoneNumber: z
-    .string()
-    .min(1, "Next of kin phone number is required")
-    .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)"),
-  email: z.email("Please enter a valid next of kin email address"),
-});
 
 type CustomerDetailsForm = z.infer<typeof customerDetailsSchema>;
 type NextOfKinForm = z.infer<typeof nextOfKinSchema>;
@@ -91,6 +63,7 @@ export default function CreateCustomer() {
   const { mutate: createCustomer, isPending } = useCreateCustomer();
   const { data } = useBranchesAdmin();
   const branches = data?.data || [];
+
   const [step, setStep] = useState<"customer" | "nextOfKin">("customer");
 
   const customerForm = useForm<CustomerDetailsForm>({
@@ -192,6 +165,26 @@ export default function CreateCustomer() {
 
             <FormField
               control={customerForm.control}
+              name="contributionAmount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contribution Amount</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      step={0.01}
+                      placeholder="Enter contribution amount"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={customerForm.control}
               name="branchId"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
@@ -228,14 +221,17 @@ export default function CreateCustomer() {
                                 onSelect={() => {
                                   customerForm.setValue("branchId", branch.id);
                                 }}
+                                asChild
                               >
-                                {branch.name}
-                                <Check
-                                  className={cn(
-                                    "ml-auto",
-                                    branch.id === field.value ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
+                                <PopoverClose className="w-full">
+                                  {branch.name}
+                                  <Check
+                                    className={cn(
+                                      "ml-auto",
+                                      branch.id === field.value ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                </PopoverClose>
                               </CommandItem>
                             ))}
                           </CommandGroup>

@@ -58,6 +58,7 @@ const createBranchFormSchema = z.object({
   name: z.string().min(2, "Branch name must be at least 2 characters long"),
   location: z.string().min(5, "Location must be at least 5 characters long"),
   agentId: z.string().min(1, "Please select an agent"),
+  approverId: z.string().min(1, "Please select an approver"),
 });
 
 type CreateBranchForm = z.infer<typeof createBranchFormSchema>;
@@ -65,8 +66,12 @@ type CreateBranchForm = z.infer<typeof createBranchFormSchema>;
 export default function CreateBranch() {
   const navigate = useNavigate();
   const { mutate: createBranch, isPending } = useCreateBranch();
-  const { data: usersData } = useUsers({ searchParams: { role: UserRoles.AGENT } });
-  const agents = usersData?.data ?? [];
+  const { data: agentsData } = useUsers({ searchParams: { role: UserRoles.AGENT } });
+  const { data: adminsData } = useUsers({
+    searchParams: { role: UserRoles.ADMIN, approver: true },
+  });
+  const agents = agentsData?.data ?? [];
+  const approvers = adminsData?.data ?? [];
 
   const form = useForm<CreateBranchForm>({
     resolver: zodResolver(createBranchFormSchema),
@@ -74,6 +79,7 @@ export default function CreateBranch() {
   });
 
   const selectedAgent = agents.find((agent) => agent.id === form.watch("agentId"));
+  const selectedApprover = approvers.find((approver) => approver.id === form.watch("approverId"));
 
   function handleSubmit(values: CreateBranchForm) {
     createBranch(values, {
@@ -92,45 +98,43 @@ export default function CreateBranch() {
         </DialogDescription>
       </DialogHeader>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Branch Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter branch name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-4 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Branch Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter branch name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter branch location" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="location"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Location</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter branch location" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}
             name="agentId"
             render={({ field }) => (
-              <FormItem className="w-full">
+              <FormItem>
                 <FormLabel>Assigned agent</FormLabel>
                 <Popover>
-                  <PopoverTrigger asChild className="w-full">
+                  <PopoverTrigger asChild>
                     <FormControl>
                       <Button
                         variant="outline"
@@ -138,9 +142,9 @@ export default function CreateBranch() {
                         className="w-full justify-between font-normal"
                       >
                         {selectedAgent ? (
-                          <>
+                          <span className="truncate">
                             {selectedAgent.name} - {selectedAgent.email}
-                          </>
+                          </span>
                         ) : (
                           <span className="text-muted-foreground">Select an agent</span>
                         )}
@@ -156,11 +160,15 @@ export default function CreateBranch() {
                         <CommandEmpty>No agents found.</CommandEmpty>
                         <CommandGroup>
                           {agents.map((agent) => (
-                            <PopoverClose asChild>
-                              <CommandItem key={agent.id} onSelect={() => field.onChange(agent.id)}>
+                            <CommandItem
+                              key={agent.id}
+                              onSelect={() => field.onChange(agent.id)}
+                              asChild
+                            >
+                              <PopoverClose className="w-full">
                                 {agent.name} - {agent.email}
-                              </CommandItem>
-                            </PopoverClose>
+                              </PopoverClose>
+                            </CommandItem>
                           ))}
                         </CommandGroup>
                       </CommandList>
@@ -172,7 +180,60 @@ export default function CreateBranch() {
             )}
           />
 
-          <DialogFooter>
+          <FormField
+            control={form.control}
+            name="approverId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Approver</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild className="">
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-full justify-between font-normal"
+                      >
+                        {selectedApprover ? (
+                          <span className="truncate">
+                            {selectedApprover.name} - {selectedApprover.email}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">Select an approver</span>
+                        )}
+
+                        <ChevronDown className="text-muted-foreground ml-auto" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0">
+                    <Command>
+                      <CommandInput placeholder="Search approvers..." />
+                      <CommandList>
+                        <CommandEmpty>No approvers found.</CommandEmpty>
+                        <CommandGroup>
+                          {approvers.map((approver) => (
+                            <CommandItem
+                              key={approver.id}
+                              onSelect={() => field.onChange(approver.id)}
+                              asChild
+                            >
+                              <PopoverClose>
+                                {approver.name} - {approver.email}
+                              </PopoverClose>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <DialogFooter className="sm:col-span-2">
             <DialogClose asChild>
               <Button type="button" variant="outline">
                 Cancel

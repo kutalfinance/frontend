@@ -119,8 +119,19 @@ function UserMenu() {
 
   if (!user) return null;
 
+  const isApprover = user.approver;
+
   return (
     <div className="flex items-center gap-4">
+      {isApprover && (
+        <Button asChild variant="ghost" size="sm" className="hidden sm:flex">
+          <Link to={href("/admin/pending-approvals")}>
+            <CheckCircle className="size-4" />
+            <span className="hidden sm:inline">Approvals</span>
+          </Link>
+        </Button>
+      )}
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar>
@@ -136,7 +147,11 @@ function UserMenu() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          {isApprover && (
+            <DropdownMenuItem asChild>
+              <Link to={href("/admin/pending-approvals")}>Pending Approvals</Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem onClick={() => logout.mutate()}>Log out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -155,12 +170,6 @@ const adminNavLinks: {
     href: href("/admin"),
     pathRegex: /^\/admin$/,
     icon: Home,
-  },
-  {
-    title: "Approvals",
-    href: href("/admin/pending-approvals"),
-    pathRegex: /\/admin\/pending-approvals/,
-    icon: CheckCircle,
   },
   {
     title: "Branches",

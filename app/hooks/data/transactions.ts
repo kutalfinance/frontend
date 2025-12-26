@@ -54,6 +54,32 @@ export const createDepositOptions = mutationOptions({
   },
 });
 
+export const pendingApprovalsQueryOptions = () =>
+  queryOptions({
+    queryKey: queryKeys.transactions.pendingApprovals(),
+    queryFn: () => api.get("transaction/pending-approvals").json<APIResponse<Transaction[]>>(),
+  });
+
+export const approveTransactionOptions = mutationOptions({
+  mutationFn: (transactionId: string) =>
+    api.patch(`transaction/${transactionId}/approve`).json<APIResponse<Transaction>>(),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
+    queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
+    successToast("Transaction approved successfully");
+  },
+});
+
+export const rejectTransactionOptions = mutationOptions({
+  mutationFn: (transactionId: string) =>
+    api.patch(`transaction/${transactionId}/reject`).json<APIResponse<Transaction>>(),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
+    queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
+    successToast("Transaction rejected successfully");
+  },
+});
+
 const validateMetricsSearch = validateTransactionsSearch.pick({ customerId: true });
 type TransactionsMetricsSearchParams = z.infer<typeof validateMetricsSearch>;
 

@@ -30,6 +30,7 @@ export default [
       route("create", "./routes/admin/branches-create.tsx"),
     ]),
     route("transactions", "./routes/admin/transactions.tsx"),
+    route("pending-approvals", "./routes/admin/pending-approvals.tsx"),
     route("audit", "./routes/admin/audit.tsx"),
   ]),
 

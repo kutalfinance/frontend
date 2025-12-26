@@ -45,6 +45,7 @@ export const queryKeys = {
       ["transactions", "metrics", searchParams] as const,
     all: () => ["transactions"] as const,
     filters: (filters?: Record<string, unknown>) => ["transactions", filters] as const,
+    pendingApprovals: () => ["transactions", "pending-approvals"] as const,
   },
 
   // Branches queries

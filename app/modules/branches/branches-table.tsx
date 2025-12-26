@@ -101,9 +101,12 @@ const columns: ColumnDef<Branch>[] = [
     meta: { className: "min-w-48" },
   },
   {
-    accessorKey: "agent",
+    accessorKey: "agent.name",
     header: "Assigned Agent",
-    cell: ({ row }) => row.original.agent.name,
+  },
+  {
+    accessorKey: "approver.name",
+    header: "Approver",
   },
   {
     accessorKey: "createdAt",

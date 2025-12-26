@@ -6,7 +6,7 @@ import { queryClient } from "@/components/query-provider";
 import { api } from "@/lib/api";
 import type { APIResponse, Transaction } from "@/lib/types";
 
-import { queryKeys, successToast } from "./utils";
+import { errorToast, queryKeys, successToast } from "./utils";
 
 export const validateTransactionsSearch = z
   .object({
@@ -42,6 +42,7 @@ export const createWithdrawalOptions = mutationOptions({
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
     successToast("Withdrawal recorded successfully");
   },
+  onError: errorToast,
 });
 
 export const createDepositOptions = mutationOptions({
@@ -52,6 +53,7 @@ export const createDepositOptions = mutationOptions({
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
     successToast("Deposit recorded successfully");
   },
+  onError: errorToast,
 });
 
 export const pendingApprovalsQueryOptions = () =>
@@ -68,6 +70,7 @@ export const approveTransactionOptions = mutationOptions({
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
     successToast("Transaction approved successfully");
   },
+  onError: errorToast,
 });
 
 export const rejectTransactionOptions = mutationOptions({
@@ -78,6 +81,7 @@ export const rejectTransactionOptions = mutationOptions({
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
     successToast("Transaction rejected successfully");
   },
+  onError: errorToast,
 });
 
 const validateMetricsSearch = validateTransactionsSearch.pick({ customerId: true });

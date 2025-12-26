@@ -38,6 +38,8 @@ export type CustomerNextOfKin = {
 
 export type Customer = {
   id: string;
+  accountNumber: string;
+  balance: number;
   name: string;
   phoneNumber: string;
   email: string;
@@ -46,6 +48,13 @@ export type Customer = {
   branch: { id: string; name: string };
   createdAt: string; // date-time
   updatedAt: string; // date-time
+  contributionAmount: number;
+  contributionStartDate: string; // date
+  lastWithdrawal: string; // date
+  registrationDate: string; // date
+  daysContributed: string[]; // unique array
+  lastDepositDate: string; // date
+  deleted: boolean;
 };
 
 export enum TransactionTypes {

@@ -5,11 +5,16 @@ import {
   BanknoteArrowDown,
   BanknoteArrowUp,
   Building2,
+  Calendar,
   ChevronDown,
+  CreditCard,
+  DollarSign,
+  Hash,
   Mail,
   MapPin,
   Phone,
   User,
+  Wallet,
 } from "lucide-react";
 
 import {
@@ -35,6 +40,7 @@ import { Heading, Paragraph } from "@/components/ui/text";
 import { customerByIdQueryOptions } from "@/hooks/data/customers";
 import { transactionsQueryOptions, validateTransactionsSearch } from "@/hooks/data/transactions";
 import { siteConfig } from "@/lib/config";
+import { formatMoney } from "@/lib/utils/money";
 import {
   AgentRecordDeposit,
   AgentRecordWithdrawal,
@@ -88,10 +94,27 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
   const transactions = data?.data ?? [];
 
   const customerInfo = [
+    { icon: Hash, label: "Account Number", value: customer.accountNumber },
+    { icon: Wallet, label: "Balance", value: formatMoney(customer.balance) },
+    { icon: DollarSign, label: "Contribution Amount", value: formatMoney(customer.contributionAmount) },
     { icon: Phone, label: "Phone Number", value: customer.phoneNumber },
     { icon: Mail, label: "Email", value: customer.email },
     { icon: MapPin, label: "Location", value: customer.location },
     { icon: Building2, label: "Branch", value: customer.branch.name },
+    {
+      icon: Calendar,
+      label: "Registration Date",
+      value: customer.registrationDate
+        ? new Date(customer.registrationDate).toLocaleDateString("en-GB")
+        : "-"
+    },
+    {
+      icon: Calendar,
+      label: "Last Deposit",
+      value: customer.lastDepositDate
+        ? new Date(customer.lastDepositDate).toLocaleDateString("en-GB")
+        : "-"
+    },
   ];
 
   return (

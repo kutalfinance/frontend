@@ -18,7 +18,7 @@ export function TransactionMetrics({ customerId }: { customerId?: string }) {
   const metricsData = [
     {
       icon: Coins,
-      label: "Net Transactions",
+      label: "Balance",
       value: formatMoney(metrics?.net ?? 0),
       className: "text-muted-foreground",
     },

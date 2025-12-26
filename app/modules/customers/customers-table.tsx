@@ -21,6 +21,7 @@ import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { Paragraph } from "@/components/ui/text";
 
 import type { Customer } from "@/lib/types";
+import { formatMoney } from "@/lib/utils/money";
 
 import { DownloadStatement } from "./download-statement";
 
@@ -81,6 +82,20 @@ const columns: ColumnDef<Customer>[] = [
     ),
   },
   {
+    accessorKey: "accountNumber",
+    header: "Account Number",
+    cell: ({ row }) => (
+      <span className="font-mono text-sm">{row.original.accountNumber}</span>
+    ),
+  },
+  {
+    accessorKey: "balance",
+    header: "Balance",
+    cell: ({ row }) => (
+      <span className="font-medium whitespace-nowrap">{formatMoney(row.original.balance)}</span>
+    ),
+  },
+  {
     accessorKey: "phoneNumber",
     header: "Contact",
     cell: ({ row }) => {
@@ -94,44 +109,43 @@ const columns: ColumnDef<Customer>[] = [
     },
   },
   {
-    accessorKey: "location",
-    header: "Location",
-  },
-  {
     accessorKey: "branch.name",
     header: "Branch",
     cell: ({ row }) => row.original.branch.name,
-    // cell: ({ row }) => (
-    //   <Link to={href(`/branches/${row.original.branch.id}`)}>{row.original.branch.name}</Link>
-    // ),
   },
   {
-    accessorKey: "nextOfKin.name",
-    header: "Next of Kin",
-    cell: ({ row }) => {
-      const nextOfKin = row.original.nextOfKin;
-      return nextOfKin.name;
-    },
+    accessorKey: "contributionAmount",
+    header: "Contribution",
+    cell: ({ row }) => (
+      <span className="whitespace-nowrap">{formatMoney(row.original.contributionAmount)}</span>
+    ),
   },
   {
-    accessorKey: "nextOfKin.phoneNumber",
-    header: "Next of Kin Contact",
+    accessorKey: "registrationDate",
+    header: "Registration Date",
     cell: ({ row }) => {
-      const nextOfKin = row.original.nextOfKin;
-      return (
-        <div>
-          <Paragraph>{nextOfKin.phoneNumber}</Paragraph>
-          <Paragraph className="text-muted-foreground text-sm">{nextOfKin.email}</Paragraph>
-        </div>
+      const date = row.original.registrationDate ? new Date(row.original.registrationDate) : null;
+      return date ? (
+        <span className="text-muted-foreground whitespace-nowrap">
+          {format(date, "dd/MM/yyyy")}
+        </span>
+      ) : (
+        <span className="text-muted-foreground">-</span>
       );
     },
   },
   {
-    accessorKey: "createdAt",
-    header: "Created At",
+    accessorKey: "lastDepositDate",
+    header: "Last Deposit",
     cell: ({ row }) => {
-      const date = new Date(row.original.createdAt);
-      return <span className="text-muted-foreground">{format(date, "dd/MM/yyyy - h:mm a")}</span>;
+      const date = row.original.lastDepositDate ? new Date(row.original.lastDepositDate) : null;
+      return date ? (
+        <span className="text-muted-foreground whitespace-nowrap">
+          {format(date, "dd/MM/yyyy")}
+        </span>
+      ) : (
+        <span className="text-muted-foreground">-</span>
+      );
     },
   },
   {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -47,6 +48,9 @@ const transactionSchema = z.object({
 type TransactionForm = z.infer<typeof transactionSchema>;
 
 export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof DialogTrigger>) {
+  const [searchParams] = useSearchParams();
+  const customerIdParam = searchParams.get("customerId");
+
   const [open, setOpen] = useState(false);
   const { mutate: createTransaction, isPending } = useMutation(createDepositOptions);
   const { data } = useCustomers();
@@ -54,7 +58,7 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
 
   const form = useForm<TransactionForm>({
     resolver: zodResolver(transactionSchema),
-    defaultValues: { amount: undefined },
+    defaultValues: { amount: undefined, customerId: customerIdParam ?? "" },
   });
 
   const handleSubmit = (data: TransactionForm) => {
@@ -107,6 +111,7 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
                             {customers.map((customer) => (
                               <CommandItem
                                 key={customer.id}
+                                value={customer.name}
                                 onSelect={() => {
                                   form.setValue("customerId", customer.id);
                                 }}
@@ -169,6 +174,9 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
 }
 
 export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof DialogTrigger>) {
+  const [searchParams] = useSearchParams();
+  const customerIdParam = searchParams.get("customerId");
+
   const [open, setOpen] = useState(false);
   const { mutate: createTransaction, isPending } = useMutation(createWithdrawalOptions);
   const { data } = useCustomers();
@@ -176,7 +184,7 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
 
   const form = useForm<TransactionForm>({
     resolver: zodResolver(transactionSchema),
-    defaultValues: { amount: undefined },
+    defaultValues: { amount: undefined, customerId: customerIdParam ?? "" },
   });
 
   const handleSubmit = (data: TransactionForm) => {
@@ -228,8 +236,8 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
                           <CommandGroup>
                             {customers.map((customer) => (
                               <CommandItem
-                                value={customer.id}
                                 key={customer.id}
+                                value={customer.name}
                                 onSelect={() => {
                                   form.setValue("customerId", customer.id);
                                 }}

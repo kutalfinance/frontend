@@ -30,9 +30,7 @@ const TransactionFiltersContext = createContext<TransactionFiltersContextValue |
 function useTransactionFilters() {
   const context = useContext(TransactionFiltersContext);
   if (!context) {
-    throw new Error(
-      `${useTransactionFilters.name} must be used within ${TransactionFilters.name}`
-    );
+    throw new Error(`${useTransactionFilters.name} must be used within ${TransactionFilters.name}`);
   }
   return context;
 }

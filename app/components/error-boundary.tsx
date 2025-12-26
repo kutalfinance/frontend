@@ -1,5 +1,7 @@
 import { Link, isRouteErrorResponse } from "react-router";
 
+import { SearchX } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -9,7 +11,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { SearchX } from "lucide-react";
 
 export function ErrorBoundary({ error }: { error: unknown }) {
   let message = "Oops!";

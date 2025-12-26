@@ -13,12 +13,16 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
+import { Download } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { Paragraph } from "@/components/ui/text";
 
 import type { Customer } from "@/lib/types";
+
+import { DownloadStatement } from "./download-statement";
 
 export function CustomersTable({
   customers,
@@ -128,6 +132,20 @@ const columns: ColumnDef<Customer>[] = [
     cell: ({ row }) => {
       const date = new Date(row.original.createdAt);
       return <span className="text-muted-foreground">{format(date, "dd/MM/yyyy - h:mm a")}</span>;
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    header: "Actions",
+    cell: ({ row }) => {
+      return (
+        <DownloadStatement customer={row.original}>
+          <Button variant="ghost" size="sm">
+            <Download className="size-4" />
+          </Button>
+        </DownloadStatement>
+      );
     },
   },
 ];

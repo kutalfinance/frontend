@@ -1,5 +1,6 @@
+import { Link, href } from "react-router";
+
 import { Building2, MapPin, SquareArrowOutUpRight } from "lucide-react";
-import { href, Link } from "react-router";
 
 import { Loader } from "@/components/loader";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

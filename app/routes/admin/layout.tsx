@@ -1,13 +1,13 @@
 import { Outlet, href, redirect } from "react-router";
 
 import { AppHeader, AppLayoutProvider } from "@/components/app-layout";
+import { ErrorBoundary as AppErrorBoundary } from "@/components/error-boundary";
 import { queryClient } from "@/components/query-provider";
 
 import { loggedInUserQueryOptions } from "@/hooks/auth/common";
 import { UserRoles } from "@/lib/types";
-import type { Route } from "./+types/layout";
 
-import { ErrorBoundary as AppErrorBoundary } from "@/components/error-boundary";
+import type { Route } from "./+types/layout";
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   return <AppErrorBoundary error={error} />;

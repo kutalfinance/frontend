@@ -1,6 +1,6 @@
 import { Link, Outlet } from "react-router";
 
-import { Plus } from "lucide-react";
+import { Plus, Upload } from "lucide-react";
 
 import {
   ModuleActions,
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 
 import { useCustomers, validateCustomerSearch } from "@/hooks/data/customers";
 import { siteConfig } from "@/lib/config";
+import { CustomerBulkUpload } from "@/modules/customers/customer-bulk-upload";
 import { CustomersTable } from "@/modules/customers/customers-table";
 import {
   CustomerBranchFilter,
@@ -62,6 +63,11 @@ export default function Customers({ loaderData }: Route.ComponentProps) {
           </ModuleDescription>
         </ModuleHeader>
         <ModuleActions>
+          <CustomerBulkUpload asChild>
+            <Button variant="outline">
+              <Upload /> Upload Customers
+            </Button>
+          </CustomerBulkUpload>
           <Button asChild>
             <Link to="/admin/customers/create">
               <Plus /> Add customer

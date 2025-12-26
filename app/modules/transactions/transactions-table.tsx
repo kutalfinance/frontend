@@ -107,7 +107,10 @@ const columns: ColumnDef<Transaction>[] = [
     header: "Status",
     cell: ({ row }) => {
       const status = row.original.status;
-      const variantMap: Record<TransactionStatus, "default" | "secondary" | "destructive" | "outline"> = {
+      const variantMap: Record<
+        TransactionStatus,
+        "default" | "secondary" | "destructive" | "outline"
+      > = {
         [TransactionStatus.COMPLETED]: "default",
         [TransactionStatus.PENDING]: "secondary",
         [TransactionStatus.REJECTED]: "destructive",

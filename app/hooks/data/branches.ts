@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import z from "zod";
 
 import { api } from "@/lib/api";
@@ -30,14 +30,10 @@ export function useBranchesAdmin({ searchParams }: { searchParams?: BranchSearch
   });
 }
 
-export function useBranchesAgent({ searchParams }: { searchParams?: BranchSearchParams } = {}) {
-  return useQuery({
-    queryKey: queryKeys.branches.filters(searchParams),
-    queryFn: () => {
-      return api.get("user/agent/branches/metrics", { searchParams }).json<APIResponse<Branch[]>>();
-    },
-  });
-}
+export const branchByAgent = queryOptions({
+  queryKey: queryKeys.branches.agent(),
+  queryFn: () => api.get("branch/agent").json<APIResponse<Branch>>(),
+});
 
 export function useCreateBranch() {
   const queryClient = useQueryClient();
@@ -87,8 +83,9 @@ export function useDeleteBranch() {
   });
 }
 
-export const branchByIdQueryOptions = (id: string) => ({
-  queryKey: queryKeys.branches.detail(id),
-  queryFn: () => api.get(`branch/${id}`).json<APIResponse<Branch>>(),
-  enabled: !!id,
-});
+export const branchByIdQueryOptions = (id: string) =>
+  queryOptions({
+    queryKey: queryKeys.branches.detail(id),
+    queryFn: () => api.get(`branch/${id}`).json<APIResponse<Branch>>(),
+    enabled: !!id,
+  });

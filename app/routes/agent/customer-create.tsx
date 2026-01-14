@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -24,6 +26,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+import { branchByAgent } from "@/hooks/data/branches";
 import { useCreateCustomer } from "@/hooks/data/customers";
 import { siteConfig } from "@/lib/config";
 import {
@@ -45,19 +48,15 @@ const customerDetailsSchema = customerSchema.omit({ branchId: true });
 type CustomerDetailsForm = z.infer<typeof customerDetailsSchema>;
 type NextOfKinForm = z.infer<typeof nextOfKinSchema>;
 
-export default function CreateCustomer({ params }: Route.ComponentProps) {
+export default function CreateCustomer({}: Route.ComponentProps) {
   const navigate = useNavigate();
+  const { data: branchData } = useQuery(branchByAgent);
   const { mutate: createCustomer, isPending } = useCreateCustomer();
   const [step, setStep] = useState<"customer" | "nextOfKin">("customer");
 
   const customerForm = useForm<CustomerDetailsForm>({
     resolver: zodResolver(customerDetailsSchema),
-    defaultValues: {
-      name: "",
-      phoneNumber: "",
-      email: "",
-      location: "",
-    },
+    defaultValues: { name: "", phoneNumber: "", email: "", location: "" },
   });
 
   const nextOfKinForm = useForm<NextOfKinForm>({
@@ -68,9 +67,16 @@ export default function CreateCustomer({ params }: Route.ComponentProps) {
   const handleClose = () => navigate(-1);
 
   const handleFinalSubmit = (data: NextOfKinForm) => {
+    if (!branchData?.data) {
+      toast.error(
+        "Branch information is missing. Cannot create customer. Please refresh and try again."
+      );
+      return;
+    }
+
     const customerData = customerForm.getValues();
     createCustomer(
-      { ...customerData, branchId: params.branchId, nextOfKin: data },
+      { ...customerData, branchId: branchData.data.id, nextOfKin: data },
       { onSuccess: () => handleClose() }
     );
   };

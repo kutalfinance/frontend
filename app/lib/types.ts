@@ -113,7 +113,6 @@ export type AdminMetrics = {
 
 export type AgentMetrics = {
   netContribution: number;
-  totalBranches: number;
   totalCustomers: number;
 };
 

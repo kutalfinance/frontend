@@ -36,13 +36,7 @@ export default [
 
   route("/agent", "./routes/agent/layout.tsx", [
     index("./routes/agent/index.tsx"),
-
-    ...prefix("branches/:branchId", [
-      route("", "./routes/agent/branch-details.tsx", [
-        route("customers/create", "./routes/agent/customer-create.tsx"),
-      ]),
-
-      route("customers/:customerId", "./routes/agent/customer-details.tsx"),
-    ]),
+    route("customers/create", "./routes/agent/customer-create.tsx"),
+    route("customers/:customerId", "./routes/agent/customer-details.tsx"),
   ]),
 ] satisfies RouteConfig;

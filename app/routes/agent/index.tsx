@@ -1,41 +1,55 @@
-import { useSearchParams } from "react-router";
+import { Link, data, href } from "react-router";
 
-import { Building2, Coins, Contact, SearchIcon } from "lucide-react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Coins, Contact, MapPin, Plus } from "lucide-react";
 
 import {
+  ModuleActions,
   ModuleDescription,
   ModuleHeader,
   ModuleHeading,
   ModuleTitle,
 } from "@/components/module-heading";
+import { queryClient } from "@/components/query-provider";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useLoggedInUser } from "@/hooks/auth/common";
-import { useBranchesAdmin, validateBranchSearch } from "@/hooks/data/branches";
+import { branchByAgent } from "@/hooks/data/branches";
+import { useCustomers, validateCustomerSearch } from "@/hooks/data/customers";
 import { useAgentMetrics } from "@/hooks/data/users";
-import { useDebounce } from "@/hooks/use-debounce";
 import { siteConfig } from "@/lib/config";
 import { formatMoney } from "@/lib/utils/money";
-import { BranchesGrid } from "@/modules/branches/branches-grid";
+import { CustomersList } from "@/modules/customers/customers-list";
+import {
+  CustomerFilters,
+  CustomerSearchFilter,
+  CustomerSortFilter,
+} from "@/modules/customers/filters";
 
 import type { Route } from "./+types/index";
 
 export function meta() {
   return [
-    { title: `My Branches - ${siteConfig.name}` },
-    { name: "description", content: "View and manage your assigned branches" },
+    { title: `My Branch - ${siteConfig.name}` },
+    { name: "description", content: "Manage your branch and customers" },
   ];
 }
 
-export function clientLoader({ request }: Route.ClientLoaderArgs) {
+export async function clientLoader({ request }: Route.ClientLoaderArgs) {
+  try {
+    await queryClient.ensureQueryData(branchByAgent);
+  } catch (err) {
+    throw data("Branch not found", { status: 404 });
+  }
+
   const url = new URL(request.url);
   const params = Object.fromEntries(url.searchParams);
 
   try {
-    const validatedParams = validateBranchSearch.omit({ agentId: true }).parse(params);
+    const validatedParams = validateCustomerSearch.omit({ branchId: true }).parse(params);
     return { searchParams: validatedParams };
   } catch (error) {
     console.error("Failed to validate search params:", error);
@@ -43,22 +57,17 @@ export function clientLoader({ request }: Route.ClientLoaderArgs) {
   }
 }
 
-export default function Branches({ loaderData }: Route.ComponentProps) {
+export default function AgentDashboard({ loaderData }: Route.ComponentProps) {
   const { searchParams } = loaderData;
   const { data: loggedInUser } = useLoggedInUser();
-  const { data, isPending } = useBranchesAdmin({
-    searchParams: { ...searchParams, agentId: loggedInUser.data.id },
-  });
-  const branches = data?.data ?? [];
 
-  const [_, setSearchParams] = useSearchParams();
-  const debouncedSearch = useDebounce((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchParams((prev) => {
-      if (e.target.value) prev.set("q", e.target.value);
-      else prev.delete("q");
-      return prev;
-    });
+  const { data: branchData } = useSuspenseQuery(branchByAgent);
+  const branch = branchData.data;
+
+  const { data: customersData, isPending: customersLoading } = useCustomers({
+    searchParams: { ...searchParams, branchId: branch?.id },
   });
+  const customers = customersData?.data ?? [];
 
   return (
     <div className="container space-y-10">
@@ -66,48 +75,41 @@ export default function Branches({ loaderData }: Route.ComponentProps) {
         <ModuleHeader>
           <ModuleTitle>Welcome {loggedInUser.data.name}</ModuleTitle>
           <ModuleDescription>
-            Your current branches summary and activity. Click on a branch to view its customers and
-            manage their accounts.
+            {branch ? (
+              <span className="flex items-center gap-1">
+                <MapPin className="size-4" />
+                {branch.name}, {branch.location}
+              </span>
+            ) : (
+              "Loading branch information..."
+            )}
           </ModuleDescription>
         </ModuleHeader>
 
-        {/* <ToggleGroup variant="outline" type="single" defaultValue={dataRangeOptions[1].value}>
-          {dataRangeOptions.map((option) => (
-            <ToggleGroupItem key={option.value} value={option.value}>
-              {option.label}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup> */}
+        {branch && (
+          <ModuleActions>
+            <Button asChild>
+              <Link to={href("/agent/customers/create")}>
+                <Plus /> Add customer
+              </Link>
+            </Button>
+          </ModuleActions>
+        )}
       </ModuleHeading>
 
       <DashboardStats />
 
       <div className="space-y-2">
-        <hgroup className="flex flex-wrap items-center justify-between gap-2">
-          <Heading variant="h2">Branches</Heading>
-          <div className="relative w-full md:max-w-xs">
-            <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-            <Input
-              placeholder="Search branches..."
-              type="search"
-              className="w-full pl-9"
-              defaultValue={searchParams.q || ""}
-              onChange={debouncedSearch}
-            />
-          </div>
-        </hgroup>
-        <BranchesGrid branches={branches} isLoading={isPending} />
+        <Heading variant="h2">Customers</Heading>
+        <CustomerFilters disabled={customersLoading}>
+          <CustomerSearchFilter />
+          <CustomerSortFilter />
+        </CustomerFilters>
+        <CustomersList customers={customers} isLoading={customersLoading} />
       </div>
     </div>
   );
 }
-
-/* const dataRangeOptions = [
-  { label: "12 months", value: "12m" },
-  { label: "30 days", value: "30d" },
-  { label: "7 days", value: "7d" },
-  { label: "24 hours", value: "24h" },
-]; */
 
 function DashboardStats() {
   const { data, isPending } = useAgentMetrics();
@@ -120,11 +122,6 @@ function DashboardStats() {
       value: formatMoney(metrics?.netContribution ?? 0),
     },
     {
-      icon: Building2,
-      label: "Branches",
-      value: formatMoney(metrics?.totalBranches ?? 0, { style: "decimal" }),
-    },
-    {
       icon: Contact,
       label: "Customers",
       value: formatMoney(metrics?.totalCustomers ?? 0, { style: "decimal" }),
@@ -132,7 +129,7 @@ function DashboardStats() {
   ];
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(18rem,auto))] gap-2 lg:grid-cols-3">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(18rem,auto))] gap-2 lg:grid-cols-2">
       {metricsData.map((metric) => (
         <Card key={metric.label} className="gap-2">
           <CardHeader>

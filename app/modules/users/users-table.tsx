@@ -12,7 +12,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { Archive, XIcon } from "lucide-react";
+import { Archive, DownloadIcon, XIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { Separator } from "@/components/ui/separator";
 import { Paragraph } from "@/components/ui/text";
 
-import { type User } from "@/lib/types";
+import { type User, UserRoles } from "@/lib/types";
 import { DeactivateUser } from "@/modules/users/user-actions";
 
 export function UsersTable({ users, isLoading }: { users: User[]; isLoading: boolean }) {
@@ -145,19 +145,19 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-2">
-          {/* <EditUser asChild user={row.original}>
-            <Button variant="ghost" size="icon">
-              <span className="sr-only">Edit</span>
-              <SquarePen className="text-muted-foreground" />
-            </Button>
-          </EditUser> */}
-
           <DeactivateUser asChild users={[row.original]}>
             <Button variant="ghost" size="icon">
               <span className="sr-only">Deactivate</span>
               <Archive className="text-destructive" />
             </Button>
           </DeactivateUser>
+
+          {row.original.role === UserRoles.AGENT && (
+            <Button variant="ghost" size="icon">
+              <span className="sr-only">Edit</span>
+              <DownloadIcon className="text-muted-foreground" />
+            </Button>
+          )}
         </div>
       );
     },

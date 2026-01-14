@@ -31,12 +31,20 @@ import { cn } from "@/lib/utils";
 export function AppLayoutProvider({ children, className, ...props }: React.ComponentProps<"div">) {
   return (
     <div className={cn("", className)} {...props}>
+      <AppHeader />
+
       {children}
+
+      <footer className="border-t">
+        <div className="text-muted-foreground container py-4 text-center text-sm">
+          &copy; {new Date().getFullYear()} <AppLogo />. All rights reserved.
+        </div>
+      </footer>
     </div>
   );
 }
 
-export function AppHeader() {
+function AppHeader() {
   const { pathname } = useLocation();
   const { data } = useLoggedInUser();
 

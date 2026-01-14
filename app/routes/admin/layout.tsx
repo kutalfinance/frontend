@@ -1,6 +1,6 @@
 import { Outlet, href, redirect } from "react-router";
 
-import { AppHeader, AppLayoutProvider } from "@/components/app-layout";
+import { AppLayoutProvider } from "@/components/app-layout";
 import { ErrorBoundary as AppErrorBoundary } from "@/components/error-boundary";
 import { queryClient } from "@/components/query-provider";
 
@@ -23,8 +23,6 @@ export async function clientLoader() {
 export default function AdminLayout() {
   return (
     <AppLayoutProvider className="flex min-h-dvh flex-col">
-      <AppHeader />
-
       <div className="flex-1 py-5">
         <Outlet />
       </div>

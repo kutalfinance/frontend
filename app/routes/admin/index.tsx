@@ -114,7 +114,7 @@ function DashboardStats() {
   const metricsData = [
     {
       icon: Coins,
-      label: "Transactions",
+      label: "Balance",
       value: formatMoney(metrics?.netContribution ?? 0),
     },
     {

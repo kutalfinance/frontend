@@ -84,9 +84,7 @@ const columns: ColumnDef<Customer>[] = [
   {
     accessorKey: "accountNumber",
     header: "Account Number",
-    cell: ({ row }) => (
-      <span className="font-mono text-sm">{row.original.accountNumber}</span>
-    ),
+    cell: ({ row }) => <span className="font-mono text-sm">{row.original.accountNumber}</span>,
   },
   {
     accessorKey: "balance",
@@ -151,7 +149,6 @@ const columns: ColumnDef<Customer>[] = [
   {
     id: "actions",
     enableHiding: false,
-    header: "Actions",
     cell: ({ row }) => {
       return (
         <DownloadStatement customer={row.original}>

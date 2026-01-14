@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { mutationOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import z from "zod";
 
 import { api } from "@/lib/api";
@@ -133,3 +133,27 @@ export function useAgentMetrics() {
     queryFn: () => api.get("user/agent/metrics").json<APIResponse<AgentMetrics>>(),
   });
 }
+
+export const downloadAgentDailyReportOptions = mutationOptions({
+  mutationFn: async (data: { agentId: string; reportDate?: string }) => {
+    const searchParams: Record<string, string> = { agentId: data.agentId };
+    if (data.reportDate) searchParams.reportDate = data.reportDate;
+
+    const blob = await api.get("data/agent-daily-report", { searchParams }).blob();
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `agent-report-${data.reportDate || new Date().toISOString().split("T")[0]}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
+    return { success: true };
+  },
+  onSuccess: () => {
+    successToast("Agent daily report downloaded successfully");
+  },
+  onError: errorToast,
+});

@@ -23,7 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import { Paragraph } from "@/components/ui/text";
 
 import { type User, UserRoles } from "@/lib/types";
-import { DeactivateUser } from "@/modules/users/user-actions";
+import { DeactivateUser, DownloadAgentReport } from "@/modules/users/user-actions";
 
 export function UsersTable({ users, isLoading }: { users: User[]; isLoading: boolean }) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -153,10 +153,12 @@ export const columns: ColumnDef<User>[] = [
           </DeactivateUser>
 
           {row.original.role === UserRoles.AGENT && (
-            <Button variant="ghost" size="icon">
-              <span className="sr-only">Edit</span>
-              <DownloadIcon className="text-muted-foreground" />
-            </Button>
+            <DownloadAgentReport user={row.original}>
+              <Button variant="ghost" size="icon">
+                <span className="sr-only">Download Report</span>
+                <DownloadIcon className="text-muted-foreground" />
+              </Button>
+            </DownloadAgentReport>
           )}
         </div>
       );

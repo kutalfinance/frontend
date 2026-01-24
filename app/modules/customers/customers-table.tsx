@@ -87,13 +87,6 @@ const columns: ColumnDef<Customer>[] = [
     cell: ({ row }) => <span className="font-mono text-sm">{row.original.accountNumber}</span>,
   },
   {
-    accessorKey: "balance",
-    header: "Balance",
-    cell: ({ row }) => (
-      <span className="font-medium whitespace-nowrap">{formatMoney(row.original.balance)}</span>
-    ),
-  },
-  {
     accessorKey: "phoneNumber",
     header: "Contact",
     cell: ({ row }) => {

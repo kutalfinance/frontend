@@ -13,7 +13,6 @@ import {
   MapPin,
   Phone,
   User,
-  Wallet,
 } from "lucide-react";
 
 import {
@@ -94,7 +93,6 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
 
   const customerInfo = [
     { icon: Hash, label: "Account Number", value: customer.accountNumber },
-    { icon: Wallet, label: "Balance", value: formatMoney(customer.balance) },
     {
       icon: DollarSign,
       label: "Contribution Amount",

@@ -39,7 +39,6 @@ export type CustomerNextOfKin = {
 export type Customer = {
   id: string;
   accountNumber: string;
-  balance: number;
   name: string;
   phoneNumber: string;
   email: string;

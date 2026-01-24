@@ -27,6 +27,9 @@ import { Paragraph } from "@/components/ui/text";
 
 import { useLoggedInUser, useLogout } from "@/hooks/auth/common";
 import { cn } from "@/lib/utils";
+import { DownloadAdminReport } from "@/modules/users/user-actions";
+
+import { DialogTrigger } from "./ui/dialog";
 
 export function AppLayoutProvider({ children, className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -140,29 +143,34 @@ function UserMenu() {
         </Button>
       )}
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Avatar>
-            <AvatarImage src="" />
-            <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end">
-          <DropdownMenuLabel>
-            <div>
-              <div className="font-medium">{user.name}</div>
-              <div className="text-muted-foreground text-xs">{user.email}</div>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {isApprover && (
-            <DropdownMenuItem asChild>
-              <Link to={href("/admin/pending-approvals")}>Pending Approvals</Link>
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem onClick={() => logout.mutate()}>Log out</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <DownloadAdminReport>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar>
+              <AvatarImage src="" />
+              <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="end">
+            <DropdownMenuLabel>
+              <div>
+                <div className="font-medium">{user.name}</div>
+                <div className="text-muted-foreground text-xs">{user.email}</div>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {isApprover && (
+              <DropdownMenuItem asChild>
+                <Link to={href("/admin/pending-approvals")}>Pending approvals</Link>
+              </DropdownMenuItem>
+            )}
+            <DialogTrigger asChild>
+              <DropdownMenuItem>Download report</DropdownMenuItem>
+            </DialogTrigger>
+            <DropdownMenuItem onClick={() => logout.mutate()}>Log out</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </DownloadAdminReport>
     </div>
   );
 }

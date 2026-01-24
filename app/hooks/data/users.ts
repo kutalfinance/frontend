@@ -157,3 +157,27 @@ export const downloadAgentDailyReportOptions = mutationOptions({
   },
   onError: errorToast,
 });
+
+export const downloadAdminDailyReportOptions = mutationOptions({
+  mutationFn: async (data: { reportDate?: string }) => {
+    const searchParams: Record<string, string> = {};
+    if (data.reportDate) searchParams.reportDate = data.reportDate;
+
+    const blob = await api.get("data/admin-daily-report", { searchParams }).blob();
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `admin-report-${data.reportDate || new Date().toISOString().split("T")[0]}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
+    return { success: true };
+  },
+  onSuccess: () => {
+    successToast("Admin daily report downloaded successfully");
+  },
+  onError: errorToast,
+});

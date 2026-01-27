@@ -1,10 +1,13 @@
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 
-import { ArrowUpDown, SearchIcon } from "lucide-react";
+import { format } from "date-fns";
+import { ArrowUpDown, CalendarIcon, SearchIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -46,7 +49,10 @@ export function TransactionFilters({
   const [searchParams, setSearchParams] = useSearchParams();
 
   const hasFilters = useMemo(
-    () => Array.from(searchParams.keys()).some((key) => !["q", "sortBy"].includes(key)),
+    () =>
+      Array.from(searchParams.keys()).some(
+        (key) => !["q", "sortBy", "sortDirection"].includes(key)
+      ),
     [searchParams]
   );
 
@@ -224,6 +230,102 @@ export function TransactionSortFilter() {
   );
 }
 
+export function TransactionDateRangeFilter() {
+  const { searchParams, setSearchParams, disabled } = useTransactionFilters();
+  const [open, setOpen] = useState(false);
+
+  const recordedAfter = searchParams.get("recordedAfter") || "";
+  const recordedBefore = searchParams.get("recordedBefore") || "";
+
+  const [fromDate, setFromDate] = useState(recordedAfter);
+  const [toDate, setToDate] = useState(recordedBefore);
+
+  const hasDateFilter = recordedAfter || recordedBefore;
+
+  function formatDisplayDate(dateStr: string) {
+    if (!dateStr) return "";
+    return format(new Date(dateStr), "MMM dd, yyyy");
+  }
+
+  function getDisplayText() {
+    if (recordedAfter && recordedBefore) {
+      return `${formatDisplayDate(recordedAfter)} - ${formatDisplayDate(recordedBefore)}`;
+    }
+    if (recordedAfter) {
+      return `From ${formatDisplayDate(recordedAfter)}`;
+    }
+    if (recordedBefore) {
+      return `Until ${formatDisplayDate(recordedBefore)}`;
+    }
+    return "Date range";
+  }
+
+  function onApply() {
+    setSearchParams((prev) => {
+      if (fromDate) prev.set("recordedAfter", fromDate);
+      else prev.delete("recordedAfter");
+
+      if (toDate) prev.set("recordedBefore", toDate);
+      else prev.delete("recordedBefore");
+
+      return prev;
+    });
+    setOpen(false);
+  }
+
+  function onClear() {
+    setFromDate("");
+    setToDate("");
+    setSearchParams((prev) => {
+      prev.delete("recordedAfter");
+      prev.delete("recordedBefore");
+      return prev;
+    });
+    setOpen(false);
+  }
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant={hasDateFilter ? "secondary" : "outline"} disabled={disabled}>
+          <CalendarIcon className="size-4" />
+          <span className="max-w-40 truncate">{getDisplayText()}</span>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-72 space-y-4" align="start">
+        <div className="space-y-2">
+          <Label htmlFor="fromDate">From</Label>
+          <Input
+            id="fromDate"
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            max={toDate || undefined}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="toDate">To</Label>
+          <Input
+            id="toDate"
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            min={fromDate || undefined}
+          />
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button variant="ghost" size="sm" onClick={onClear}>
+            Clear
+          </Button>
+          <Button size="sm" onClick={onApply}>
+            Apply
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function TransactionClearFilters() {
   const { hasFilters, setSearchParams } = useTransactionFilters();
 
@@ -237,6 +339,8 @@ export function TransactionClearFilters() {
           prev.delete("type");
           prev.delete("status");
           prev.delete("customerId");
+          prev.delete("recordedAfter");
+          prev.delete("recordedBefore");
           return prev;
         })
       }

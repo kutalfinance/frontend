@@ -22,6 +22,7 @@ import {
 import {
   TransactionClearFilters,
   TransactionCustomerFilter,
+  TransactionDateRangeFilter,
   TransactionFilters,
   TransactionSearchFilter,
   TransactionSortFilter,
@@ -93,6 +94,7 @@ export default function Transactions({ loaderData }: Route.ComponentProps) {
         <TransactionTypeFilter />
         <TransactionStatusFilter />
         <TransactionCustomerFilter />
+        <TransactionDateRangeFilter />
         <TransactionClearFilters />
         <TransactionSortFilter />
       </TransactionFilters>

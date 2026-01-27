@@ -1,4 +1,10 @@
-import { mutationOptions, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  mutationOptions,
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import z from "zod";
 
 import { api } from "@/lib/api";
@@ -32,7 +38,7 @@ export function useBranchesAdmin({ searchParams }: { searchParams?: BranchSearch
 
 export const branchByAgent = queryOptions({
   queryKey: queryKeys.branches.agent(),
-  queryFn: () => api.get("branch/agent").json<APIResponse<Branch>>(),
+  queryFn: () => api.get("branch").json<APIResponse<Branch>>(),
 });
 
 export function useCreateBranch() {

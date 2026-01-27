@@ -68,7 +68,9 @@ const columns: ColumnDef<AuditLog>[] = [
   {
     accessorKey: "authorName",
     header: "User",
-    cell: ({ row }) => <span className="font-medium">{row.original.authorName}</span>,
+    cell: ({ row }) => (
+      <span className="font-medium whitespace-nowrap">{row.original.authorName}</span>
+    ),
   },
   {
     accessorKey: "action",
@@ -84,7 +86,7 @@ const columns: ColumnDef<AuditLog>[] = [
     accessorKey: "description",
     header: "Description",
     cell: ({ row }) => <span className="text-sm">{row.original.description}</span>,
-    meta: { className: "max-w-md" },
+    meta: { className: "min-w-md" },
   },
   {
     accessorKey: "ipAddress",

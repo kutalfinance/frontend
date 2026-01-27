@@ -79,6 +79,13 @@ export type Transaction = {
   createdAt: string; // date-time
 };
 
+export type TransactionMetrics = {
+  totalCharged: number;
+  totalDeposited: number;
+  totalWithdrawn: number;
+  balance: number;
+};
+
 export type Branch = {
   id: string;
   name: string;

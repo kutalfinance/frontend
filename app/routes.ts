@@ -17,19 +17,17 @@ export default [
   ]),
 
   route("/admin", "./routes/admin/layout.tsx", [
-    route("", "./routes/admin/index.tsx", [
-      ...prefix("users", [
-        route("create", "./routes/admin/users-create.tsx"),
-        route("deactivated", "./routes/admin/users-deactivated.tsx"),
-      ]),
-    ]),
+    route("", "./routes/admin/transactions.tsx"),
     route("customers", "./routes/admin/customers.tsx", [
       route("create", "./routes/admin/customer-create.tsx"),
     ]),
     route("branches", "./routes/admin/branches.tsx", [
       route("create", "./routes/admin/branches-create.tsx"),
     ]),
-    route("transactions", "./routes/admin/transactions.tsx"),
+    route("users", "./routes/admin/users.tsx", [
+      route("create", "./routes/admin/users-create.tsx"),
+      route("deactivated", "./routes/admin/users-deactivated.tsx"),
+    ]),
     route("pending-approvals", "./routes/admin/pending-approvals.tsx"),
     route("audit", "./routes/admin/audit.tsx"),
   ]),

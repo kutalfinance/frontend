@@ -21,7 +21,7 @@ import { formatMoney } from "@/lib/utils/money";
 import { UserFilters } from "@/modules/users/filters";
 import { UsersTable } from "@/modules/users/users-table";
 
-import type { Route } from "./+types";
+import type { Route } from "./+types/users";
 
 export function meta() {
   return [

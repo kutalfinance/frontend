@@ -12,6 +12,7 @@ import {
 } from "@/components/module-heading";
 import { Button } from "@/components/ui/button";
 
+import { useLoggedInUser } from "@/hooks/auth/common";
 import { transactionsQueryOptions, validateTransactionsSearch } from "@/hooks/data/transactions";
 import { siteConfig } from "@/lib/config";
 import {
@@ -57,13 +58,16 @@ export default function Transactions({ loaderData }: Route.ComponentProps) {
   const { data, isPending } = useQuery(transactionsQueryOptions({ searchParams }));
   const transactions = data?.data ?? [];
 
+  const { data: userData } = useLoggedInUser();
+  const user = userData?.data;
+
   return (
     <div className="container space-y-10">
       <Outlet />
 
       <ModuleHeading>
         <ModuleHeader>
-          <ModuleTitle>Transactions</ModuleTitle>
+          <ModuleTitle>Welcome {user.name}</ModuleTitle>
           <ModuleDescription>
             View all customer transactions, deposits, and withdrawals across all branches
           </ModuleDescription>

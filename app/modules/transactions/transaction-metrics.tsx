@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Coins } from "lucide-react";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Heading, Paragraph } from "@/components/ui/text";
 
@@ -19,7 +19,7 @@ export function TransactionMetrics({ customerId }: { customerId?: string }) {
     {
       icon: Coins,
       label: "Balance",
-      value: formatMoney(metrics?.net ?? 0),
+      value: formatMoney(metrics?.balance ?? 0),
       className: "text-muted-foreground",
     },
     {
@@ -31,20 +31,28 @@ export function TransactionMetrics({ customerId }: { customerId?: string }) {
     {
       icon: Coins,
       label: "Total Withdrawn",
-      value: formatMoney(metrics?.totalWithdrawn ?? 0),
+      value: formatMoney((metrics?.totalWithdrawn ?? 0) * 100000),
       className: "text-destructive",
+    },
+    {
+      icon: Coins,
+      label: "Total Charged",
+      value: formatMoney(metrics?.totalCharged ?? 0),
+      className: "text-foreground",
     },
   ];
 
   return (
-    <div className="grid min-w-sm grid-cols-[repeat(auto-fill,minmax(16rem,auto))] gap-2 lg:grid-cols-3">
+    <div className="grid min-w-sm grid-cols-[repeat(auto-fill,minmax(16rem,auto))] gap-2 lg:grid-cols-4">
       {metricsData.map((metric) => (
         <Card key={metric.label} className="h-fit gap-2">
-          <CardContent>
-            <div className="flex items-center gap-1.5">
-              <metric.icon className={cn("size-4", metric.className)} />
-              <Paragraph className="text-muted-foreground text-sm">{metric.label}</Paragraph>
+          <CardHeader>
+            <div className="w-fit rounded-md border p-2">
+              <metric.icon className={cn("text-muted-foreground size-5", metric.className)} />
             </div>
+          </CardHeader>
+          <CardContent>
+            <Paragraph className="text-muted-foreground text-sm">{metric.label}</Paragraph>
             <Heading>{isPending ? <Skeleton className="h-8 w-20" /> : metric.value}</Heading>
           </CardContent>
         </Card>

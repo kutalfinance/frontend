@@ -4,7 +4,7 @@ import z from "zod";
 import { queryClient } from "@/components/query-provider";
 
 import { api } from "@/lib/api";
-import type { APIResponse, Transaction } from "@/lib/types";
+import type { APIResponse, Transaction, TransactionMetrics } from "@/lib/types";
 
 import { errorToast, queryKeys, successToast } from "./utils";
 
@@ -95,7 +95,5 @@ export const transactionsMetricsOptions = ({
   queryOptions({
     queryKey: queryKeys.transactions.metrics(searchParams),
     queryFn: () =>
-      api
-        .get("transaction/metrics", { searchParams })
-        .json<APIResponse<{ totalDeposited: number; totalWithdrawn: number; net: number }>>(),
+      api.get("transaction/metrics", { searchParams }).json<APIResponse<TransactionMetrics>>(),
   });

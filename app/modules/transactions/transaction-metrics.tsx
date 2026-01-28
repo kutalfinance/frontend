@@ -31,7 +31,7 @@ export function TransactionMetrics({ customerId }: { customerId?: string }) {
     {
       icon: Coins,
       label: "Total Withdrawn",
-      value: formatMoney((metrics?.totalWithdrawn ?? 0) * 100000),
+      value: formatMoney(metrics?.totalWithdrawn ?? 0),
       className: "text-destructive",
     },
     {

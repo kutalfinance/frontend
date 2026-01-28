@@ -38,7 +38,14 @@ export function useBranchesAdmin({ searchParams }: { searchParams?: BranchSearch
 
 export const branchByAgent = queryOptions({
   queryKey: queryKeys.branches.agent(),
-  queryFn: () => api.get("branch").json<APIResponse<Branch>>(),
+  queryFn: async () => {
+    const response = await api.get("branch").json<APIResponse<Branch[]>>();
+
+    return {
+      ...response,
+      data: response.data[0] || null,
+    };
+  },
 });
 
 export function useCreateBranch() {

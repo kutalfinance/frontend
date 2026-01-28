@@ -28,6 +28,7 @@ declare module "@tanstack/react-table" {
 
   interface TableMeta<TData extends RowData> {
     getRowClassName?: (row: Row<TData>) => string | undefined;
+    isAgentView?: boolean;
   }
 }
 

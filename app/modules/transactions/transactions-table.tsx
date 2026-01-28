@@ -25,9 +25,11 @@ import { formatMoney } from "@/lib/utils/money";
 export function TransactionsTable({
   transactions,
   isLoading,
+  isAgentView = false,
 }: {
   transactions: Transaction[];
   isLoading: boolean;
+  isAgentView?: boolean;
 }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -51,6 +53,9 @@ export function TransactionsTable({
       columnVisibility,
       rowSelection,
     },
+    meta: {
+      isAgentView,
+    },
   });
 
   return (
@@ -72,11 +77,14 @@ const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "customer.name",
     header: "Customer",
-    cell: ({ row }) => (
-      <Link className="link" to={href("/admin/customers") + `?q=${row.original.customer.name}`}>
-        {row.original.customer.name}
-      </Link>
-    ),
+    cell: ({ row, table }) =>
+      table.options.meta?.isAgentView ? (
+        row.original.customer.name
+      ) : (
+        <Link className="link" to={href("/admin/customers") + `?q=${row.original.customer.name}`}>
+          {row.original.customer.name}
+        </Link>
+      ),
   },
   {
     accessorKey: "type",

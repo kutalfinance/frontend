@@ -214,7 +214,7 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
           <TransactionSortFilter />
         </TransactionFilters>
 
-        <TransactionsTable transactions={transactions} isLoading={isPending} />
+        <TransactionsTable transactions={transactions} isLoading={isPending} isAgentView />
       </div>
     </div>
   );

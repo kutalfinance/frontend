@@ -1,6 +1,6 @@
 import { Link, Outlet } from "react-router";
 
-import { Archive, Building2, Coins, Contact, Plus, Users } from "lucide-react";
+import { Archive, Building2, Contact, Plus, Users } from "lucide-react";
 
 import {
   ModuleActions,
@@ -60,39 +60,27 @@ export default function AdminDashboard({ loaderData }: Route.ComponentProps) {
 
       <ModuleHeading>
         <ModuleHeader>
-          <ModuleTitle>Welcome {user.name}</ModuleTitle>
+          <ModuleTitle>User Management</ModuleTitle>
           <ModuleDescription>Monitor key metrics and manage users.</ModuleDescription>
         </ModuleHeader>
 
-        {/* <ToggleGroup variant="outline" type="single" defaultValue={dataRangeOptions[1].value}>
-          {dataRangeOptions.map((option) => (
-            <ToggleGroupItem key={option.value} value={option.value}>
-              {option.label}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup> */}
+        <ModuleActions>
+          <Button asChild>
+            <Link to="/admin/users/create">
+              <Plus /> Add user
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/admin/users/deactivated">
+              <Archive />
+            </Link>
+          </Button>
+        </ModuleActions>
       </ModuleHeading>
 
       <DashboardStats />
 
       <div className="flex flex-col gap-2">
-        <ModuleHeading className="mb-0">
-          <ModuleHeader>
-            <ModuleTitle>User Management</ModuleTitle>
-          </ModuleHeader>
-          <ModuleActions>
-            <Button asChild>
-              <Link to="/admin/users/create">
-                <Plus /> Add user
-              </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/admin/users/deactivated">
-                <Archive />
-              </Link>
-            </Button>
-          </ModuleActions>
-        </ModuleHeading>
         <UserFilters disabled={isPending} />
         <UsersTable users={users} isLoading={isPending} />
       </div>
@@ -113,11 +101,6 @@ function DashboardStats() {
 
   const metricsData = [
     {
-      icon: Coins,
-      label: "Balance",
-      value: formatMoney(metrics?.netContribution ?? 0),
-    },
-    {
       icon: Building2,
       label: "Branches",
       value: formatMoney(metrics?.totalBranches ?? 0, { style: "decimal" }),
@@ -135,7 +118,7 @@ function DashboardStats() {
   ];
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(16rem,auto))] gap-2 xl:grid-cols-4">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(17rem,auto))] gap-2 lg:grid-cols-3">
       {metricsData.map((metric) => (
         <Card key={metric.label} className="gap-2">
           <CardHeader>

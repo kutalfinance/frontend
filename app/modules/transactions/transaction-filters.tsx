@@ -300,7 +300,7 @@ export function TransactionDateRangeFilter() {
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
-            max={toDate || undefined}
+            max={toDate || new Date().toISOString().split("T")[0]}
           />
         </div>
         <div className="space-y-2">
@@ -311,6 +311,7 @@ export function TransactionDateRangeFilter() {
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
             min={fromDate || undefined}
+            max={new Date().toISOString().split("T")[0]}
           />
         </div>
         <div className="flex justify-end gap-2">

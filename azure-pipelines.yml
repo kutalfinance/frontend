@@ -71,7 +71,9 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           az acr login --name $(ACR_NAME)
-          docker build -t $CONTAINER_IMAGE_NAME .
+          docker build \
+            --build-arg VITE_API_URL=$(VITE_API_URL) \
+            -t $CONTAINER_IMAGE_NAME .
           docker push $CONTAINER_IMAGE_NAME
       displayName: 'Build and Push to ACR'
 
@@ -106,9 +108,7 @@ stages:
           az containerapp update \
             --name $(CONTAINER_APP_NAME) \
             --resource-group $(RESOURCE_GROUP) \
-            --image $(CONTAINER_IMAGE_NAME) \
-            --set-env-vars \
-              VITE_API_URL="$(VITE_API_URL)"
+            --image $(CONTAINER_IMAGE_NAME)
 
           echo "Container App updated successfully!"
 

@@ -34,7 +34,6 @@ stages:
           exit 1
         fi
       displayName: 'Run TruffleHog Secret Scan'
-
   - job: ReactBuild
     displayName: 'React Vite Build'
     steps:
@@ -65,7 +64,6 @@ stages:
     displayName: 'Build and Push Docker Image'
     steps:
     - checkout: self
-
     - task: AzureCLI@2
       inputs:
         azureSubscription: 'KssArmConnection'
@@ -92,11 +90,8 @@ stages:
   jobs:
   - job: UpdateContainerApp
     displayName: 'Update Container App'
-    variables:
-    - group: ${{ parameters.environment }}
     steps:
     - checkout: none
-
     - task: AzureCLI@2
       inputs:
         azureSubscription: 'KssArmConnection'

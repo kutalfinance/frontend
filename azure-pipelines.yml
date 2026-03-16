@@ -8,15 +8,6 @@ trigger:
 variables:
 - group: KssGlobal
 
-parameters:
-- name: environment
-  displayName: Environment
-  type: string
-  default: KssFrontendDev
-  values:
-  - KssFrontendDev
-  - KssFrontendProd
-
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -63,9 +54,12 @@ stages:
   dependsOn: ScanAndBuild
   condition: in(variables['Build.SourceBranchName'], 'staging', 'main')
   variables:
+    - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+      - group: KssBackendProd
+    - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+      - group: KssBackendDev
     - name: CONTAINER_IMAGE_NAME
       value: "$(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.SourceVersion)"
-    - group: ${{ parameters.environment }}
   jobs:
   - job: BuildPushDockerImage
     displayName: 'Build and Push Docker Image'
@@ -88,9 +82,12 @@ stages:
   dependsOn: DockerBuildPush
   condition: in(variables['Build.SourceBranchName'], 'staging', 'main')
   variables:
-  - name: CONTAINER_IMAGE_NAME
-    value: "$(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.SourceVersion)"
-  - group: ${{ parameters.environment }}
+    - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+      - group: KssBackendProd
+    - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+      - group: KssBackendDev
+    - name: CONTAINER_IMAGE_NAME
+      value: "$(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.SourceVersion)"
 
   jobs:
   - job: UpdateContainerApp
@@ -116,7 +113,7 @@ stages:
             --resource-group $(RESOURCE_GROUP) \
             --image $(CONTAINER_IMAGE_NAME) \
             --set-env-vars \
-              VITE_API_URL="$(CLIENT_URL)"
+              VITE_API_URL="$(VITE_API_URL)"
 
           echo "Container App updated successfully!"
 

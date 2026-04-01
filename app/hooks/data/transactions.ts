@@ -40,7 +40,7 @@ export const createWithdrawalOptions = mutationOptions({
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
-    successToast("Withdrawal recorded successfully");
+    successToast("Withdrawal request initiated");
   },
   onError: errorToast,
 });

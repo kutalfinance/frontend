@@ -127,14 +127,14 @@ export function Preview({
   wide?: boolean;
 }) {
   return (
-    <div className="relative ml-9 rounded-lg border">
-      <div className="bg-muted/50 border-b px-3 py-1.5">
+    <div className="relative ml-9 rounded-lg border border-foreground/20">
+      <div className="border-b border-foreground/20 px-3 py-1.5">
         <span className="text-muted-foreground text-xs font-medium">Preview</span>
       </div>
       <div className="flex justify-center p-6">
         <div
           className={cn(
-            "pointer-events-none w-full select-none space-y-6",
+            "w-full select-none space-y-6",
             wide ? "max-w-2xl" : "max-w-sm",
           )}
         >

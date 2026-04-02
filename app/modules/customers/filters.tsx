@@ -45,7 +45,10 @@ export function CustomerFilters({
   const [searchParams, setSearchParams] = useSearchParams();
 
   const hasFilters = useMemo(
-    () => Array.from(searchParams.keys()).some((key) => !["q", "sortBy"].includes(key)),
+    () =>
+      Array.from(searchParams.keys()).some(
+        (key) => !["q", "sortBy", "sortDirection"].includes(key),
+      ),
     [searchParams]
   );
 
@@ -126,33 +129,55 @@ export function CustomerSortFilter() {
   const { searchParams, setSearchParams, disabled } = useCustomerFilters();
 
   return (
-    <Select
-      disabled={disabled}
-      value={searchParams.get("sortBy") || "createdAt"}
-      onValueChange={(value) => {
-        setSearchParams((prev) => {
-          if (value) prev.set("sortBy", value);
-          else prev.delete("sortBy");
-          return prev;
-        });
-      }}
-    >
-      <SelectTrigger className="ml-auto">
-        <div className="flex items-center gap-1.5">
+    <div className="ml-auto flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="icon"
+        disabled={disabled}
+        onClick={() => {
+          setSearchParams((prev) => {
+            const current = prev.get("sortDirection") || "desc";
+            prev.set("sortDirection", current === "asc" ? "desc" : "asc");
+            return prev;
+          });
+        }}
+        title={
+          (searchParams.get("sortDirection") || "desc") === "asc" ? "Ascending" : "Descending"
+        }
+      >
+        <ArrowUpDown className="size-4" />
+      </Button>
+
+      <Select
+        disabled={disabled}
+        value={searchParams.get("sortBy") || "createdAt"}
+        onValueChange={(value) => {
+          setSearchParams((prev) => {
+            if (value) {
+              prev.set("sortBy", value);
+              prev.set("sortDirection", value === "createdAt" ? "desc" : "asc");
+            } else {
+              prev.delete("sortBy");
+              prev.delete("sortDirection");
+            }
+            return prev;
+          });
+        }}
+      >
+        <SelectTrigger>
           <div className="flex items-center gap-1.5">
-            <ArrowUpDown className="size-4" />
             <span className="text-muted-foreground">Sort by:</span>
+            <SelectValue placeholder="Sort By" />
           </div>
-          <SelectValue placeholder="Sort By" />
-        </div>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="name">Name</SelectItem>
-        <SelectItem value="email">Email</SelectItem>
-        <SelectItem value="location">Location</SelectItem>
-        <SelectItem value="createdAt">Created At</SelectItem>
-      </SelectContent>
-    </Select>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="name">Name</SelectItem>
+          <SelectItem value="email">Email</SelectItem>
+          <SelectItem value="location">Location</SelectItem>
+          <SelectItem value="createdAt">Created At</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
 

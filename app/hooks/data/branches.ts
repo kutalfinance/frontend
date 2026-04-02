@@ -1,10 +1,4 @@
-import {
-  mutationOptions,
-  queryOptions,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import z from "zod";
 
 import { api } from "@/lib/api";
@@ -112,26 +106,3 @@ export const branchByIdQueryOptions = (id: string) =>
     enabled: !!id,
   });
 
-export const downloadBranchDailyReportOptions = mutationOptions({
-  mutationFn: async (data: { branchId: string; reportDate?: string }) => {
-    const searchParams: Record<string, string> = { branchId: data.branchId };
-    if (data.reportDate) searchParams.reportDate = data.reportDate;
-
-    const blob = await api.get("data/branch-daily-report", { searchParams }).blob();
-
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `branch-report-${data.reportDate || new Date().toISOString().split("T")[0]}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-
-    return { success: true };
-  },
-  onSuccess: () => {
-    successToast("Branch daily report downloaded successfully");
-  },
-  onError: errorToast,
-});

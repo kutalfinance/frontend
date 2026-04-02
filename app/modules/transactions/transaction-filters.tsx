@@ -200,33 +200,55 @@ export function TransactionSortFilter() {
   const { searchParams, setSearchParams, disabled } = useTransactionFilters();
 
   return (
-    <Select
-      disabled={disabled}
-      value={searchParams.get("sortBy") || "timestamp"}
-      onValueChange={(value) => {
-        setSearchParams((prev) => {
-          if (value) prev.set("sortBy", value);
-          else prev.delete("sortBy");
-          return prev;
-        });
-      }}
-    >
-      <SelectTrigger className="ml-auto w-48">
-        <div className="flex items-center gap-1.5">
+    <div className="ml-auto flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="icon"
+        disabled={disabled}
+        onClick={() => {
+          setSearchParams((prev) => {
+            const current = prev.get("sortDirection") || "desc";
+            prev.set("sortDirection", current === "asc" ? "desc" : "asc");
+            return prev;
+          });
+        }}
+        title={
+          (searchParams.get("sortDirection") || "desc") === "asc" ? "Ascending" : "Descending"
+        }
+      >
+        <ArrowUpDown className="size-4" />
+      </Button>
+
+      <Select
+        disabled={disabled}
+        value={searchParams.get("sortBy") || "timestamp"}
+        onValueChange={(value) => {
+          setSearchParams((prev) => {
+            if (value) {
+              prev.set("sortBy", value);
+              prev.set("sortDirection", value === "timestamp" ? "desc" : "asc");
+            } else {
+              prev.delete("sortBy");
+              prev.delete("sortDirection");
+            }
+            return prev;
+          });
+        }}
+      >
+        <SelectTrigger className="w-44">
           <div className="flex items-center gap-1.5">
-            <ArrowUpDown className="size-4" />
             <span className="text-muted-foreground">Sort by:</span>
+            <SelectValue placeholder="Sort By" />
           </div>
-          <SelectValue placeholder="Sort By" />
-        </div>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="timestamp">Date</SelectItem>
-        <SelectItem value="amount">Amount</SelectItem>
-        <SelectItem value="type">Type</SelectItem>
-        <SelectItem value="status">Status</SelectItem>
-      </SelectContent>
-    </Select>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="timestamp">Date</SelectItem>
+          <SelectItem value="amount">Amount</SelectItem>
+          <SelectItem value="type">Type</SelectItem>
+          <SelectItem value="status">Status</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Download } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -38,6 +38,21 @@ import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/compone
 import { useBranchesAdmin } from "@/hooks/data/branches";
 import { uploadCustomersOptions } from "@/hooks/data/customers";
 import { cn } from "@/lib/utils";
+
+const CSV_TEMPLATE = [
+  "name,email,phone number,location,contribution amount,nok name,nok phone number,nok email,last withdrawal date,contribution start date,registration date,balance",
+  "Ama Darko,ama@example.com,0245551234,Adum Kumasi,50.00,Kofi Darko,0201234567,kofi@example.com,2025-01-15,2024-06-01,2024-05-20,1000.00",
+].join("\n");
+
+function downloadTemplate() {
+  const blob = new Blob([CSV_TEMPLATE], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "customer-upload-template.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 const uploadSchema = z.object({
   file: z
@@ -85,6 +100,16 @@ export function CustomerBulkUpload({ ...props }: React.ComponentProps<typeof Dia
             Upload a CSV file to bulk create customers. All customers will be assigned to the
             selected branch.
           </DialogDescription>
+          <Button
+            type="button"
+            variant="link"
+            size="sm"
+            className="h-auto w-fit p-0 text-xs"
+            onClick={downloadTemplate}
+          >
+            <Download className="size-3" />
+            Download CSV template
+          </Button>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">

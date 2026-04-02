@@ -13,15 +13,16 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { DownloadIcon, SquarePen, Trash2 } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 
+import { SuperAdminOnly } from "@/components/protected";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import type { Branch } from "@/lib/types";
-import { DeleteBranch, DownloadBranchReport } from "@/modules/branches/branch-actions";
+import { DeleteBranch } from "@/modules/branches/branch-actions";
 import { EditBranchAdmin } from "@/modules/branches/edit-branch-admin";
 
 export function BranchesTable({ branches, isLoading }: { branches: Branch[]; isLoading: boolean }) {
@@ -144,13 +145,6 @@ const columns: ColumnDef<Branch>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-2">
-          <DownloadBranchReport branch={row.original}>
-            <Button variant="ghost" size="icon">
-              <span className="sr-only">Download Report</span>
-              <DownloadIcon className="text-muted-foreground" />
-            </Button>
-          </DownloadBranchReport>
-
           <EditBranchAdmin asChild branch={row.original}>
             <Button variant="ghost" size="icon">
               <span className="sr-only">Edit</span>
@@ -158,12 +152,14 @@ const columns: ColumnDef<Branch>[] = [
             </Button>
           </EditBranchAdmin>
 
-          <DeleteBranch asChild branch={row.original}>
-            <Button variant="ghost" size="icon">
-              <span className="sr-only">Delete</span>
-              <Trash2 className="text-destructive" />
-            </Button>
-          </DeleteBranch>
+          <SuperAdminOnly>
+            <DeleteBranch asChild branch={row.original}>
+              <Button variant="ghost" size="icon">
+                <span className="sr-only">Delete</span>
+                <Trash2 className="text-destructive" />
+              </Button>
+            </DeleteBranch>
+          </SuperAdminOnly>
         </div>
       );
     },

@@ -17,7 +17,9 @@ import { useDebounce } from "@/hooks/use-debounce";
 
 export function UserFilters({ disabled }: { disabled?: boolean }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const hasFilters = Array.from(searchParams.keys()).some((key) => !["q", "sortBy"].includes(key));
+  const hasFilters = Array.from(searchParams.keys()).some(
+    (key) => !["q", "sortBy", "sortDirection"].includes(key),
+  );
 
   const debouncedSearch = useDebounce((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchParams((prev) => {
@@ -110,33 +112,55 @@ export function UserFilters({ disabled }: { disabled?: boolean }) {
         )}
       </div>
 
-      <Select
-        disabled={disabled}
-        value={searchParams.get("sortBy") || "createdAt"}
-        onValueChange={(value) => {
-          setSearchParams((prev) => {
-            if (value) prev.set("sortBy", value);
-            else prev.delete("sortBy");
-            return prev;
-          });
-        }}
-      >
-        <SelectTrigger className="w-48">
-          <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled={disabled}
+          onClick={() => {
+            setSearchParams((prev) => {
+              const current = prev.get("sortDirection") || "desc";
+              prev.set("sortDirection", current === "asc" ? "desc" : "asc");
+              return prev;
+            });
+          }}
+          title={
+            (searchParams.get("sortDirection") || "desc") === "asc" ? "Ascending" : "Descending"
+          }
+        >
+          <ArrowUpDown className="size-4" />
+        </Button>
+
+        <Select
+          disabled={disabled}
+          value={searchParams.get("sortBy") || "createdAt"}
+          onValueChange={(value) => {
+            setSearchParams((prev) => {
+              if (value) {
+                prev.set("sortBy", value);
+                prev.set("sortDirection", value === "createdAt" ? "desc" : "asc");
+              } else {
+                prev.delete("sortBy");
+                prev.delete("sortDirection");
+              }
+              return prev;
+            });
+          }}
+        >
+          <SelectTrigger className="w-44">
             <div className="flex items-center gap-1.5">
-              <ArrowUpDown className="size-4" />
               <span className="text-muted-foreground">Sort by:</span>
+              <SelectValue placeholder="Sort By" />
             </div>
-            <SelectValue placeholder="Sort By" />
-          </div>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="name">Name</SelectItem>
-          <SelectItem value="email">Email</SelectItem>
-          <SelectItem value="role">Role</SelectItem>
-          <SelectItem value="createdAt">Created At</SelectItem>
-        </SelectContent>
-      </Select>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="name">Name</SelectItem>
+            <SelectItem value="email">Email</SelectItem>
+            <SelectItem value="role">Role</SelectItem>
+            <SelectItem value="createdAt">Created At</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 }

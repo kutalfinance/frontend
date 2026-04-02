@@ -4,6 +4,29 @@ export default [
   route("/", "./routes/home.tsx"),
   route("/initialize", "./routes/initialize.tsx"),
 
+  route("/guide", "./routes/guide/layout.tsx", [
+    index("./routes/guide/overview.tsx"),
+    ...prefix("admin", [
+      route("login", "./routes/guide/admin-login.tsx"),
+      route("dashboard", "./routes/guide/admin-dashboard.tsx"),
+      route("users", "./routes/guide/admin-users.tsx"),
+      route("branches", "./routes/guide/admin-branches.tsx"),
+      route("customers", "./routes/guide/admin-customers.tsx"),
+      route("transactions", "./routes/guide/admin-transactions.tsx"),
+      route("withdrawals", "./routes/guide/admin-withdrawals.tsx"),
+      route("reports", "./routes/guide/admin-reports.tsx"),
+      route("audit-logs", "./routes/guide/admin-audit-logs.tsx"),
+    ]),
+    ...prefix("agent", [
+      route("login", "./routes/guide/agent-login.tsx"),
+      route("dashboard", "./routes/guide/agent-dashboard.tsx"),
+      route("customers", "./routes/guide/agent-customers.tsx"),
+      route("deposits", "./routes/guide/agent-deposits.tsx"),
+      route("withdrawals", "./routes/guide/agent-withdrawals.tsx"),
+      route("customer-details", "./routes/guide/agent-customer-details.tsx"),
+    ]),
+  ]),
+
   layout("./routes/auth/auth-layout.tsx", [
     ...prefix("auth", [
       index("./routes/auth/auth-home.tsx"),

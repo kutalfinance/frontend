@@ -167,6 +167,10 @@ function UserMenu() {
             <DialogTrigger asChild>
               <DropdownMenuItem>Download report</DropdownMenuItem>
             </DialogTrigger>
+            <DropdownMenuItem asChild>
+              <Link to="/guide">User guide</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => logout.mutate()}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

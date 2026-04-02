@@ -72,7 +72,8 @@ stages:
         inlineScript: |
           az acr login --name $(ACR_NAME)
           docker build \
-            --build-arg VITE_API_URL=$(VITE_API_URL) VITE_ENVIRONMENT=$(VITE_ENVIRONMENT) \
+            --build-arg VITE_API_URL=$(VITE_API_URL) \
+            --build-arg VITE_ENVIRONMENT=$(VITE_ENVIRONMENT) \
             -t $CONTAINER_IMAGE_NAME .
           docker push $CONTAINER_IMAGE_NAME
       displayName: 'Build and Push to ACR'

@@ -13,6 +13,9 @@ COPY --from=installer /app/node_modules ./node_modules
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
+ARG VITE_ENVIRONMENT
+ENV VITE_ENVIRONMENT=$VITE_ENVIRONMENT
+
 RUN pnpm run build
 
 FROM nginx:alpine

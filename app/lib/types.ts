@@ -91,6 +91,7 @@ export type Branch = {
   name: string;
   location: string;
   agent: { id: string; name: string };
+  approvers: Array<{ id: string; name: string }>;
   createdAt: string; // date-time
   updatedAt: string; // date-time
 };
@@ -114,11 +115,9 @@ export type AdminMetrics = {
   totalUsers: number;
   totalBranches: number;
   totalCustomers: number;
-  netContribution: number;
 };
 
 export type AgentMetrics = {
-  netContribution: number;
   totalCustomers: number;
 };
 

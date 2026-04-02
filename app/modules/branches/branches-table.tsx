@@ -18,6 +18,7 @@ import { DownloadIcon, SquarePen, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import type { Branch } from "@/lib/types";
 import { DeleteBranch, DownloadBranchReport } from "@/modules/branches/branch-actions";
@@ -105,8 +106,29 @@ const columns: ColumnDef<Branch>[] = [
     header: "Assigned Agent",
   },
   {
-    accessorKey: "approver.name",
-    header: "Approver",
+    id: "approvers",
+    header: "Approvers",
+    cell: ({ row }) => {
+      const approvers = row.original.approvers ?? [];
+      if (approvers.length === 0) return "-";
+      if (approvers.length === 1) return approvers[0].name;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="cursor-default underline decoration-dotted">
+                {approvers.length} approvers
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="flex flex-col gap-1">
+              {approvers.map((a) => (
+                <span key={a.id}>{a.name}</span>
+              ))}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
   },
   {
     accessorKey: "createdAt",

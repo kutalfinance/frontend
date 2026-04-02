@@ -62,7 +62,7 @@ export function AgentRecordDeposit({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger {...props} />
 
-      <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Record Deposit</DialogTitle>
           <DialogDescription>
@@ -135,7 +135,7 @@ export function AgentRecordWithdrawal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger {...props} />
 
-      <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Record Withdrawal</DialogTitle>
           <DialogDescription>

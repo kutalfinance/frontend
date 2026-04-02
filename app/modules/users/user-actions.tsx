@@ -4,7 +4,6 @@ import { useMutation } from "@tanstack/react-query";
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -40,10 +39,13 @@ export function RestoreUser({
   ...props
 }: React.ComponentProps<typeof AlertDialogTrigger> & { users: User[] }) {
   const [open, setOpen] = useState(false);
-  const { mutate } = useRestoreUser();
+  const { mutate, isPending } = useRestoreUser();
 
   function onRestore() {
-    mutate(users.map((user) => user.id));
+    mutate(
+      users.map((user) => user.id),
+      { onSuccess: () => setOpen(false) }
+    );
   }
 
   return (
@@ -58,10 +60,10 @@ export function RestoreUser({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction asChild onClick={onRestore}>
-            <Button>Restore User{users.length > 1 ? "s" : ""}</Button>
-          </AlertDialogAction>
+          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <Button isLoading={isPending} onClick={onRestore}>
+            Restore User{users.length > 1 ? "s" : ""}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -73,10 +75,13 @@ export function DeactivateUser({
   ...props
 }: React.ComponentProps<typeof AlertDialogTrigger> & { users: User[] }) {
   const [open, setOpen] = useState(false);
-  const { mutate } = useDeactivateUser();
+  const { mutate, isPending } = useDeactivateUser();
 
-  function onDelete() {
-    mutate(users.map((user) => user.id));
+  function onDeactivate() {
+    mutate(
+      users.map((user) => user.id),
+      { onSuccess: () => setOpen(false) }
+    );
   }
 
   return (
@@ -91,10 +96,10 @@ export function DeactivateUser({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction asChild onClick={onDelete}>
-            <Button variant="destructive">Deactivate User{users.length > 1 ? "s" : ""}</Button>
-          </AlertDialogAction>
+          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <Button variant="destructive" isLoading={isPending} onClick={onDeactivate}>
+            Deactivate User{users.length > 1 ? "s" : ""}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -106,10 +111,13 @@ export function DeleteUser({
   ...props
 }: React.ComponentProps<typeof AlertDialogTrigger> & { users: User[] }) {
   const [open, setOpen] = useState(false);
-  const { mutate } = useDeleteUser();
+  const { mutate, isPending } = useDeleteUser();
 
   function onDelete() {
-    mutate(users.map((user) => user.id));
+    mutate(
+      users.map((user) => user.id),
+      { onSuccess: () => setOpen(false) }
+    );
   }
 
   return (
@@ -124,10 +132,10 @@ export function DeleteUser({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction asChild onClick={onDelete}>
-            <Button variant="destructive">Delete User{users.length > 1 ? "s" : ""}</Button>
-          </AlertDialogAction>
+          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <Button variant="destructive" isLoading={isPending} onClick={onDelete}>
+            Delete User{users.length > 1 ? "s" : ""}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

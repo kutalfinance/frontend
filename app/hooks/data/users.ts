@@ -19,6 +19,7 @@ export const validateUserSearch = z
     status: z.enum(["ACTIVE", "INACTIVE"]),
     superAdmin: z.boolean(),
     approver: z.boolean(),
+    hasNoBranch: z.boolean(),
     isDeactivated: z.boolean(),
     createdBefore: z.string(), // date-time
     createdAfter: z.string(), // date-time

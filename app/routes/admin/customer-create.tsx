@@ -340,7 +340,7 @@ export default function CreateCustomer() {
 
   return (
     <Dialog open onOpenChange={handleClose}>
-      <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>{body}</DialogContent>
+      <DialogContent>{body}</DialogContent>
     </Dialog>
   );
 }

@@ -52,8 +52,12 @@ export function useCreateBranch() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { name: string; location: string; agentId: string }) =>
-      api.post("branch", { json: data }).json<APIResponse<Branch>>(),
+    mutationFn: (data: {
+      name: string;
+      location: string;
+      agentId: string;
+      approverIds: string[];
+    }) => api.post("branch", { json: data }).json<APIResponse<Branch>>(),
     onSuccess: () => {
       invalidationHelpers.branches.related().forEach((queryKey) => {
         queryClient.invalidateQueries({ queryKey });
@@ -68,8 +72,13 @@ export function useUpdateBranch() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { id: string; name: string; location: string; agentId?: string }) =>
-      api.patch(`branch/${data.id}`, { json: data }).json<APIResponse<Branch>>(),
+    mutationFn: (data: {
+      id: string;
+      name: string;
+      location: string;
+      agentId?: string;
+      approverIds?: string[];
+    }) => api.patch(`branch/${data.id}`, { json: data }).json<APIResponse<Branch>>(),
     onSuccess: () => {
       invalidationHelpers.branches.related().forEach((queryKey) => {
         queryClient.invalidateQueries({ queryKey });

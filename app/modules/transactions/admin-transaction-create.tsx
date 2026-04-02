@@ -69,7 +69,7 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger {...props} />
 
-      <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Record Deposit</DialogTitle>
           <DialogDescription>Record a customer deposit</DialogDescription>
@@ -195,7 +195,7 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger {...props} />
 
-      <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Record Withdrawal</DialogTitle>
           <DialogDescription>Record a customer withdrawal</DialogDescription>

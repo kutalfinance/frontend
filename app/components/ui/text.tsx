@@ -16,8 +16,7 @@ const headingVariants = cva("scroll-m-20 tracking-tight font-medium", {
 });
 
 export interface HeadingProps
-  extends React.HTMLAttributes<HTMLParagraphElement>,
-    VariantProps<typeof headingVariants> {}
+  extends React.HTMLAttributes<HTMLParagraphElement>, VariantProps<typeof headingVariants> {}
 
 const Heading = React.forwardRef<HTMLParagraphElement, HeadingProps>(
   ({ className, variant = "h1", ...props }, ref) => {

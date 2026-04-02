@@ -83,7 +83,7 @@ export default function CreateCustomer({}: Route.ComponentProps) {
 
   return (
     <Dialog open onOpenChange={handleClose}>
-      <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Create New Customer</DialogTitle>
           <DialogDescription>

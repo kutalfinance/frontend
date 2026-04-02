@@ -1,7 +1,7 @@
 import { Link, data, href } from "react-router";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Coins, Contact, MapPin, Plus } from "lucide-react";
+import { Contact, MapPin, Plus } from "lucide-react";
 
 import {
   ModuleActions,
@@ -116,11 +116,6 @@ function DashboardStats() {
   const metrics = data?.data;
 
   const metricsData = [
-    {
-      icon: Coins,
-      label: "Balance",
-      value: formatMoney(metrics?.netContribution ?? 0),
-    },
     {
       icon: Contact,
       label: "Customers",

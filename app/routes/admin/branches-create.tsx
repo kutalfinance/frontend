@@ -1,11 +1,12 @@
 import { Link, href, useNavigate } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building, ChevronDown } from "lucide-react";
+import { Building, ChevronDown, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Command,
   CommandEmpty,
@@ -58,7 +59,7 @@ const createBranchFormSchema = z.object({
   name: z.string().min(2, "Branch name must be at least 2 characters long"),
   location: z.string().min(5, "Location must be at least 5 characters long"),
   agentId: z.string().min(1, "Please select an agent"),
-  approverId: z.string().min(1, "Please select an approver"),
+  approverIds: z.array(z.string()).min(1, "Please select at least one approver"),
 });
 
 type CreateBranchForm = z.infer<typeof createBranchFormSchema>;
@@ -66,7 +67,9 @@ type CreateBranchForm = z.infer<typeof createBranchFormSchema>;
 export default function CreateBranch() {
   const navigate = useNavigate();
   const { mutate: createBranch, isPending } = useCreateBranch();
-  const { data: agentsData } = useUsers({ searchParams: { role: UserRoles.AGENT } });
+  const { data: agentsData } = useUsers({
+    searchParams: { role: UserRoles.AGENT, hasNoBranch: true },
+  });
   const { data: adminsData } = useUsers({
     searchParams: { role: UserRoles.ADMIN, approver: true },
   });
@@ -75,11 +78,11 @@ export default function CreateBranch() {
 
   const form = useForm<CreateBranchForm>({
     resolver: zodResolver(createBranchFormSchema),
-    defaultValues: { name: "", location: "", agentId: "" },
+    defaultValues: { name: "", location: "", agentId: "", approverIds: [] },
   });
 
   const selectedAgent = agents.find((agent) => agent.id === form.watch("agentId"));
-  const selectedApprover = approvers.find((approver) => approver.id === form.watch("approverId"));
+  const selectedApproverIds = form.watch("approverIds");
 
   function handleSubmit(values: CreateBranchForm) {
     createBranch(values, {
@@ -182,26 +185,26 @@ export default function CreateBranch() {
 
           <FormField
             control={form.control}
-            name="approverId"
+            name="approverIds"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Approver</FormLabel>
+                <FormLabel>Approvers</FormLabel>
                 <Popover>
-                  <PopoverTrigger asChild className="">
+                  <PopoverTrigger asChild>
                     <FormControl>
                       <Button
                         variant="outline"
                         role="combobox"
                         className="w-full justify-between font-normal"
                       >
-                        {selectedApprover ? (
+                        {selectedApproverIds.length > 0 ? (
                           <span className="truncate">
-                            {selectedApprover.name} - {selectedApprover.email}
+                            {selectedApproverIds.length} approver
+                            {selectedApproverIds.length > 1 ? "s" : ""} selected
                           </span>
                         ) : (
-                          <span className="text-muted-foreground">Select an approver</span>
+                          <span className="text-muted-foreground">Select approvers</span>
                         )}
-
                         <ChevronDown className="text-muted-foreground ml-auto" />
                       </Button>
                     </FormControl>
@@ -212,22 +215,49 @@ export default function CreateBranch() {
                       <CommandList>
                         <CommandEmpty>No approvers found.</CommandEmpty>
                         <CommandGroup>
-                          {approvers.map((approver) => (
-                            <CommandItem
-                              key={approver.id}
-                              onSelect={() => field.onChange(approver.id)}
-                              asChild
-                            >
-                              <PopoverClose>
+                          {approvers.map((approver) => {
+                            const isSelected = field.value.includes(approver.id);
+                            return (
+                              <CommandItem
+                                key={approver.id}
+                                onSelect={() => {
+                                  const next = isSelected
+                                    ? field.value.filter((id) => id !== approver.id)
+                                    : [...field.value, approver.id];
+                                  field.onChange(next);
+                                }}
+                              >
+                                <Checkbox checked={isSelected} className="mr-2" />
                                 {approver.name} - {approver.email}
-                              </PopoverClose>
-                            </CommandItem>
-                          ))}
+                              </CommandItem>
+                            );
+                          })}
                         </CommandGroup>
                       </CommandList>
                     </Command>
                   </PopoverContent>
                 </Popover>
+                {selectedApproverIds.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {selectedApproverIds.map((id) => {
+                      const approver = approvers.find((a) => a.id === id);
+                      return (
+                        <span
+                          key={id}
+                          className="bg-secondary text-secondary-foreground inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs"
+                        >
+                          {approver?.name}
+                          <button
+                            type="button"
+                            onClick={() => field.onChange(field.value.filter((v) => v !== id))}
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
                 <FormMessage />
               </FormItem>
             )}
@@ -273,7 +303,7 @@ export default function CreateBranch() {
 
   return (
     <Dialog defaultOpen onOpenChange={() => navigate(-1)}>
-      <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>{body}</DialogContent>
+      <DialogContent>{body}</DialogContent>
     </Dialog>
   );
 }

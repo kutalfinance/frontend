@@ -4,6 +4,7 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { QueryProvider } from "./components/query-provider";
 import { Toaster } from "./components/ui/sonner";
+import { ENVIRONMENT } from "./lib/config";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -18,8 +19,10 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+const isDev = ENVIRONMENT !== "production";
+
 function DevBanner() {
-  if (!import.meta.env.DEV) return null;
+  if (!isDev) return null;
   return (
     <div className="fixed top-0 left-0 z-[9999] flex h-6 w-full items-center justify-center bg-amber-500 text-xs font-semibold text-black">
       Development Mode
@@ -36,7 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className={import.meta.env.DEV ? "pt-6" : ""}>
+      <body className={isDev ? "pt-6" : ""}>
         <DevBanner />
         {children}
         <ScrollRestoration />

@@ -62,7 +62,7 @@ export function EditUser({
     <Dialog>
       <DialogTrigger {...props} />
 
-      <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit User</DialogTitle>
           <DialogDescription>

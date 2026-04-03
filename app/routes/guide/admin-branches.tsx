@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { GuideNavigation, GuideTitle, Preview, StepLabel } from "./components";
+import { AdminNavPreview, GuideNavigation, GuideTitle, Preview, StepLabel } from "./components";
 
 export default function AdminBranchesGuide() {
   return (
@@ -18,6 +18,15 @@ export default function AdminBranchesGuide() {
         or more approvers, and links to its customers. From here you can create, edit, delete branches,
         and download branch reports.
       </p>
+
+      {/* Accessing Branches */}
+      <div className="space-y-3">
+        <h3 className="text-foreground text-base font-semibold">Accessing Branches</h3>
+        <p>
+          Click <strong>Branches</strong> in the navigation bar to open the Branches page.
+        </p>
+        <AdminNavPreview highlight="Branches" />
+      </div>
 
       {/* Page Overview */}
       <div className="space-y-3">
@@ -31,10 +40,11 @@ export default function AdminBranchesGuide() {
             <div>
               <Heading variant="h2">Branch Management</Heading>
               <Paragraph className="text-muted-foreground text-sm">
-                Manage branch locations and agent assignments.
+                Manage branch locations and agent assignments. Create new branches, assign agents,
+                and track branch performance.
               </Paragraph>
             </div>
-            <Button size="sm">
+            <Button>
               <Plus className="size-4" />
               Add branch
             </Button>
@@ -173,7 +183,7 @@ export default function AdminBranchesGuide() {
         <Preview wide>
           <div className="space-y-0 rounded-md border text-xs">
             {/* Table header */}
-            <div className="text-muted-foreground grid grid-cols-[1fr_1fr_6rem_5rem_6rem_5rem] gap-2 border-b px-3 py-2 font-medium">
+            <div className="text-muted-foreground grid grid-cols-6 gap-2 border-b px-3 py-2 font-medium">
               <span>Branch Name</span>
               <span>Location</span>
               <span>Agent</span>
@@ -200,7 +210,7 @@ export default function AdminBranchesGuide() {
             ].map((row) => (
               <div
                 key={row.name}
-                className="grid grid-cols-[1fr_1fr_6rem_5rem_6rem_5rem] items-center gap-2 border-b px-3 py-2.5 last:border-0"
+                className="grid grid-cols-6 items-center gap-2 border-b px-3 py-2.5 last:border-0"
               >
                 <span className="text-primary font-medium whitespace-nowrap">{row.name}</span>
                 <span className="text-muted-foreground">{row.location}</span>

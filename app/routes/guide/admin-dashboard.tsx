@@ -1,11 +1,19 @@
 import { Link } from "react-router";
 
-import { GuideNavigation, GuideTitle } from "./components";
+import { AdminNavPreview, GuideNavigation, GuideTitle } from "./components";
 
 export default function AdminDashboardGuide() {
   return (
     <div className="text-foreground/80 space-y-8 text-sm leading-relaxed">
       <GuideTitle badge="Admin">Dashboard</GuideTitle>
+      <div className="space-y-3">
+        <h3 className="text-foreground text-base font-semibold">Accessing the Dashboard</h3>
+        <p>
+          Click <strong>Home</strong> in the navigation bar to return to the dashboard at any time.
+        </p>
+        <AdminNavPreview highlight="Home" />
+      </div>
+
       <p>
         The admin dashboard is the <strong>Transactions</strong> page. It displays all transactions
         across the system with filtering by branch, customer, date range, type, and status. Summary

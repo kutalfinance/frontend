@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { GuideNavigation, GuideTitle, Preview, StepLabel } from "./components";
+import { AdminNavPreview, GuideNavigation, GuideTitle, Preview, StepLabel } from "./components";
 
 export default function AdminCustomersGuide() {
   return (
@@ -19,6 +19,15 @@ export default function AdminCustomersGuide() {
         account statements.
       </p>
 
+      {/* Accessing Customers */}
+      <div className="space-y-3">
+        <h3 className="text-foreground text-base font-semibold">Accessing Customers</h3>
+        <p>
+          Click <strong>Customers</strong> in the navigation bar to open the Customers page.
+        </p>
+        <AdminNavPreview highlight="Customers" />
+      </div>
+
       {/* Page Overview */}
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Page Overview</h3>
@@ -31,15 +40,16 @@ export default function AdminCustomersGuide() {
             <div>
               <Heading variant="h2">Customer Management</Heading>
               <Paragraph className="text-muted-foreground text-sm">
-                Manage customer accounts and information.
+                Manage customer accounts and information. Create new customers, view their details,
+                and track customer interactions.
               </Paragraph>
             </div>
             <div className="flex gap-2">
-              <Button size="sm" variant="outline">
+              <Button variant="outline">
                 <Upload className="size-4" />
                 Upload Customers
               </Button>
-              <Button size="sm">
+              <Button>
                 <Plus className="size-4" />
                 Add customer
               </Button>
@@ -260,7 +270,7 @@ export default function AdminCustomersGuide() {
 
         <Preview wide>
           <div className="space-y-0 rounded-md border text-xs">
-            <div className="text-muted-foreground grid grid-cols-[1fr_5.5rem_5.5rem_4.5rem_4rem_4.5rem_4.5rem_2rem] gap-2 border-b px-3 py-2 font-medium">
+            <div className="text-muted-foreground grid grid-cols-8 gap-2 border-b px-3 py-2 font-medium">
               <span>Name</span>
               <span>Account #</span>
               <span>Contact</span>
@@ -294,7 +304,7 @@ export default function AdminCustomersGuide() {
             ].map((row) => (
               <div
                 key={row.name}
-                className="grid grid-cols-[1fr_5.5rem_5.5rem_4.5rem_4rem_4.5rem_4.5rem_2rem] items-center gap-2 border-b px-3 py-2.5 last:border-0"
+                className="grid grid-cols-8 items-center gap-2 border-b px-3 py-2.5 last:border-0"
               >
                 <span className="text-primary font-medium whitespace-nowrap">{row.name}</span>
                 <span className="font-mono">{row.account}</span>

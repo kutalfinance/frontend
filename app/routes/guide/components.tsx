@@ -1,8 +1,19 @@
 import { Link, useLocation } from "react-router";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Building2,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+  Contact,
+  History,
+  Home,
+  Users,
+} from "lucide-react";
 
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Heading } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
 
 /* ── Guide Pages Order ── */
@@ -119,6 +130,77 @@ export function StepLabel({ n, children }: { n: number; children: React.ReactNod
   );
 }
 
+/* ── Admin Nav Preview ── */
+
+const adminNavItems = [
+  { label: "Home", icon: Home },
+  { label: "Branches", icon: Building2 },
+  { label: "Customers", icon: Contact },
+  { label: "Users", icon: Users },
+  { label: "Audit Logs", icon: History },
+] as const;
+
+export type AdminNavHighlight = (typeof adminNavItems)[number]["label"] | "Approvals";
+
+export function AdminNavPreview({ highlight }: { highlight: AdminNavHighlight }) {
+  return (
+    <div className="relative ml-9 rounded-lg border border-foreground/20">
+      <div className="border-b border-foreground/20 px-3 py-1.5">
+        <span className="text-muted-foreground text-xs font-medium">Preview</span>
+      </div>
+      <div className="select-none p-4">
+        <div className="flex items-center justify-between">
+          {/* Left: logo + nav */}
+          <div className="flex items-center gap-6">
+            <Heading className="inline" variant="h4">
+              KSS
+            </Heading>
+            <div className="flex items-center gap-0.5">
+              {adminNavItems.map((item) => {
+                const isActive = item.label === highlight;
+                return (
+                  <div
+                    key={item.label}
+                    className={cn(
+                      "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs",
+                      isActive
+                        ? "border-primary bg-primary/5 text-primary border font-semibold"
+                        : "text-muted-foreground",
+                    )}
+                  >
+                    <item.icon className="size-3.5" />
+                    {item.label}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right: approvals + avatar */}
+          <div className="flex items-center gap-3">
+            <div
+              className={cn(
+                "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs",
+                highlight === "Approvals"
+                  ? "border-primary bg-primary/5 text-primary border font-semibold"
+                  : "text-muted-foreground",
+              )}
+            >
+              <CheckCircle className="size-3.5" />
+              Approvals
+            </div>
+            <Avatar className="size-7">
+              <AvatarFallback className="text-[10px]">AD</AvatarFallback>
+            </Avatar>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Preview Card ── */
+
 export function Preview({
   children,
   wide,
@@ -135,7 +217,7 @@ export function Preview({
         <div
           className={cn(
             "w-full select-none space-y-6",
-            wide ? "max-w-2xl" : "max-w-sm",
+            !wide && "max-w-sm",
           )}
         >
           {children}

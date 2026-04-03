@@ -11,6 +11,7 @@ import {
 
 import { listAuditlogsOptions, validateAuditSearch } from "@/hooks/data/logs";
 import { siteConfig } from "@/lib/config";
+import { AuditFilters } from "@/modules/audit/audit-filters";
 import { AuditTable } from "@/modules/audit/audit-table";
 
 import type { Route } from "./+types/audit";
@@ -53,6 +54,7 @@ export default function AuditLogs({ loaderData }: Route.ComponentProps) {
         </ModuleHeader>
       </ModuleHeading>
 
+      <AuditFilters disabled={isPending} />
       <AuditTable logs={auditLogs} isLoading={isPending} />
     </div>
   );

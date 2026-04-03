@@ -1,6 +1,7 @@
 import { href, useNavigate } from "react-router";
 
 import { queryOptions, useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { HTTPError } from "ky";
 
 import { api } from "@/lib/api";
 import { authToken } from "@/lib/auth-token";
@@ -16,8 +17,10 @@ export const loggedInUserQueryOptions = queryOptions({
       const response = await api.get("user/me").json<APIResponse<User>>();
       return response;
     } catch (err) {
-      authToken.clear();
-      window.location.replace(href("/auth"));
+      if (err instanceof HTTPError && (err.response.status === 401 || err.response.status === 403)) {
+        authToken.clear();
+        window.location.replace(href("/auth"));
+      }
       throw err;
     }
   },

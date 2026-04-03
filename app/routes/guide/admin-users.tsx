@@ -23,7 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { GuideNavigation, GuideTitle, Preview, StepLabel } from "./components";
+import { AdminNavPreview, GuideNavigation, GuideTitle, Preview, StepLabel } from "./components";
 
 export default function AdminUsersGuide() {
   return (
@@ -35,6 +35,15 @@ export default function AdminUsersGuide() {
         can create new users, search and filter the list, deactivate or restore accounts, and
         download agent reports.
       </p>
+
+      {/* Accessing Users */}
+      <div className="space-y-3">
+        <h3 className="text-foreground text-base font-semibold">Accessing Users</h3>
+        <p>
+          Click <strong>Users</strong> in the navigation bar to open the Users page.
+        </p>
+        <AdminNavPreview highlight="Users" />
+      </div>
 
       {/* Page Header */}
       <div className="space-y-3">
@@ -54,11 +63,11 @@ export default function AdminUsersGuide() {
                 </Paragraph>
               </div>
               <div className="flex gap-2">
-                <Button size="sm">
+                <Button>
                   <Plus className="size-4" />
                   Add user
                 </Button>
-                <Button size="sm" variant="outline">
+                <Button variant="outline">
                   <Archive className="size-4" />
                 </Button>
               </div>
@@ -292,7 +301,7 @@ export default function AdminUsersGuide() {
         <Preview wide>
           <div className="space-y-0 rounded-md border text-xs">
             {/* Table header */}
-            <div className="text-muted-foreground grid grid-cols-[2rem_1fr_1fr_5rem_6rem_4.5rem] gap-2 border-b px-3 py-2 font-medium">
+            <div className="text-muted-foreground grid grid-cols-6 gap-2 border-b px-3 py-2 font-medium">
               <span>
                 <Checkbox disabled />
               </span>
@@ -326,7 +335,7 @@ export default function AdminUsersGuide() {
             ].map((row) => (
               <div
                 key={row.name}
-                className="grid grid-cols-[2rem_1fr_1fr_5rem_6rem_4.5rem] items-center gap-2 border-b px-3 py-2.5 last:border-0"
+                className="grid grid-cols-6 items-center gap-2 border-b px-3 py-2.5 last:border-0"
               >
                 <span>
                   <Checkbox disabled />
@@ -430,7 +439,7 @@ export default function AdminUsersGuide() {
 
             <div className="space-y-0 rounded-md border text-xs">
               {/* Table header */}
-              <div className="text-muted-foreground grid grid-cols-[2rem_1fr_1fr_5rem_6rem_5rem] gap-2 border-b px-3 py-2 font-medium">
+              <div className="text-muted-foreground grid grid-cols-6 gap-2 border-b px-3 py-2 font-medium">
                 <span>
                   <Checkbox disabled />
                 </span>
@@ -456,7 +465,7 @@ export default function AdminUsersGuide() {
               ].map((row) => (
                 <div
                   key={row.name}
-                  className="grid grid-cols-[2rem_1fr_1fr_5rem_6rem_5rem] items-center gap-2 border-b px-3 py-2.5 last:border-0"
+                  className="grid grid-cols-6 items-center gap-2 border-b px-3 py-2.5 last:border-0"
                 >
                   <span>
                     <Checkbox disabled />

@@ -38,7 +38,8 @@ export default function AgentCustomerDetailsGuide() {
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Accessing Customer Details</h3>
         <StepLabel n={1}>
-          Find the customer on the dashboard and click <strong>View contributions</strong>
+          Find the customer on the dashboard and click <strong>View contributions</strong> (shown
+          as <strong>View</strong> on mobile)
         </StepLabel>
         <Preview wide>
           <div className="rounded-lg border">
@@ -101,6 +102,9 @@ export default function AgentCustomerDetailsGuide() {
           <li>
             <strong>Record withdrawal</strong> — opens the withdrawal dialog (see the Requesting
             Withdrawals guide)
+          </li>
+          <li>
+            On mobile, the action buttons stack below the customer name and breadcrumb.
           </li>
         </ul>
       </div>
@@ -178,6 +182,7 @@ export default function AgentCustomerDetailsGuide() {
           <li>
             <strong>Total Charged</strong> — sum of all service charges
           </li>
+          <li>On mobile, the metric cards display in a 2-column grid.</li>
         </ul>
       </div>
 
@@ -223,6 +228,10 @@ export default function AgentCustomerDetailsGuide() {
           </li>
           <li>
             <strong>Clear filters</strong> — appears when filters are active to reset them
+          </li>
+          <li>
+            On mobile, the search bar takes the full width and the filter dropdowns wrap onto a
+            second row.
           </li>
         </ul>
       </div>
@@ -322,6 +331,9 @@ export default function AgentCustomerDetailsGuide() {
           </li>
           <li>
             <strong>Date &amp; Time</strong> — when the transaction was recorded
+          </li>
+          <li>
+            On mobile, the table scrolls horizontally. Swipe left to see all columns.
           </li>
         </ul>
       </div>

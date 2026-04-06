@@ -101,6 +101,9 @@ export default function AgentCustomersGuide() {
             <strong>Contribution Amount</strong> — the agreed daily contribution amount in GHS. This
             is used as the default deposit amount when recording transactions.
           </li>
+          <li>
+            On mobile, the Phone Number and Email fields stack vertically instead of side by side.
+          </li>
         </ul>
       </div>
 

@@ -131,6 +131,7 @@ function UserMenu() {
   if (!user) return null;
 
   const isApprover = user.approver;
+  const isAdmin = user.role == "ADMIN";
 
   return (
     <div className="flex items-center gap-4">
@@ -164,9 +165,11 @@ function UserMenu() {
                 <Link to={href("/admin/pending-approvals")}>Pending approvals</Link>
               </DropdownMenuItem>
             )}
-            <DialogTrigger asChild>
-              <DropdownMenuItem>Download report</DropdownMenuItem>
-            </DialogTrigger>
+            {isAdmin && (
+              <DialogTrigger asChild>
+                <DropdownMenuItem>Download report</DropdownMenuItem>
+              </DialogTrigger>
+            )}
             <DropdownMenuItem asChild>
               <Link to="/guide">User guide</Link>
             </DropdownMenuItem>
@@ -185,37 +188,37 @@ const adminNavLinks: {
   pathRegex: RegExp;
   icon: LucideIcon;
 }[] = [
-  {
-    title: "Home",
-    href: href("/admin"),
-    pathRegex: /^\/admin$/,
-    icon: Home,
-  },
-  {
-    title: "Branches",
-    href: href("/admin/branches"),
-    pathRegex: /\/admin\/branches/,
-    icon: Building2,
-  },
-  {
-    title: "Customers",
-    href: href("/admin/customers"),
-    pathRegex: /\/admin\/customers/,
-    icon: Contact,
-  },
-  {
-    title: "Users",
-    href: href("/admin/users"),
-    pathRegex: /\/admin\/users/,
-    icon: Users,
-  },
-  {
-    title: "Audit Logs",
-    href: href("/admin/audit"),
-    pathRegex: /\/admin\/audit/,
-    icon: History,
-  },
-];
+    {
+      title: "Home",
+      href: href("/admin"),
+      pathRegex: /^\/admin$/,
+      icon: Home,
+    },
+    {
+      title: "Branches",
+      href: href("/admin/branches"),
+      pathRegex: /\/admin\/branches/,
+      icon: Building2,
+    },
+    {
+      title: "Customers",
+      href: href("/admin/customers"),
+      pathRegex: /\/admin\/customers/,
+      icon: Contact,
+    },
+    {
+      title: "Users",
+      href: href("/admin/users"),
+      pathRegex: /\/admin\/users/,
+      icon: Users,
+    },
+    {
+      title: "Audit Logs",
+      href: href("/admin/audit"),
+      pathRegex: /\/admin\/audit/,
+      icon: History,
+    },
+  ];
 
 export function getNavLinks(userRole: string) {
   return userRole === "ADMIN" ? adminNavLinks : [];

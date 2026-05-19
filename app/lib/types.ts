@@ -109,6 +109,13 @@ export type AuditLog = {
   metadata: Record<string, string>;
 };
 
+export type UploadJob = {
+  id: string;
+  status: "QUEUED" | "PROCESSING" | "DONE" | "FAILED";
+  count: number;
+  error: string | null;
+};
+
 // ========== ADDITIONAL TYPES ==========
 
 export type AdminMetrics = {

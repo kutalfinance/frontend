@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { Check, ChevronsUpDown, Download } from "lucide-react";
+import { Check, ChevronsUpDown, Download, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -36,8 +37,12 @@ import { Input, inputStyles } from "@/components/ui/input";
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { useBranchesAdmin } from "@/hooks/data/branches";
-import { uploadCustomersOptions } from "@/hooks/data/customers";
+import { uploadCustomersOptions, useUploadStatus } from "@/hooks/data/customers";
+import { queryClient } from "@/components/query-provider";
+import { queryKeys } from "@/hooks/data/utils";
 import { cn } from "@/lib/utils";
+
+const UPLOAD_JOB_KEY = "kss_upload_job";
 
 const CSV_TEMPLATE = [
   "name,email,phone number,location,contribution amount,nok name,nok phone number,nok email,last withdrawal date,contribution start date,registration date,balance",
@@ -70,6 +75,12 @@ export function CustomerBulkUpload({ ...props }: React.ComponentProps<typeof Dia
   const { data } = useBranchesAdmin();
   const branches = data?.data ?? [];
 
+  const [jobId, setJobId] = useState<string | null>(() => localStorage.getItem(UPLOAD_JOB_KEY));
+  const toastIdRef = useRef<string | number | null>(null);
+
+  const { data: jobData } = useUploadStatus(jobId);
+  const job = jobData?.data;
+
   const form = useForm<UploadForm>({
     resolver: zodResolver(uploadSchema),
     defaultValues: {
@@ -77,21 +88,93 @@ export function CustomerBulkUpload({ ...props }: React.ComponentProps<typeof Dia
     },
   });
 
+  // Show persistent toast when job is in progress (handles page reloads)
+  useEffect(() => {
+    if (!jobId) return;
+
+    if (!job || job.status === "QUEUED" || job.status === "PROCESSING") {
+      if (!toastIdRef.current) {
+        toastIdRef.current = toast.loading("Uploading customers, please wait...", {
+          icon: <Loader2 className="size-4 animate-spin" />,
+        });
+      }
+      return;
+    }
+
+    if (job.status === "DONE") {
+      toast.success(`Upload complete — ${job.count} customer${job.count !== 1 ? "s" : ""} saved.`, {
+        id: toastIdRef.current ?? undefined,
+        icon: undefined,
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
+    } else if (job.status === "FAILED") {
+      const rowErrors = (job.error ?? "")
+        .split("\n")
+        .filter((line) => line.trim().startsWith("Row "));
+      const description =
+        rowErrors.length > 0
+          ? `${rowErrors.length} row${rowErrors.length !== 1 ? "s" : ""} failed validation`
+          : (job.error ?? "Something went wrong. Please try again.");
+      toast.error("Upload failed", {
+        id: toastIdRef.current ?? undefined,
+        icon: undefined,
+        description,
+        duration: 6000,
+      });
+    }
+
+    // Job is terminal — clean up
+    toastIdRef.current = null;
+    setJobId(null);
+    localStorage.removeItem(UPLOAD_JOB_KEY);
+  }, [job?.status, jobId]);
+
   const handleSubmit = (data: UploadForm) => {
     const file = data.file[0];
+    setOpen(false);
+
+    toastIdRef.current = toast.loading("Uploading customers, please wait...", {
+      icon: <Loader2 className="size-4 animate-spin" />,
+    });
+
     uploadCustomers(
       { file, branchId: data.branchId },
       {
-        onSuccess: () => {
-          setOpen(false);
+        onSuccess: (res) => {
+          const id = res.data;
+          localStorage.setItem(UPLOAD_JOB_KEY, id);
+          setJobId(id);
+        },
+        onError: async (err: any) => {
+          if (toastIdRef.current) toast.dismiss(toastIdRef.current);
+          toastIdRef.current = null;
+          if (!err.response) {
+            toast.warning("Upload status unknown", {
+              description:
+                "The connection dropped before a response was received. Please refresh to check if the customers were uploaded.",
+              duration: 10000,
+            });
+          } else {
+            const errResponse = await err.response.json();
+            const detail: string = errResponse?.detail ?? "Something went wrong. Please try again.";
+            const rowErrors = detail
+              .split("\n")
+              .filter((line: string) => line.trim().startsWith("Row "));
+            const description =
+              rowErrors.length > 0
+                ? `${rowErrors.length} row${rowErrors.length !== 1 ? "s" : ""} failed validation`
+                : detail;
+            toast.error("Upload failed", { description, duration: 6000 });
+          }
           form.reset();
         },
+        onSettled: () => form.reset(),
       }
     );
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(o) => { if (!isPending) setOpen(o); }}>
       <DialogTrigger {...props} />
       <DialogContent>
         <DialogHeader>
@@ -197,9 +280,7 @@ export function CustomerBulkUpload({ ...props }: React.ComponentProps<typeof Dia
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" isLoading={isPending}>
-                Upload Customers
-              </Button>
+              <Button type="submit">Upload Customers</Button>
             </DialogFooter>
           </form>
         </Form>

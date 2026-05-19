@@ -4,7 +4,7 @@ import z from "zod";
 import { queryClient } from "@/components/query-provider";
 
 import { api } from "@/lib/api";
-import type { APIResponse, Customer } from "@/lib/types";
+import type { APIResponse, Customer, UploadJob } from "@/lib/types";
 
 import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";
 
@@ -91,14 +91,22 @@ export const uploadCustomersOptions = mutationOptions({
 
     return api
       .post(`data/customer-upload?branchId=${data.branchId}`, { body: formData })
-      .json<APIResponse<{ success: number; failed: number }>>();
+      .json<APIResponse<string>>();
   },
-  onSuccess: (response) => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
-    successToast(`${response.data.success} customers uploaded successfully`);
-  },
-  onError: errorToast,
 });
+
+export function useUploadStatus(jobId: string | null) {
+  return useQuery({
+    queryKey: ["upload-status", jobId],
+    queryFn: () => api.get(`data/upload-status/${jobId}`).json<APIResponse<UploadJob>>(),
+    enabled: !!jobId,
+    refetchInterval: (query) => {
+      const status = query.state.data?.data?.status;
+      if (status === "DONE" || status === "FAILED") return false;
+      return 2000;
+    },
+  });
+}
 
 export const downloadStatementOptions = mutationOptions({
   mutationFn: async (data: { customerId: string; startDate?: string; endDate?: string }) => {

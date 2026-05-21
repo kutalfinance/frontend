@@ -126,6 +126,15 @@ export type AdminMetrics = {
 
 export type AgentMetrics = {
   totalCustomers: number;
+  totalCustomersVisitedToday: number;
+  totalCustomersVisitedThisWeek: number;
+  totalNewCustomersToday: number;
+  totalNewCustomersThisWeek: number;
+  totalDepositsToday: number;
+  totalDepositsThisWeek: number;
+  totalWithdrawalsApprovedToday: number;
+  totalWithdrawalsApprovedThisWeek: number;
+  totalWithdrawalsPending: number;
 };
 
 export type VerifyOtp = {

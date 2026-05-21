@@ -186,6 +186,51 @@ export function DownloadAgentReport({
   );
 }
 
+export function DownloadAgentSelfReport({
+  user,
+  children,
+  ...props
+}: React.ComponentProps<typeof Dialog> & { user: User }) {
+  const [open, setOpen] = useState(false);
+  const [reportDate, setReportDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const { mutate, isPending } = useMutation(downloadAgentDailyReportOptions);
+
+  function onDownload() {
+    mutate({ agentId: user.id, reportDate }, { onSuccess: () => setOpen(false) });
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen} {...props}>
+      {children}
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Download Daily Report</DialogTitle>
+          <DialogDescription>
+            Download your daily report. Select a date to generate the report.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2">
+          <Label htmlFor="reportDate">Report Date</Label>
+          <Input
+            id="reportDate"
+            type="date"
+            value={reportDate}
+            onChange={(e) => setReportDate(e.target.value)}
+          />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={onDownload} disabled={isPending}>
+            {isPending ? "Downloading..." : "Download Report"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function DownloadAdminReport({ children, ...props }: React.ComponentProps<typeof Dialog>) {
   const [open, setOpen] = useState(false);
   const [reportDate, setReportDate] = useState(() => new Date().toISOString().split("T")[0]);

@@ -1,10 +1,9 @@
 import { Link, data, href } from "react-router";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowDownUp, MapPin, Plus, TrendingUp, UserCheck, Users } from "lucide-react";
+import { ArrowDownUp, Contact, MapPin, TrendingUp, UserCheck, Users } from "lucide-react";
 
 import {
-  ModuleActions,
   ModuleDescription,
   ModuleHeader,
   ModuleHeading,
@@ -19,56 +18,29 @@ import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useLoggedInUser } from "@/hooks/auth/common";
 import { branchByAgent } from "@/hooks/data/branches";
-import { useCustomers, validateCustomerSearch } from "@/hooks/data/customers";
 import { useAgentMetrics } from "@/hooks/data/users";
 import { siteConfig } from "@/lib/config";
 import { formatMoney } from "@/lib/utils/money";
-import { CustomersList } from "@/modules/customers/customers-list";
-import {
-  CustomerFilters,
-  CustomerSearchFilter,
-  CustomerSortFilter,
-} from "@/modules/customers/filters";
-
-import type { Route } from "./+types/index";
 
 export function meta() {
   return [
-    { title: `My Branch - ${siteConfig.name}` },
-    { name: "description", content: "Manage your branch and customers" },
+    { title: `Dashboard - ${siteConfig.name}` },
+    { name: "description", content: "Your branch dashboard" },
   ];
 }
 
-export async function clientLoader({ request }: Route.ClientLoaderArgs) {
+export async function clientLoader() {
   try {
     await queryClient.ensureQueryData(branchByAgent);
   } catch (err) {
     throw data("Branch not found", { status: 404 });
   }
-
-  const url = new URL(request.url);
-  const params = Object.fromEntries(url.searchParams);
-
-  try {
-    const validatedParams = validateCustomerSearch.omit({ branchId: true }).parse(params);
-    return { searchParams: validatedParams };
-  } catch (error) {
-    console.error("Failed to validate search params:", error);
-    return { searchParams: {} };
-  }
 }
 
-export default function AgentDashboard({ loaderData }: Route.ComponentProps) {
-  const { searchParams } = loaderData;
+export default function AgentDashboard() {
   const { data: loggedInUser } = useLoggedInUser();
-
   const { data: branchData } = useSuspenseQuery(branchByAgent);
   const branch = branchData.data;
-
-  const { data: customersData, isPending: customersLoading } = useCustomers({
-    searchParams: { ...searchParams, branchId: branch?.id },
-  });
-  const customers = customersData?.data ?? [];
 
   return (
     <div className="container space-y-10">
@@ -87,47 +59,9 @@ export default function AgentDashboard({ loaderData }: Route.ComponentProps) {
           </ModuleDescription>
         </ModuleHeader>
 
-        {branch && (
-          <ModuleActions>
-            <Button asChild>
-              <Link to={href("/agent/customers/create")}>
-                <Plus /> Add customer
-              </Link>
-            </Button>
-          </ModuleActions>
-        )}
       </ModuleHeading>
 
       <DashboardStats />
-
-      <div className="space-y-2">
-        <CustomerFilters disabled={customersLoading}>
-          <div className="flex w-full items-center justify-between gap-2">
-            <CustomersHeading />
-            <CustomerSortFilter />
-          </div>
-          <CustomerSearchFilter />
-        </CustomerFilters>
-        <CustomersList customers={customers} isLoading={customersLoading} />
-      </div>
-    </div>
-  );
-}
-
-function CustomersHeading() {
-  const { data, isPending } = useAgentMetrics();
-  const totalCustomers = data?.data?.totalCustomers;
-
-  return (
-    <div className="flex items-center gap-2">
-      <Heading variant="h2">Customers</Heading>
-      {isPending ? (
-        <Skeleton className="h-5 w-8 rounded-full" />
-      ) : (
-        <span className="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-sm font-medium">
-          {totalCustomers ?? 0}
-        </span>
-      )}
     </div>
   );
 }
@@ -140,11 +74,16 @@ function DashboardStats() {
 
   return (
     <Tabs defaultValue="today">
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex items-center justify-between">
         <TabsList>
           <TabsTrigger value="today">Today</TabsTrigger>
           <TabsTrigger value="week">This week</TabsTrigger>
         </TabsList>
+        <Button asChild variant="outline" size="sm">
+          <Link to={href("/agent/customers")}>
+            <Contact /> Customers
+          </Link>
+        </Button>
       </div>
 
       <TabsContent value="today">
@@ -218,14 +157,39 @@ function MetricCards({
 
   return (
     <div className="space-y-2">
-      <MetricCard icon={TrendingUp} label="Total collections" value={totalCollections} isPending={isPending} />
+      <MetricCard
+        icon={TrendingUp}
+        label="Total collections"
+        value={totalCollections}
+        isPending={isPending}
+      />
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_1fr]">
-        <MetricCard icon={UserCheck} label="Customers visited" value={customersVisited} isPending={isPending} />
-        <MetricCard icon={Users} label="New customers" value={newCustomers} isPending={isPending} />
+        <MetricCard
+          icon={UserCheck}
+          label="Customers visited"
+          value={customersVisited}
+          isPending={isPending}
+        />
+        <MetricCard
+          icon={Users}
+          label="New customers"
+          value={newCustomers}
+          isPending={isPending}
+        />
         <div className="flex flex-col gap-2">
-          <MetricCard icon={ArrowDownUp} label="Withdrawals pending" value={withdrawalsPending} isPending={isPending} />
-          <MetricCard icon={ArrowDownUp} label="Withdrawals approved" value={withdrawalsApproved} isPending={isPending} />
+          <MetricCard
+            icon={ArrowDownUp}
+            label="Withdrawals pending"
+            value={withdrawalsPending}
+            isPending={isPending}
+          />
+          <MetricCard
+            icon={ArrowDownUp}
+            label="Withdrawals approved"
+            value={withdrawalsApproved}
+            isPending={isPending}
+          />
         </div>
       </div>
     </div>

@@ -131,6 +131,12 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to={href("/agent/customers")}>Customers</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
             <BreadcrumbPage>{customer.name}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>

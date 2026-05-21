@@ -17,9 +17,9 @@
     Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol", "Noto Color Emoji";
 
-  --background: hsl(0 0% 99%);
+  --background: hsl(0 0% 97%);
   --foreground: hsl(0 0% 10%);
-  --card: hsl(0 0% 99%);
+  --card: hsl(0 0% 100%);
   --card-foreground: hsl(0 0% 15%);
   --popover: hsl(0 0% 100%);
   --popover-foreground: hsl(0 0% 15%);
@@ -35,8 +35,8 @@
   --success-foreground: hsl(355.7 100% 97.3%);
   --destructive: hsl(0 84% 60%);
   --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(54 20% 89%);
-  --input: hsl(54 20% 89%);
+  --border: hsl(54 15% 82%);
+  --input: hsl(54 15% 82%);
   --ring: hsl(142 76% 36%);
   --chart-1: hsl(142 76% 36%);
   --chart-2: hsl(158 64% 52%);

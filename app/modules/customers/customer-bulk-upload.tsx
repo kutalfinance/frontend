@@ -45,7 +45,7 @@ import { cn } from "@/lib/utils";
 const UPLOAD_JOB_KEY = "kss_upload_job";
 
 const CSV_TEMPLATE = [
-  "name,email,phone number,location,contribution amount,nok name,nok phone number,nok email,last withdrawal date,contribution start date,registration date,balance",
+  "name,email (optional),phone number,location,contribution amount,nok name,nok phone number,nok email (optional),last withdrawal date,contribution start date,registration date,balance",
   "Ama Darko,ama@example.com,0245551234,Adum Kumasi,50.00,Kofi Darko,0201234567,kofi@example.com,2025-01-15,2024-06-01,2024-05-20,1000.00",
 ].join("\n");
 

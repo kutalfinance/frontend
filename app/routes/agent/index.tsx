@@ -98,19 +98,28 @@ function DashboardStats() {
 
 type AgentMetricsData = NonNullable<ReturnType<typeof useAgentMetrics>["data"]>["data"];
 
+const colorClasses = {
+  green: "border-l-4 border-l-green-700/50",
+  blue: "border-l-4 border-l-blue-600/50",
+  red: "border-l-4 border-l-red-600/50",
+  amber: "border-l-4 border-l-amber-600/50",
+} as const;
+
 function MetricCard({
   icon: Icon,
   label,
   value,
   isPending,
+  color,
 }: {
   icon: React.ElementType;
   label: string;
   value: string;
   isPending: boolean;
+  color?: keyof typeof colorClasses;
 }) {
   return (
-    <Card className="gap-2">
+    <Card className={`gap-2 ${color ? colorClasses[color] : ""}`}>
       <CardHeader>
         <div className="w-fit rounded-md border p-2">
           <Icon className="text-muted-foreground size-5" />
@@ -157,41 +166,45 @@ function MetricCards({
 
   return (
     <div className="space-y-2">
-      <MetricCard
-        icon={TrendingUp}
-        label="Total collections"
-        value={totalCollections}
-        isPending={isPending}
-      />
-
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_1fr]">
+      <div className="grid grid-cols-2 gap-2">
         <MetricCard
           icon={UserCheck}
           label="Customers visited"
           value={customersVisited}
           isPending={isPending}
+          color="blue"
         />
         <MetricCard
           icon={Users}
           label="New customers"
           value={newCustomers}
           isPending={isPending}
+          color="blue"
         />
-        <div className="flex flex-col gap-2">
-          <MetricCard
-            icon={ArrowDownUp}
-            label="Withdrawals pending"
-            value={withdrawalsPending}
-            isPending={isPending}
-          />
-          <MetricCard
-            icon={ArrowDownUp}
-            label="Withdrawals approved"
-            value={withdrawalsApproved}
-            isPending={isPending}
-          />
-        </div>
       </div>
+
+      <MetricCard
+        icon={TrendingUp}
+        label="Total collections"
+        value={totalCollections}
+        isPending={isPending}
+        color="green"
+      />
+
+      <MetricCard
+        icon={ArrowDownUp}
+        label="Withdrawals pending"
+        value={withdrawalsPending}
+        isPending={isPending}
+        color="amber"
+      />
+      <MetricCard
+        icon={ArrowDownUp}
+        label="Withdrawals approved"
+        value={withdrawalsApproved}
+        isPending={isPending}
+        color="red"
+      />
     </div>
   );
 }

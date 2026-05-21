@@ -15,7 +15,7 @@ export const customerDetailsSchema = z.object({
     .string()
     .min(1, "Phone number is required")
     .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)").optional(),
-  email: z.email("Please enter a valid email address").optional(),
+  email: z.union([z.email("Please enter a valid email address"), z.literal("")]).optional(),
   location: z.string().min(1, "Location is required"),
   contributionAmount: z.coerce.number<number>().min(0, "Contribution amount cannot be negative"),
   branchId: z.string().min(1, "Branch selection is required"),
@@ -27,5 +27,5 @@ export const nextOfKinSchema = z.object({
     .string()
     .min(1, "Next of kin phone number is required")
     .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)"),
-  email: z.email("Please enter a valid next of kin email address"),
+  email: z.union([z.email("Please enter a valid next of kin email address"), z.literal("")]).optional(),
 });

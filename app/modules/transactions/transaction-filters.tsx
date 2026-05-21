@@ -19,6 +19,7 @@ import {
 import { useCustomers } from "@/hooks/data/customers";
 import { useDebounce } from "@/hooks/use-debounce";
 import { TransactionStatus, TransactionTypes } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 // Context
 interface TransactionFiltersContextValue {
@@ -42,9 +43,11 @@ function useTransactionFilters() {
 export function TransactionFilters({
   children,
   disabled,
+  className,
 }: {
   children: React.ReactNode;
   disabled?: boolean;
+  className?: string;
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -60,13 +63,13 @@ export function TransactionFilters({
     <TransactionFiltersContext.Provider
       value={{ searchParams, setSearchParams, disabled, hasFilters }}
     >
-      <div className="mb-4 flex flex-wrap items-center gap-2">{children}</div>
+      <div className={className ?? "mb-4 flex flex-wrap items-center gap-2"}>{children}</div>
     </TransactionFiltersContext.Provider>
   );
 }
 
 // Individual filter components
-export function TransactionSearchFilter() {
+export function TransactionSearchFilter({ className }: { className?: string }) {
   const { searchParams, setSearchParams, disabled } = useTransactionFilters();
 
   const debouncedSearch = useDebounce((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +81,7 @@ export function TransactionSearchFilter() {
   });
 
   return (
-    <div className="relative w-full md:max-w-xs">
+    <div className={cn("relative w-full md:max-w-xs", className)}>
       <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
       <Input
         placeholder="Search transactions..."
@@ -196,11 +199,11 @@ export function TransactionStatusFilter() {
   );
 }
 
-export function TransactionSortFilter() {
+export function TransactionSortFilter({ className }: { className?: string }) {
   const { searchParams, setSearchParams, disabled } = useTransactionFilters();
 
   return (
-    <div className="ml-auto flex items-center gap-1">
+    <div className={cn("ml-auto flex items-center gap-1", className)}>
       <Button
         variant="ghost"
         size="icon"

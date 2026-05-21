@@ -1,5 +1,7 @@
 import { Link, Outlet, data, href } from "react-router";
 
+import { toast } from "sonner";
+
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import {
   BanknoteArrowDown,
@@ -36,7 +38,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Heading, Paragraph } from "@/components/ui/text";
 
 import { customerByIdQueryOptions } from "@/hooks/data/customers";
-import { transactionsQueryOptions, validateTransactionsSearch } from "@/hooks/data/transactions";
+import {
+  transactionsMetricsOptions,
+  transactionsQueryOptions,
+  validateTransactionsSearch,
+} from "@/hooks/data/transactions";
 import { siteConfig } from "@/lib/config";
 import { formatMoney } from "@/lib/utils/money";
 import {
@@ -90,6 +96,28 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
   const { searchParams } = loaderData;
   const { data, isPending } = useQuery(transactionsQueryOptions({ searchParams }));
   const transactions = data?.data ?? [];
+
+  const { data: metricsData } = useQuery(
+    transactionsMetricsOptions({ searchParams: { customerId: customer.id } })
+  );
+  const balance = metricsData?.data?.balance ?? 0;
+
+  const { data: pendingData } = useQuery(
+    transactionsQueryOptions({
+      searchParams: { customerId: customer.id, type: "WITHDRAWAL", status: "PENDING" },
+    })
+  );
+  const hasPendingWithdrawal = (pendingData?.data?.length ?? 0) > 0;
+
+  let withdrawalDisabledReason: string | null = null;
+  switch (true) {
+    case hasPendingWithdrawal:
+      withdrawalDisabledReason = "A withdrawal request is already pending for this customer";
+      break;
+    case balance <= 0:
+      withdrawalDisabledReason = "Customer has no balance to withdraw";
+      break;
+  }
 
   const customerInfo = [
     { icon: Hash, label: "Account Number", value: customer.accountNumber },
@@ -198,11 +226,19 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
               <BanknoteArrowUp /> Record deposit
             </Button>
           </AgentRecordDeposit>
-          <AgentRecordWithdrawal asChild customer={customer}>
-            <Button variant="destructive-outline">
-              <BanknoteArrowDown /> Record withdrawal
-            </Button>
-          </AgentRecordWithdrawal>
+          <span
+            onClick={() => withdrawalDisabledReason && toast.info(withdrawalDisabledReason)}
+          >
+            <AgentRecordWithdrawal asChild customer={customer}>
+              <Button
+                variant="destructive-outline"
+                disabled={!!withdrawalDisabledReason}
+                className={withdrawalDisabledReason ? "pointer-events-none" : undefined}
+              >
+                <BanknoteArrowDown /> Record withdrawal
+              </Button>
+            </AgentRecordWithdrawal>
+          </span>
         </ModuleActions>
       </ModuleHeading>
 
@@ -212,12 +248,14 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
       <div className="space-y-3">
         <Heading variant="h3">Transactions History</Heading>
 
-        <TransactionFilters disabled={isPending}>
-          <TransactionSearchFilter />
+        <TransactionFilters disabled={isPending} className="mb-4 grid grid-cols-2 gap-2">
+          <TransactionSearchFilter className="md:max-w-none" />
           <TransactionTypeFilter />
           <TransactionStatusFilter />
-          <TransactionClearFilters />
-          <TransactionSortFilter />
+          <TransactionSortFilter className="ml-0 w-full justify-between" />
+          <div className="col-span-2">
+            <TransactionClearFilters />
+          </div>
         </TransactionFilters>
 
         <TransactionsTable transactions={transactions} isLoading={isPending} isAgentView />

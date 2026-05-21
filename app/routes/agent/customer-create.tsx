@@ -132,7 +132,10 @@ export default function CreateCustomer({}: Route.ComponentProps) {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email Address</FormLabel>
+                      <FormLabel>
+                        Email Address{" "}
+                        <span className="text-muted-foreground text-xs">(optional)</span>
+                      </FormLabel>
                       <FormControl>
                         <Input type="email" placeholder="Enter email address" {...field} />
                       </FormControl>
@@ -223,7 +226,10 @@ export default function CreateCustomer({}: Route.ComponentProps) {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Next of Kin Email</FormLabel>
+                      <FormLabel>
+                        Next of Kin Email{" "}
+                        <span className="text-muted-foreground text-xs">(optional)</span>
+                      </FormLabel>
                       <FormControl>
                         <Input type="email" placeholder="Enter next of kin email" {...field} />
                       </FormControl>

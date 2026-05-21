@@ -51,7 +51,7 @@ export type Customer = {
   contributionStartDate: string; // date
   lastWithdrawal: string; // date
   registrationDate: string; // date
-  daysContributed: string[]; // unique array
+  daysContributed: number; // count of unique contribution days
   lastDepositDate: string; // date
   deleted: boolean;
 };

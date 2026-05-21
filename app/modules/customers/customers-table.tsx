@@ -13,7 +13,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { Download } from "lucide-react";
+import { Download, Eye, Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
@@ -23,6 +23,8 @@ import { Paragraph } from "@/components/ui/text";
 import type { Customer } from "@/lib/types";
 import { formatMoney } from "@/lib/utils/money";
 
+import { EditCustomer } from "./customer-edit";
+import { ViewCustomer } from "./customer-view";
 import { DownloadStatement } from "./download-statement";
 
 export function CustomersTable({
@@ -144,11 +146,23 @@ const columns: ColumnDef<Customer>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       return (
-        <DownloadStatement customer={row.original}>
-          <Button variant="ghost" size="sm">
-            <Download className="size-4" />
-          </Button>
-        </DownloadStatement>
+        <div className="flex items-center gap-1">
+          <ViewCustomer customer={row.original}>
+            <Button variant="ghost" size="sm">
+              <Eye className="size-4" />
+            </Button>
+          </ViewCustomer>
+          <EditCustomer customer={row.original}>
+            <Button variant="ghost" size="sm">
+              <Pencil className="size-4" />
+            </Button>
+          </EditCustomer>
+          <DownloadStatement customer={row.original}>
+            <Button variant="ghost" size="sm">
+              <Download className="size-4" />
+            </Button>
+          </DownloadStatement>
+        </div>
       );
     },
   },

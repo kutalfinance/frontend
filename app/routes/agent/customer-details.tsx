@@ -100,7 +100,7 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
   const { data: metricsData } = useQuery(
     transactionsMetricsOptions({ searchParams: { customerId: customer.id } })
   );
-  const balance = metricsData?.data?.balance ?? 0;
+  const balance = metricsData?.data?.balance;
 
   const { data: pendingData } = useQuery(
     transactionsQueryOptions({
@@ -114,7 +114,7 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
     case hasPendingWithdrawal:
       withdrawalDisabledReason = "A withdrawal request is already pending for this customer";
       break;
-    case balance <= 0:
+    case balance !== undefined && balance <= 0:
       withdrawalDisabledReason = "Customer has no balance to withdraw";
       break;
   }

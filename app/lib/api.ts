@@ -5,6 +5,7 @@ import { authToken } from "./auth-token";
 import { API_URL } from "./config";
 
 const SAFE_METHODS = ["GET", "HEAD", "OPTIONS"];
+const MUTATING_METHODS = ["POST", "PATCH", "DELETE"];
 const RETRYABLE_STATUS_CODES = [503, 504];
 
 export const api = ky.extend({
@@ -25,6 +26,13 @@ export const api = ky.extend({
         const authHeader = authToken.getAuthHeader();
         if (authHeader) {
           request.headers.set("Authorization", authHeader);
+        }
+
+        if (
+          MUTATING_METHODS.includes(request.method.toUpperCase()) &&
+          !request.headers.has("Idempotency-Key")
+        ) {
+          request.headers.set("Idempotency-Key", crypto.randomUUID());
         }
       },
     ],

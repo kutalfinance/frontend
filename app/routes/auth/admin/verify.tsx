@@ -65,7 +65,7 @@ export default function AdminVerify({ loaderData }: Route.ComponentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <InputOTP maxLength={6} {...field} autoFocus>
+                  <InputOTP maxLength={6} {...field} autoFocus containerClassName="w-full">
                     <InputOTPGroup>
                       <InputOTPSlot index={0} />
                       <InputOTPSlot index={1} />

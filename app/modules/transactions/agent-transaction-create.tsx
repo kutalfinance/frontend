@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -53,6 +53,7 @@ export function AgentRecordDeposit({
   const [open, setOpen] = useState(false);
   const [pendingData, setPendingData] = useState<TransactionForm | null>(null);
   const { mutate: createTransaction, isPending } = useMutation(createDepositOptions);
+  const idempotencyKeyRef = useRef(crypto.randomUUID());
 
   const form = useForm<TransactionForm>({
     resolver: zodResolver(transactionSchema),
@@ -73,8 +74,10 @@ export function AgentRecordDeposit({
     if (!pendingData) return;
     setOpen(false);
     setPendingData(null);
+    const idempotencyKey = idempotencyKeyRef.current;
+    idempotencyKeyRef.current = crypto.randomUUID();
     createTransaction(
-      { customerId: customer.id, amount: pendingData.amount },
+      { customerId: customer.id, amount: pendingData.amount, idempotencyKey },
       { onSuccess: () => form.reset() }
     );
   };
@@ -152,9 +155,12 @@ export function AgentRecordWithdrawal({
   ...props
 }: React.ComponentProps<typeof AlertDialogTrigger> & { customer: Customer }) {
   const { mutate: createTransaction } = useMutation(createWithdrawalOptions);
+  const idempotencyKeyRef = useRef(crypto.randomUUID());
 
   function handleConfirm() {
-    createTransaction({ customerId: customer.id });
+    const idempotencyKey = idempotencyKeyRef.current;
+    idempotencyKeyRef.current = crypto.randomUUID();
+    createTransaction({ customerId: customer.id, idempotencyKey });
   }
 
   return (

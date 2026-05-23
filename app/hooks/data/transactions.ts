@@ -35,8 +35,10 @@ export const transactionsQueryOptions = ({
   });
 
 export const createWithdrawalOptions = mutationOptions({
-  mutationFn: (data: { customerId: string; amount?: number }) =>
-    api.post("transaction/withdraw", { json: data }).json<APIResponse<Transaction>>(),
+  mutationFn: ({ idempotencyKey, ...data }: { customerId: string; amount?: number; idempotencyKey: string }) =>
+    api
+      .post("transaction/withdraw", { json: data, headers: { "Idempotency-Key": idempotencyKey } })
+      .json<APIResponse<Transaction>>(),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
@@ -46,8 +48,10 @@ export const createWithdrawalOptions = mutationOptions({
 });
 
 export const createDepositOptions = mutationOptions({
-  mutationFn: (data: { customerId: string; amount?: number }) =>
-    api.post("transaction/deposit", { json: data }).json<APIResponse<Transaction>>(),
+  mutationFn: ({ idempotencyKey, ...data }: { customerId: string; amount?: number; idempotencyKey: string }) =>
+    api
+      .post("transaction/deposit", { json: data, headers: { "Idempotency-Key": idempotencyKey } })
+      .json<APIResponse<Transaction>>(),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });

@@ -7,7 +7,6 @@
     "dev": "react-router dev",
     "format": "prettier --log-level warn --check .",
     "format:fix": "prettier --log-level warn --write .",
-    "prepare": "npx husky",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc"
   },

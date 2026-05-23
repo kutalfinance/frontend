@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -66,6 +66,7 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
   const [pendingData, setPendingData] = useState<TransactionForm | null>(null);
   const { mutate: createTransaction, isPending } = useMutation(createDepositOptions);
   const { data } = useCustomers();
+  const idempotencyKeyRef = useRef(crypto.randomUUID());
   const customers = data?.data ?? [];
 
   const form = useForm<TransactionForm>({
@@ -88,7 +89,9 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
     if (!pendingData) return;
     setOpen(false);
     setPendingData(null);
-    createTransaction(pendingData);
+    const idempotencyKey = idempotencyKeyRef.current;
+    idempotencyKeyRef.current = crypto.randomUUID();
+    createTransaction({ ...pendingData, idempotencyKey });
   };
 
   const pendingCustomerName = pendingData
@@ -233,6 +236,7 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
   const [pendingCustomerId, setPendingCustomerId] = useState<string | null>(null);
   const { mutate: createTransaction } = useMutation(createWithdrawalOptions);
   const { data } = useCustomers();
+  const idempotencyKeyRef = useRef(crypto.randomUUID());
   const customers = data?.data ?? [];
 
   const form = useForm<WithdrawalForm>({
@@ -248,7 +252,9 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
     if (!pendingCustomerId) return;
     setOpen(false);
     setPendingCustomerId(null);
-    createTransaction({ customerId: pendingCustomerId });
+    const idempotencyKey = idempotencyKeyRef.current;
+    idempotencyKeyRef.current = crypto.randomUUID();
+    createTransaction({ customerId: pendingCustomerId, idempotencyKey });
   };
 
   const pendingCustomerName = pendingCustomerId

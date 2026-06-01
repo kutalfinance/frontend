@@ -1,9 +1,13 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
+import { toast } from "sonner";
 import z from "zod";
 
 import { queryClient } from "@/components/query-provider";
 
 import { api } from "@/lib/api";
+import { enqueueOperation, getOfflineTransactions, syncTransactionsOffline } from "@/lib/offline";
+import { isOfflineMode } from "@/lib/offline-mode";
+import { TransactionTypes } from "@/lib/types";
 import type { APIResponse, Transaction, TransactionMetrics } from "@/lib/types";
 
 import { errorToast, queryKeys, successToast } from "./utils";
@@ -24,6 +28,27 @@ export const validateTransactionsSearch = z
 
 export type TransactionsSearchParams = z.infer<typeof validateTransactionsSearch>;
 
+function filterTransactionsOffline(
+  transactions: Transaction[],
+  searchParams?: TransactionsSearchParams
+): Transaction[] {
+  let result = transactions;
+  if (searchParams?.customerId) {
+    result = result.filter((t) => t.customer.id === searchParams.customerId);
+  }
+  if (searchParams?.type) {
+    result = result.filter((t) => t.type === searchParams.type);
+  }
+  if (searchParams?.status) {
+    result = result.filter((t) => t.status === searchParams.status);
+  }
+  if (searchParams?.q) {
+    const q = searchParams.q.toLowerCase();
+    result = result.filter((t) => t.customer.name.toLowerCase().includes(q));
+  }
+  return result;
+}
+
 export const transactionsQueryOptions = ({
   searchParams,
 }: {
@@ -31,33 +56,98 @@ export const transactionsQueryOptions = ({
 }) =>
   queryOptions({
     queryKey: queryKeys.transactions.filters(searchParams),
-    queryFn: () => api.get("transaction", { searchParams }).json<APIResponse<Transaction[]>>(),
+    queryFn: async () => {
+      if (isOfflineMode()) {
+        const all = await getOfflineTransactions();
+        return { msg: "ok", data: filterTransactionsOffline(all, searchParams) } as APIResponse<
+          Transaction[]
+        >;
+      }
+      return api.get("transaction", { searchParams }).json<APIResponse<Transaction[]>>();
+    },
   });
 
 export const createWithdrawalOptions = mutationOptions({
-  mutationFn: ({ idempotencyKey, ...data }: { customerId: string; amount?: number; idempotencyKey: string }) =>
-    api
+  mutationFn: ({
+    idempotencyKey,
+    customerName: _customerName,
+    ...data
+  }: {
+    customerId: string;
+    amount?: number;
+    idempotencyKey: string;
+    customerName?: string;
+  }) => {
+    if (isOfflineMode()) {
+      return Promise.reject(Object.assign(new Error("offline"), { isOffline: true }));
+    }
+    return api
       .post("transaction/withdraw", { json: data, headers: { "Idempotency-Key": idempotencyKey } })
-      .json<APIResponse<Transaction>>(),
+      .json<APIResponse<Transaction>>();
+  },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
+    syncTransactionsOffline().catch(() => {});
     successToast("Withdrawal request initiated");
   },
-  onError: errorToast,
+  onError: (error: any, variables) => {
+    if (error.isOffline || isOfflineMode()) {
+      enqueueOperation({
+        url: "transaction/withdraw",
+        method: "POST",
+        body: JSON.stringify({ customerId: variables.customerId, amount: variables.amount }),
+        idempotencyKey: variables.idempotencyKey,
+        label: `Withdrawal – ${variables.customerName ?? ""}`.trim().replace(/–\s*$/, ""),
+        queuedAt: Date.now(),
+      });
+      toast.info("You're offline — withdrawal queued and will sync automatically");
+      return;
+    }
+    errorToast(error);
+  },
 });
 
 export const createDepositOptions = mutationOptions({
-  mutationFn: ({ idempotencyKey, ...data }: { customerId: string; amount?: number; idempotencyKey: string }) =>
-    api
+  mutationFn: ({
+    idempotencyKey,
+    customerName: _customerName,
+    ...data
+  }: {
+    customerId: string;
+    amount?: number;
+    idempotencyKey: string;
+    customerName?: string;
+  }) => {
+    if (isOfflineMode()) {
+      return Promise.reject(Object.assign(new Error("offline"), { isOffline: true }));
+    }
+    return api
       .post("transaction/deposit", { json: data, headers: { "Idempotency-Key": idempotencyKey } })
-      .json<APIResponse<Transaction>>(),
+      .json<APIResponse<Transaction>>();
+  },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
+    syncTransactionsOffline().catch(() => {});
     successToast("Deposit recorded successfully");
   },
-  onError: errorToast,
+  onError: (error: any, variables) => {
+    if (error.isOffline || isOfflineMode()) {
+      const name = variables.customerName ? ` – ${variables.customerName}` : "";
+      enqueueOperation({
+        url: "transaction/deposit",
+        method: "POST",
+        body: JSON.stringify({ customerId: variables.customerId, amount: variables.amount }),
+        idempotencyKey: variables.idempotencyKey,
+        label: `Deposit${name}`,
+        queuedAt: Date.now(),
+      });
+      toast.info("You're offline — deposit queued and will sync automatically");
+      return;
+    }
+    errorToast(error);
+  },
 });
 
 export const pendingApprovalsQueryOptions = () =>
@@ -98,6 +188,31 @@ export const transactionsMetricsOptions = ({
 }) =>
   queryOptions({
     queryKey: queryKeys.transactions.metrics(searchParams),
-    queryFn: () =>
-      api.get("transaction/metrics", { searchParams }).json<APIResponse<TransactionMetrics>>(),
+    queryFn: async () => {
+      if (isOfflineMode()) {
+        const all = await getOfflineTransactions();
+        const filtered = searchParams.customerId
+          ? all.filter((t) => t.customer.id === searchParams.customerId)
+          : all;
+        const completed = (type: TransactionTypes) =>
+          filtered
+            .filter((t) => t.type === type && t.status === "COMPLETED")
+            .reduce((sum, t) => sum + t.amount, 0);
+        const totalDeposited = completed(TransactionTypes.DEPOSIT);
+        const totalWithdrawn = completed(TransactionTypes.WITHDRAWAL);
+        const totalCharged = completed(TransactionTypes.SERVICE_CHARGE);
+        return {
+          msg: "ok",
+          data: {
+            totalDeposited,
+            totalWithdrawn,
+            totalCharged,
+            balance: totalDeposited - totalWithdrawn - totalCharged,
+          } as TransactionMetrics,
+        } as APIResponse<TransactionMetrics>;
+      }
+      return api
+        .get("transaction/metrics", { searchParams })
+        .json<APIResponse<TransactionMetrics>>();
+    },
   });

@@ -1,9 +1,12 @@
 import { mutationOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import z from "zod";
 
 import { queryClient } from "@/components/query-provider";
 
 import { api } from "@/lib/api";
+import { enqueueOperation, getOfflineCustomerById, getOfflineCustomers } from "@/lib/offline";
+import { isOfflineMode } from "@/lib/offline-mode";
 import type { APIResponse, Customer, UploadJob } from "@/lib/types";
 
 import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";
@@ -21,11 +24,41 @@ export const validateCustomerSearch = z
 
 export type CustomerSearchParams = z.infer<typeof validateCustomerSearch>;
 
+function filterCustomersOffline(
+  customers: Customer[],
+  searchParams?: CustomerSearchParams
+): Customer[] {
+  let result = customers;
+  if (searchParams?.q) {
+    const q = searchParams.q.toLowerCase();
+    result = result.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        c.phoneNumber.includes(q) ||
+        c.accountNumber.toLowerCase().includes(q)
+    );
+  }
+  if (searchParams?.sortBy) {
+    const dir = searchParams.sortDirection === "desc" ? -1 : 1;
+    const key = searchParams.sortBy as keyof Customer;
+    result = [...result].sort(
+      (a, b) => String(a[key] ?? "").localeCompare(String(b[key] ?? "")) * dir
+    );
+  }
+  return result;
+}
+
 // Customer management hooks
 export function useCustomers({ searchParams }: { searchParams?: CustomerSearchParams } = {}) {
   return useQuery({
     queryKey: queryKeys.customers.filters(searchParams),
-    queryFn: () => {
+    queryFn: async () => {
+      if (isOfflineMode()) {
+        const all = await getOfflineCustomers();
+        return { msg: "ok", data: filterCustomersOffline(all, searchParams) } as APIResponse<
+          Customer[]
+        >;
+      }
       return api.get("customer", { searchParams }).json<APIResponse<Customer[]>>();
     },
   });
@@ -35,15 +68,33 @@ export function useCreateCustomer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: Partial<Customer> & { branchId: string }) =>
-      api.post("customer", { json: data }).json<APIResponse<Customer>>(),
+    mutationFn: (data: Partial<Customer> & { branchId: string }) => {
+      if (isOfflineMode()) {
+        return Promise.reject(Object.assign(new Error("offline"), { isOffline: true }));
+      }
+      return api.post("customer", { json: data }).json<APIResponse<Customer>>();
+    },
     onSuccess: () => {
       invalidationHelpers.customers.related().forEach((queryKey) => {
         queryClient.invalidateQueries({ queryKey });
       });
       successToast("Customer created successfully");
     },
-    onError: errorToast,
+    onError: (error: any, variables) => {
+      if (error.isOffline || isOfflineMode()) {
+        enqueueOperation({
+          url: "customer",
+          method: "POST",
+          body: JSON.stringify(variables),
+          idempotencyKey: crypto.randomUUID(),
+          label: `New Customer – ${variables.name ?? ""}`,
+          queuedAt: Date.now(),
+        });
+        toast.info("You're offline — customer will be created when connection is restored");
+        return;
+      }
+      errorToast(error);
+    },
   });
 }
 
@@ -80,7 +131,14 @@ export function useDeleteCustomer() {
 
 export const customerByIdQueryOptions = (id: string) => ({
   queryKey: queryKeys.customers.detail(id),
-  queryFn: () => api.get(`customer/${id}`).json<APIResponse<Customer>>(),
+  queryFn: async () => {
+    if (isOfflineMode()) {
+      const customer = await getOfflineCustomerById(id);
+      if (!customer) throw new Error("Customer not available in offline data");
+      return { msg: "ok", data: customer } as APIResponse<Customer>;
+    }
+    return api.get(`customer/${id}`).json<APIResponse<Customer>>();
+  },
   enabled: !!id,
 });
 

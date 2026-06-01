@@ -22,8 +22,8 @@ export default function AgentDepositsGuide() {
       {/* Step 1 */}
       <div className="space-y-3">
         <StepLabel n={1}>
-          Find the customer on the dashboard and click <strong>View contributions</strong> (shown
-          as <strong>View</strong> on mobile)
+          Find the customer on the dashboard and click <strong>View contributions</strong> (shown as{" "}
+          <strong>View</strong> on mobile)
         </StepLabel>
         <Preview wide>
           <div className="rounded-lg border">
@@ -70,7 +70,9 @@ export default function AgentDepositsGuide() {
         <Preview>
           <div className="space-y-4">
             <div>
-              <Paragraph className="text-foreground text-sm font-semibold">Record Deposit</Paragraph>
+              <Paragraph className="text-foreground text-sm font-semibold">
+                Record Deposit
+              </Paragraph>
               <Paragraph className="text-muted-foreground text-xs">
                 Record a new deposit for <strong>Ama Darko</strong>
               </Paragraph>
@@ -99,9 +101,7 @@ export default function AgentDepositsGuide() {
           </li>
           <li>Deposits are processed immediately and marked as completed.</li>
           <li>The transaction appears in the customer&apos;s transaction history right away.</li>
-          <li>
-            On mobile, the dialog takes the full screen width for easier input.
-          </li>
+          <li>On mobile, the dialog takes the full screen width for easier input.</li>
         </ul>
       </div>
 

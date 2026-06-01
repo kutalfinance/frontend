@@ -123,7 +123,11 @@ function CustomerDetails({ transaction }: { transaction: Transaction }) {
 
       {/* Contribution info */}
       <Section title="Contribution" icon={CalendarIcon}>
-        <Field icon={Banknote} label="Daily Amount" value={formatMoney(customer.contributionAmount)} />
+        <Field
+          icon={Banknote}
+          label="Daily Amount"
+          value={formatMoney(customer.contributionAmount)}
+        />
         <div className="flex items-start gap-3">
           <BadgeCheck className="text-muted-foreground mt-0.5 size-4 shrink-0" />
           <div>
@@ -137,12 +141,12 @@ function CustomerDetails({ transaction }: { transaction: Transaction }) {
 
       {/* Financial breakdown */}
       <Section title="Withdrawal Breakdown" icon={ReceiptText}>
-        <div className="bg-muted/50 rounded-lg p-3 space-y-2 text-sm">
+        <div className="bg-muted/50 space-y-2 rounded-lg p-3 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Gross Balance</span>
             <span className="font-medium">{formatMoney(grossBalance)}</span>
           </div>
-          <div className="flex justify-between text-destructive">
+          <div className="text-destructive flex justify-between">
             <span>
               Service Charge{" "}
               <span className="text-muted-foreground font-normal">

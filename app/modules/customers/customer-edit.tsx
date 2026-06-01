@@ -32,9 +32,11 @@ import type { Customer } from "@/lib/types";
 import { customerDetailsSchema, nextOfKinSchema } from "./utils";
 
 const editSchema = customerDetailsSchema.omit({ branchId: true }).extend({
-  nextOfKin: nextOfKinSchema.extend({
-    email: z.email("Please enter a valid email address").optional(),
-  }).partial({ email: true }),
+  nextOfKin: nextOfKinSchema
+    .extend({
+      email: z.email("Please enter a valid email address").optional(),
+    })
+    .partial({ email: true }),
 });
 
 type EditForm = z.infer<typeof editSchema>;

@@ -122,7 +122,9 @@ export default function AdminUsersGuide() {
         <Preview>
           <div className="space-y-4">
             <div>
-              <Paragraph className="text-foreground text-sm font-semibold">Create New User</Paragraph>
+              <Paragraph className="text-foreground text-sm font-semibold">
+                Create New User
+              </Paragraph>
               <Paragraph className="text-muted-foreground text-xs">
                 Select the type of user account to create.
               </Paragraph>
@@ -178,7 +180,9 @@ export default function AdminUsersGuide() {
         <Preview>
           <div className="space-y-4">
             <div>
-              <Paragraph className="text-foreground text-sm font-semibold">Create New User</Paragraph>
+              <Paragraph className="text-foreground text-sm font-semibold">
+                Create New User
+              </Paragraph>
               <Paragraph className="text-muted-foreground text-xs">
                 Enter the user details and permissions.
               </Paragraph>
@@ -228,26 +232,24 @@ export default function AdminUsersGuide() {
 
         <ul className="list-inside list-disc space-y-1 pl-1">
           <li>
-            <strong>Agents</strong> — only require a name and email. They receive limited, branch-scoped
-            access.
+            <strong>Agents</strong> — only require a name and email. They receive limited,
+            branch-scoped access.
           </li>
           <li>
             <strong>Administrators</strong> — additionally show the <strong>Approver Access</strong>{" "}
-            toggle (on by default) and the <strong>Super Administrator</strong> toggle (visible only to
-            super admins).
+            toggle (on by default) and the <strong>Super Administrator</strong> toggle (visible only
+            to super admins).
           </li>
-          <li>
-            After creation, the new user receives a login email with their credentials.
-          </li>
+          <li>After creation, the new user receives a login email with their credentials.</li>
         </ul>
       </div>
 
       {/* Searching, Filtering & Sorting */}
       <div className="space-y-3">
-        <h3 className="text-foreground text-base font-semibold">Searching, Filtering &amp; Sorting</h3>
-        <p>
-          Below the metric cards is a toolbar that lets you narrow down the user list.
-        </p>
+        <h3 className="text-foreground text-base font-semibold">
+          Searching, Filtering &amp; Sorting
+        </h3>
+        <p>Below the metric cards is a toolbar that lets you narrow down the user list.</p>
         <Preview wide>
           <div className="flex flex-wrap gap-2">
             <div className="relative flex-1">
@@ -381,15 +383,15 @@ export default function AdminUsersGuide() {
           <li>
             <strong>Download report</strong> (
             <DownloadIcon className="text-muted-foreground inline size-3.5" />) — available only for
-            Agent users. Opens a dialog to select a date and download the agent&apos;s daily report as a
-            PDF.
+            Agent users. Opens a dialog to select a date and download the agent&apos;s daily report
+            as a PDF.
           </li>
         </ul>
 
         <h4 className="text-foreground text-sm font-semibold">Bulk actions</h4>
         <p>
-          Select multiple users using the checkboxes to reveal a floating action bar at the bottom of
-          the screen.
+          Select multiple users using the checkboxes to reveal a floating action bar at the bottom
+          of the screen.
         </p>
         <Preview wide>
           <div className="flex items-center justify-center">

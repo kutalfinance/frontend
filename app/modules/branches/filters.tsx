@@ -22,7 +22,7 @@ export function BranchFilters({ disabled }: { disabled?: boolean }) {
   const agents = usersData?.data ?? [];
 
   const hasFilters = Array.from(searchParams.keys()).some(
-    (key) => !["q", "sortBy", "sortDirection"].includes(key),
+    (key) => !["q", "sortBy", "sortDirection"].includes(key)
   );
 
   const debouncedSearch = useDebounce((e: React.ChangeEvent<HTMLInputElement>) => {

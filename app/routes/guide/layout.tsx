@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { AppLogo } from "@/components/app-logo";
 import { Button } from "@/components/ui/button";
+
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
 
@@ -55,7 +56,7 @@ function SidebarNav() {
     <ul className="space-y-4">
       {sidebar.map((group) => (
         <li key={group.label}>
-          <p className="text-foreground/50 mb-1 px-3 text-xs font-semibold uppercase tracking-wider">
+          <p className="text-foreground/50 mb-1 px-3 text-xs font-semibold tracking-wider uppercase">
             {group.label}
           </p>
           <ul className="space-y-0.5">
@@ -65,7 +66,7 @@ function SidebarNav() {
                   to={item.path}
                   className={cn(
                     "text-muted-foreground hover:text-foreground block rounded-md px-3 py-1.5 text-sm transition-colors",
-                    pathname === item.path && "text-primary bg-primary/10 font-medium",
+                    pathname === item.path && "text-primary bg-primary/10 font-medium"
                   )}
                 >
                   {item.label}

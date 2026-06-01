@@ -133,7 +133,9 @@ export default function AdminTransactionsGuide() {
         <Preview>
           <div className="space-y-4">
             <div>
-              <Paragraph className="text-foreground text-sm font-semibold">Record Deposit</Paragraph>
+              <Paragraph className="text-foreground text-sm font-semibold">
+                Record Deposit
+              </Paragraph>
               <Paragraph className="text-muted-foreground text-xs">
                 Record a customer deposit
               </Paragraph>
@@ -142,11 +144,7 @@ export default function AdminTransactionsGuide() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label className="text-xs">Customer</Label>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between font-normal"
-                  disabled
-                >
+                <Button variant="outline" className="w-full justify-between font-normal" disabled>
                   <span className="text-muted-foreground text-xs">Select customer</span>
                   <ChevronDown className="text-muted-foreground size-4" />
                 </Button>
@@ -201,11 +199,7 @@ export default function AdminTransactionsGuide() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label className="text-xs">Customer</Label>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between font-normal"
-                  disabled
-                >
+                <Button variant="outline" className="w-full justify-between font-normal" disabled>
                   <span className="text-muted-foreground text-xs">Select customer</span>
                   <ChevronDown className="text-muted-foreground size-4" />
                 </Button>
@@ -232,8 +226,8 @@ export default function AdminTransactionsGuide() {
             If the amount is left empty, it defaults to the customer&apos;s entire deposit balance.
           </li>
           <li>
-            Withdrawals are created with a <strong>Pending</strong> status and must be approved by an
-            admin approver assigned to the customer&apos;s branch.
+            Withdrawals are created with a <strong>Pending</strong> status and must be approved by
+            an admin approver assigned to the customer&apos;s branch.
           </li>
           <li>
             See the <strong>Approving Withdrawals</strong> guide for more details on the approval

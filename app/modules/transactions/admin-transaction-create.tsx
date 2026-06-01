@@ -76,7 +76,11 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
 
   const handleSubmit = (data: TransactionForm) => {
     const selectedCustomer = customers.find((c) => c.id === data.customerId);
-    if (selectedCustomer && data.amount !== undefined && data.amount % selectedCustomer.contributionAmount !== 0) {
+    if (
+      selectedCustomer &&
+      data.amount !== undefined &&
+      data.amount % selectedCustomer.contributionAmount !== 0
+    ) {
       form.setError("amount", {
         message: `Amount must be a multiple of ${formatMoney(selectedCustomer.contributionAmount)}`,
       });
@@ -105,9 +109,8 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
           <AlertDialogHeader>
             <AlertDialogTitle>Record Deposit?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will record a deposit of{" "}
-              <strong>{formatMoney(pendingData?.amount ?? 0)}</strong> for customer{" "}
-              <strong>{pendingCustomerName}</strong>.
+              This will record a deposit of <strong>{formatMoney(pendingData?.amount ?? 0)}</strong>{" "}
+              for customer <strong>{pendingCustomerName}</strong>.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -263,7 +266,10 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
 
   return (
     <>
-      <AlertDialog open={!!pendingCustomerId} onOpenChange={(o) => !o && setPendingCustomerId(null)}>
+      <AlertDialog
+        open={!!pendingCustomerId}
+        onOpenChange={(o) => !o && setPendingCustomerId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Record Withdrawal?</AlertDialogTitle>

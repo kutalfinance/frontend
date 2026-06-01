@@ -2,10 +2,13 @@ import { mutationOptions, useMutation, useQuery, useQueryClient } from "@tanstac
 import z from "zod";
 
 import { api } from "@/lib/api";
+import { getOfflineCustomers } from "@/lib/offline";
+import { isOfflineMode } from "@/lib/offline-mode";
 import {
   type APIResponse,
   type AdminMetrics,
   type AgentMetrics,
+  type Customer,
   type User,
   UserRoles,
 } from "@/lib/types";
@@ -65,6 +68,30 @@ export function useCreateAgent() {
         queryClient.invalidateQueries({ queryKey });
       });
       successToast("Agent created successfully");
+    },
+    onError: errorToast,
+  });
+}
+
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      ...data
+    }: {
+      id: string;
+      name: string;
+      email: string;
+      isApprover?: boolean;
+      isSuperAdmin?: boolean;
+    }) => api.patch(`user/${id}`, { json: data }).json<APIResponse<User>>(),
+    onSuccess: () => {
+      invalidationHelpers.users.related().forEach((queryKey) => {
+        queryClient.invalidateQueries({ queryKey });
+      });
+      successToast("User updated successfully");
     },
     onError: errorToast,
   });
@@ -131,7 +158,27 @@ export function useAdminMetrics() {
 export function useAgentMetrics() {
   return useQuery({
     queryKey: queryKeys.metrics.agent(),
-    queryFn: () => api.get("user/agent/metrics").json<APIResponse<AgentMetrics>>(),
+    queryFn: async () => {
+      if (isOfflineMode()) {
+        const customers = await getOfflineCustomers();
+        return {
+          msg: "ok",
+          data: {
+            totalCustomers: customers.length,
+            totalCustomersVisitedToday: 0,
+            totalCustomersVisitedThisWeek: 0,
+            totalNewCustomersToday: 0,
+            totalNewCustomersThisWeek: 0,
+            totalDepositsToday: 0,
+            totalDepositsThisWeek: 0,
+            totalWithdrawalsApprovedToday: 0,
+            totalWithdrawalsApprovedThisWeek: 0,
+            totalWithdrawalsPending: 0,
+          } as AgentMetrics,
+        } as APIResponse<AgentMetrics>;
+      }
+      return api.get("user/agent/metrics").json<APIResponse<AgentMetrics>>();
+    },
   });
 }
 

@@ -1,14 +1,5 @@
 import { Link, data, href } from "react-router";
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 
@@ -19,6 +10,14 @@ import {
   ModuleTitle,
 } from "@/components/module-heading";
 import { queryClient } from "@/components/query-provider";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Heading } from "@/components/ui/text";

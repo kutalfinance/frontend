@@ -1,6 +1,9 @@
 import { useState } from "react";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 import {
   AlertDialog,
@@ -13,6 +16,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -22,8 +26,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Paragraph } from "@/components/ui/text";
+import { SuperAdminOnly } from "@/components/protected";
 
 import {
   downloadAdminDailyReportOptions,
@@ -31,8 +45,149 @@ import {
   useDeactivateUser,
   useDeleteUser,
   useRestoreUser,
+  useUpdateUser,
 } from "@/hooks/data/users";
-import type { User } from "@/lib/types";
+import { type User, UserRoles } from "@/lib/types";
+
+const editUserSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.email("Please enter a valid email address"),
+  isApprover: z.boolean().optional(),
+  isSuperAdmin: z.boolean().optional(),
+});
+
+type EditUserForm = z.infer<typeof editUserSchema>;
+
+export function EditUser({
+  user,
+  ...props
+}: React.ComponentProps<typeof DialogTrigger> & { user: User }) {
+  const [open, setOpen] = useState(false);
+  const { mutate, isPending } = useUpdateUser();
+
+  const form = useForm<EditUserForm>({
+    resolver: zodResolver(editUserSchema),
+    values: {
+      name: user.name,
+      email: user.email,
+      isApprover: user.approver ?? false,
+      isSuperAdmin: user.superAdmin ?? false,
+    },
+  });
+
+  function onSubmit(data: EditUserForm) {
+    mutate({ id: user.id, ...data }, { onSuccess: () => setOpen(false) });
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild {...props} />
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit User</DialogTitle>
+          <DialogDescription>Update details for {user.name}.</DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Name</FormLabel>
+                  <FormControl>
+                    <Input type="text" placeholder="Enter full name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email Address</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="Enter email address" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {user.role === UserRoles.ADMIN && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="isApprover"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <div className="hover:bg-muted relative flex items-start justify-between gap-2 rounded-lg border p-3 transition-colors">
+                          <div className="flex-1 space-y-1">
+                            <FormLabel>Approver Access</FormLabel>
+                            <Paragraph className="text-muted-foreground text-xs">
+                              Allow this administrator to approve transactions and critical actions
+                            </Paragraph>
+                          </div>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="after:absolute after:inset-0"
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <SuperAdminOnly>
+                  <FormField
+                    control={form.control}
+                    name="isSuperAdmin"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="hover:bg-muted relative flex items-start justify-between gap-2 rounded-lg border p-3 transition-colors">
+                            <div className="flex-1 space-y-1">
+                              <FormLabel>Super Administrator</FormLabel>
+                              <Paragraph className="text-muted-foreground text-xs">
+                                Grant full administrative privileges and user management capabilities
+                              </Paragraph>
+                            </div>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="after:absolute after:inset-0"
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </SuperAdminOnly>
+              </>
+            )}
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button isLoading={isPending} type="submit">
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export function RestoreUser({
   users,

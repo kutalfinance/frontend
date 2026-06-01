@@ -77,7 +77,7 @@ export function AgentRecordDeposit({
     const idempotencyKey = idempotencyKeyRef.current;
     idempotencyKeyRef.current = crypto.randomUUID();
     createTransaction(
-      { customerId: customer.id, amount: pendingData.amount, idempotencyKey },
+      { customerId: customer.id, amount: pendingData.amount, idempotencyKey, customerName: customer.name },
       { onSuccess: () => form.reset() }
     );
   };
@@ -89,9 +89,8 @@ export function AgentRecordDeposit({
           <AlertDialogHeader>
             <AlertDialogTitle>Record Deposit?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will record a deposit of{" "}
-              <strong>{formatMoney(pendingData?.amount ?? 0)}</strong> for customer{" "}
-              <strong>{customer.name}</strong>.
+              This will record a deposit of <strong>{formatMoney(pendingData?.amount ?? 0)}</strong>{" "}
+              for customer <strong>{customer.name}</strong>.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -160,7 +159,7 @@ export function AgentRecordWithdrawal({
   function handleConfirm() {
     const idempotencyKey = idempotencyKeyRef.current;
     idempotencyKeyRef.current = crypto.randomUUID();
-    createTransaction({ customerId: customer.id, idempotencyKey });
+    createTransaction({ customerId: customer.id, idempotencyKey, customerName: customer.name });
   }
 
   return (
@@ -170,8 +169,7 @@ export function AgentRecordWithdrawal({
         <AlertDialogHeader>
           <AlertDialogTitle>Record Withdrawal?</AlertDialogTitle>
           <AlertDialogDescription>
-            This will withdraw the entire balance for customer{" "}
-            <strong>{customer.name}</strong>.
+            This will withdraw the entire balance for customer <strong>{customer.name}</strong>.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

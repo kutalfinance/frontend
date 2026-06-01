@@ -47,7 +47,7 @@ export function CustomerFilters({
   const hasFilters = useMemo(
     () =>
       Array.from(searchParams.keys()).some(
-        (key) => !["q", "sortBy", "sortDirection"].includes(key),
+        (key) => !["q", "sortBy", "sortDirection"].includes(key)
       ),
     [searchParams]
   );
@@ -141,9 +141,7 @@ export function CustomerSortFilter() {
             return prev;
           });
         }}
-        title={
-          (searchParams.get("sortDirection") || "desc") === "asc" ? "Ascending" : "Descending"
-        }
+        title={(searchParams.get("sortDirection") || "desc") === "asc" ? "Ascending" : "Descending"}
       >
         <ArrowUpDown className="size-4" />
       </Button>

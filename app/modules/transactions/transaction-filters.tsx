@@ -215,9 +215,7 @@ export function TransactionSortFilter({ className }: { className?: string }) {
             return prev;
           });
         }}
-        title={
-          (searchParams.get("sortDirection") || "desc") === "asc" ? "Ascending" : "Descending"
-        }
+        title={(searchParams.get("sortDirection") || "desc") === "asc" ? "Ascending" : "Descending"}
       >
         <ArrowUpDown className="size-4" />
       </Button>

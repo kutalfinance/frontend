@@ -1,5 +1,5 @@
 {
-  "name": "dev-chizi",
+  "name": "kss-frontend",
   "private": true,
   "type": "module",
   "scripts": {
@@ -7,7 +7,7 @@
     "dev": "react-router dev",
     "format": "prettier --log-level warn --check .",
     "format:fix": "prettier --log-level warn --write .",
-    "start": "react-router-serve ./build/server/index.js",
+    "start": "serve build/client -s -l 5500",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
@@ -22,6 +22,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "idb": "^8.0.3",
     "input-otp": "^1.4.2",
     "isbot": "^5.1.31",
     "ky": "^1.11.0",
@@ -44,10 +45,12 @@
     "@types/react-dom": "^19.1.9",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
+    "serve": "^14.2.6",
     "tailwindcss": "^4.1.13",
     "tw-animate-css": "^1.4.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
+    "vite-plugin-pwa": "^1.3.0",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }

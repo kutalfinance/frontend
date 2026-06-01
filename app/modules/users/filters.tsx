@@ -18,7 +18,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 export function UserFilters({ disabled }: { disabled?: boolean }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const hasFilters = Array.from(searchParams.keys()).some(
-    (key) => !["q", "sortBy", "sortDirection"].includes(key),
+    (key) => !["q", "sortBy", "sortDirection"].includes(key)
   );
 
   const debouncedSearch = useDebounce((e: React.ChangeEvent<HTMLInputElement>) => {

@@ -113,9 +113,7 @@ export default function AgentLoginGuide() {
       </div>
 
       {/* Step 4: Done */}
-      <StepLabel n={4}>
-        Once verified, you will be redirected to the agent dashboard.
-      </StepLabel>
+      <StepLabel n={4}>Once verified, you will be redirected to the agent dashboard.</StepLabel>
 
       <GuideNavigation />
     </div>

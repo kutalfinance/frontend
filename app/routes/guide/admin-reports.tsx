@@ -98,8 +98,8 @@ export default function AdminReportsGuide() {
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Agent Daily Report</h3>
         <p>
-          The agent daily report summarises all transactions recorded by a specific agent for a given
-          date.
+          The agent daily report summarises all transactions recorded by a specific agent for a
+          given date.
         </p>
 
         <StepLabel n={1}>
@@ -150,7 +150,7 @@ export default function AdminReportsGuide() {
                   <Button variant="ghost" size="icon" className="size-7" disabled>
                     <Archive className="text-destructive size-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="size-7 border border-primary/30">
+                  <Button variant="ghost" size="icon" className="border-primary/30 size-7 border">
                     <DownloadIcon className="text-muted-foreground size-3.5" />
                   </Button>
                 </span>
@@ -257,7 +257,7 @@ export default function AdminReportsGuide() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="size-7 border border-primary/30"
+                    className="border-primary/30 size-7 border"
                     disabled
                   >
                     <Download className="size-3.5" />
@@ -268,9 +268,7 @@ export default function AdminReportsGuide() {
           </div>
         </Preview>
 
-        <StepLabel n={3}>
-          Select an optional date range and click Download Statement
-        </StepLabel>
+        <StepLabel n={3}>Select an optional date range and click Download Statement</StepLabel>
         <Preview>
           <div className="space-y-4">
             <div>

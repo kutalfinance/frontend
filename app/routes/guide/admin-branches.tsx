@@ -14,9 +14,9 @@ export default function AdminBranchesGuide() {
       <GuideTitle badge="Admin">Managing Branches</GuideTitle>
 
       <p>
-        The Branches page lets you manage all branch locations. Each branch has an assigned agent, one
-        or more approvers, and links to its customers. From here you can create, edit, delete branches,
-        and download branch reports.
+        The Branches page lets you manage all branch locations. Each branch has an assigned agent,
+        one or more approvers, and links to its customers. From here you can create, edit, delete
+        branches, and download branch reports.
       </p>
 
       {/* Accessing Branches */}
@@ -32,8 +32,8 @@ export default function AdminBranchesGuide() {
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Page Overview</h3>
         <p>
-          The page header shows the title with a single action button, followed by the filter bar and
-          branches table.
+          The page header shows the title with a single action button, followed by the filter bar
+          and branches table.
         </p>
         <Preview wide>
           <div className="flex items-center justify-between">
@@ -62,7 +62,8 @@ export default function AdminBranchesGuide() {
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Creating a Branch</h3>
         <p>
-          Click <strong>Add branch</strong> to open the creation dialog. All four fields are required.
+          Click <strong>Add branch</strong> to open the creation dialog. All four fields are
+          required.
         </p>
         <Preview>
           <div className="space-y-4">
@@ -86,22 +87,14 @@ export default function AdminBranchesGuide() {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Assigned Agent</Label>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between font-normal"
-                  disabled
-                >
+                <Button variant="outline" className="w-full justify-between font-normal" disabled>
                   <span className="text-muted-foreground text-xs">Select an agent</span>
                   <ChevronDown className="text-muted-foreground size-4" />
                 </Button>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Approvers</Label>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between font-normal"
-                  disabled
-                >
+                <Button variant="outline" className="w-full justify-between font-normal" disabled>
                   <span className="text-muted-foreground text-xs">Select approvers</span>
                   <ChevronDown className="text-muted-foreground size-4" />
                 </Button>
@@ -134,9 +127,7 @@ export default function AdminBranchesGuide() {
             <strong>Approvers</strong> — a multi-select dropdown of administrators with approver
             access. Selected approvers appear as removable chips below the field.
           </li>
-          <li>
-            If no agents exist yet, the dialog shows a prompt to create one first.
-          </li>
+          <li>If no agents exist yet, the dialog shows a prompt to create one first.</li>
         </ul>
       </div>
 
@@ -245,8 +236,8 @@ export default function AdminBranchesGuide() {
             <strong>Approvers</strong> — if more than one, hover to see all names in a tooltip
           </li>
           <li>
-            <strong>Edit</strong> (<SquarePen className="inline size-3.5" />) — opens the edit dialog
-            with the same fields as creation, pre-filled with current values
+            <strong>Edit</strong> (<SquarePen className="inline size-3.5" />) — opens the edit
+            dialog with the same fields as creation, pre-filled with current values
           </li>
           <li>
             <strong>Delete</strong> (<Trash2 className="text-destructive inline size-3.5" />) —
@@ -260,9 +251,9 @@ export default function AdminBranchesGuide() {
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Editing a Branch</h3>
         <p>
-          Click the edit icon (<SquarePen className="inline size-3.5" />) on any row to open the edit
-          dialog. It contains the same fields as the creation form, pre-filled with the branch&apos;s
-          current details.
+          Click the edit icon (<SquarePen className="inline size-3.5" />) on any row to open the
+          edit dialog. It contains the same fields as the creation form, pre-filled with the
+          branch&apos;s current details.
         </p>
         <ul className="list-inside list-disc space-y-1 pl-1">
           <li>You can change the name, location, assigned agent, and approvers.</li>

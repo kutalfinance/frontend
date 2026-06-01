@@ -1,9 +1,10 @@
 import { Link, type LinkProps, href, useLocation } from "react-router";
 
-import { Building2, CheckCircle, History, Home, Menu, Users } from "lucide-react";
+import { Building2, CheckCircle, Download, History, Home, Menu, Users } from "lucide-react";
 import { Contact, type LucideIcon } from "lucide-react";
 
 import { AppLogo } from "@/components/app-logo";
+import { NotificationBell } from "@/components/notification-bell";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +27,7 @@ import {
 import { Paragraph } from "@/components/ui/text";
 
 import { useLoggedInUser, useLogout } from "@/hooks/auth/common";
+import { usePwaInstall } from "@/hooks/use-pwa-install";
 import { cn } from "@/lib/utils";
 import { DownloadAdminReport, DownloadAgentSelfReport } from "@/modules/users/user-actions";
 
@@ -126,6 +128,7 @@ function MobileNavigation({ navLinks }: { navLinks: ReturnType<typeof getNavLink
 function UserMenu() {
   const { data } = useLoggedInUser();
   const logout = useLogout();
+  const { canInstall, install } = usePwaInstall();
   const user = data?.data;
 
   if (!user) return null;
@@ -177,6 +180,14 @@ function UserMenu() {
         </Button>
       )}
 
+      {!isAdmin && <NotificationBell />}
+
+      {canInstall && (
+        <Button variant="ghost" size="icon" onClick={install} title="Install app">
+          <Download className="size-4" />
+        </Button>
+      )}
+
       {isAdmin ? (
         <DownloadAdminReport>{dropdownMenu}</DownloadAdminReport>
       ) : (
@@ -192,37 +203,37 @@ const adminNavLinks: {
   pathRegex: RegExp;
   icon: LucideIcon;
 }[] = [
-    {
-      title: "Home",
-      href: href("/admin"),
-      pathRegex: /^\/admin$/,
-      icon: Home,
-    },
-    {
-      title: "Branches",
-      href: href("/admin/branches"),
-      pathRegex: /\/admin\/branches/,
-      icon: Building2,
-    },
-    {
-      title: "Customers",
-      href: href("/admin/customers"),
-      pathRegex: /\/admin\/customers/,
-      icon: Contact,
-    },
-    {
-      title: "Users",
-      href: href("/admin/users"),
-      pathRegex: /\/admin\/users/,
-      icon: Users,
-    },
-    {
-      title: "Audit Logs",
-      href: href("/admin/audit"),
-      pathRegex: /\/admin\/audit/,
-      icon: History,
-    },
-  ];
+  {
+    title: "Home",
+    href: href("/admin"),
+    pathRegex: /^\/admin$/,
+    icon: Home,
+  },
+  {
+    title: "Branches",
+    href: href("/admin/branches"),
+    pathRegex: /\/admin\/branches/,
+    icon: Building2,
+  },
+  {
+    title: "Customers",
+    href: href("/admin/customers"),
+    pathRegex: /\/admin\/customers/,
+    icon: Contact,
+  },
+  {
+    title: "Users",
+    href: href("/admin/users"),
+    pathRegex: /\/admin\/users/,
+    icon: Users,
+  },
+  {
+    title: "Audit Logs",
+    href: href("/admin/audit"),
+    pathRegex: /\/admin\/audit/,
+    icon: History,
+  },
+];
 
 export function getNavLinks(userRole: string) {
   return userRole === "ADMIN" ? adminNavLinks : [];

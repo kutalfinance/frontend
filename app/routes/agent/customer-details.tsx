@@ -1,7 +1,5 @@
 import { Link, Outlet, data, href } from "react-router";
 
-import { toast } from "sonner";
-
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import {
   BanknoteArrowDown,
@@ -16,6 +14,7 @@ import {
   Phone,
   User,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   ModuleActions,
@@ -226,9 +225,7 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
               <BanknoteArrowUp /> Record deposit
             </Button>
           </AgentRecordDeposit>
-          <span
-            onClick={() => withdrawalDisabledReason && toast.info(withdrawalDisabledReason)}
-          >
+          <span onClick={() => withdrawalDisabledReason && toast.info(withdrawalDisabledReason)}>
             <AgentRecordWithdrawal asChild customer={customer}>
               <Button
                 variant="destructive-outline"

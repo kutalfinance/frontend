@@ -12,7 +12,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { Archive, DownloadIcon, XIcon } from "lucide-react";
+import { Archive, DownloadIcon, Pencil, XIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import { Paragraph } from "@/components/ui/text";
 
 import { type User, UserRoles } from "@/lib/types";
-import { DeactivateUser, DownloadAgentReport } from "@/modules/users/user-actions";
+import { DeactivateUser, DownloadAgentReport, EditUser } from "@/modules/users/user-actions";
 
 export function UsersTable({ users, isLoading }: { users: User[]; isLoading: boolean }) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -145,6 +145,13 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-2">
+          <EditUser user={row.original}>
+            <Button variant="ghost" size="icon">
+              <span className="sr-only">Edit</span>
+              <Pencil className="text-muted-foreground" />
+            </Button>
+          </EditUser>
+
           <DeactivateUser asChild users={[row.original]}>
             <Button variant="ghost" size="icon">
               <span className="sr-only">Deactivate</span>

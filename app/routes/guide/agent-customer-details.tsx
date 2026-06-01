@@ -2,9 +2,9 @@ import {
   ArrowUpDown,
   BanknoteArrowDown,
   BanknoteArrowUp,
+  Calendar,
   ChevronDown,
   Coins,
-  Calendar,
   DollarSign,
   Hash,
   Mail,
@@ -38,8 +38,8 @@ export default function AgentCustomerDetailsGuide() {
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Accessing Customer Details</h3>
         <StepLabel n={1}>
-          Find the customer on the dashboard and click <strong>View contributions</strong> (shown
-          as <strong>View</strong> on mobile)
+          Find the customer on the dashboard and click <strong>View contributions</strong> (shown as{" "}
+          <strong>View</strong> on mobile)
         </StepLabel>
         <Preview wide>
           <div className="rounded-lg border">
@@ -60,8 +60,8 @@ export default function AgentCustomerDetailsGuide() {
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Page Header</h3>
         <p>
-          The header shows a breadcrumb, the customer&apos;s name with an info dropdown, and
-          action buttons for recording deposits and withdrawals.
+          The header shows a breadcrumb, the customer&apos;s name with an info dropdown, and action
+          buttons for recording deposits and withdrawals.
         </p>
         <Preview wide>
           <div className="space-y-4">
@@ -103,18 +103,14 @@ export default function AgentCustomerDetailsGuide() {
             <strong>Record withdrawal</strong> — opens the withdrawal dialog (see the Requesting
             Withdrawals guide)
           </li>
-          <li>
-            On mobile, the action buttons stack below the customer name and breadcrumb.
-          </li>
+          <li>On mobile, the action buttons stack below the customer name and breadcrumb.</li>
         </ul>
       </div>
 
       {/* Customer Info Popover */}
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Customer Information</h3>
-        <p>
-          Click the dropdown arrow next to the customer&apos;s name to see their full details.
-        </p>
+        <p>Click the dropdown arrow next to the customer&apos;s name to see their full details.</p>
         <Preview wide>
           <div className="grid grid-cols-2 gap-4">
             {[
@@ -315,8 +311,8 @@ export default function AgentCustomerDetailsGuide() {
             <strong>Amount</strong> — the transaction value in GHS
           </li>
           <li>
-            <strong>Customer</strong> — always shows the current customer&apos;s name (not
-            clickable in agent view)
+            <strong>Customer</strong> — always shows the current customer&apos;s name (not clickable
+            in agent view)
           </li>
           <li>
             <strong>Type</strong> — green badge for deposits, red for withdrawals, outline for
@@ -332,9 +328,7 @@ export default function AgentCustomerDetailsGuide() {
           <li>
             <strong>Date &amp; Time</strong> — when the transaction was recorded
           </li>
-          <li>
-            On mobile, the table scrolls horizontally. Swipe left to see all columns.
-          </li>
+          <li>On mobile, the table scrolls horizontally. Swipe left to see all columns.</li>
         </ul>
       </div>
 

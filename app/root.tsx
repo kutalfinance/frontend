@@ -1,12 +1,20 @@
+import { useEffect } from "react";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
 import { QueryProvider } from "./components/query-provider";
 import { Toaster } from "./components/ui/sonner";
+import { useOnlineStatus } from "./hooks/use-online-status";
 import { ENVIRONMENT } from "./lib/config";
+import { flushSyncQueue } from "./lib/sync-queue";
 
 export const links: Route.LinksFunction = () => [
+  {
+    rel: "icon",
+    href: "https://res.cloudinary.com/dweh5irid/image/upload/w_32,h_32,c_fill,f_png/v1780326041/kss-logo.jpg",
+    type: "image/png",
+  },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -50,6 +58,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const isOnline = useOnlineStatus();
+
+  useEffect(() => {
+    if (isOnline) flushSyncQueue();
+  }, [isOnline]);
+
   return (
     <QueryProvider>
       <Outlet />

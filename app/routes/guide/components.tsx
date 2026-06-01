@@ -14,6 +14,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/text";
+
 import { cn } from "@/lib/utils";
 
 /* ── Guide Pages Order ── */
@@ -144,11 +145,11 @@ export type AdminNavHighlight = (typeof adminNavItems)[number]["label"] | "Appro
 
 export function AdminNavPreview({ highlight }: { highlight: AdminNavHighlight }) {
   return (
-    <div className="relative ml-9 rounded-lg border border-foreground/20">
-      <div className="border-b border-foreground/20 px-3 py-1.5">
+    <div className="border-foreground/20 relative ml-9 rounded-lg border">
+      <div className="border-foreground/20 border-b px-3 py-1.5">
         <span className="text-muted-foreground text-xs font-medium">Preview</span>
       </div>
-      <div className="select-none p-4">
+      <div className="p-4 select-none">
         <div className="flex items-center justify-between">
           {/* Left: logo + nav */}
           <div className="flex items-center gap-6">
@@ -165,7 +166,7 @@ export function AdminNavPreview({ highlight }: { highlight: AdminNavHighlight })
                       "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs",
                       isActive
                         ? "border-primary bg-primary/5 text-primary border font-semibold"
-                        : "text-muted-foreground",
+                        : "text-muted-foreground"
                     )}
                   >
                     <item.icon className="size-3.5" />
@@ -183,7 +184,7 @@ export function AdminNavPreview({ highlight }: { highlight: AdminNavHighlight })
                 "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs",
                 highlight === "Approvals"
                   ? "border-primary bg-primary/5 text-primary border font-semibold"
-                  : "text-muted-foreground",
+                  : "text-muted-foreground"
               )}
             >
               <CheckCircle className="size-3.5" />
@@ -201,27 +202,14 @@ export function AdminNavPreview({ highlight }: { highlight: AdminNavHighlight })
 
 /* ── Preview Card ── */
 
-export function Preview({
-  children,
-  wide,
-}: {
-  children: React.ReactNode;
-  wide?: boolean;
-}) {
+export function Preview({ children, wide }: { children: React.ReactNode; wide?: boolean }) {
   return (
-    <div className="relative ml-9 rounded-lg border border-foreground/20">
-      <div className="border-b border-foreground/20 px-3 py-1.5">
+    <div className="border-foreground/20 relative ml-9 rounded-lg border">
+      <div className="border-foreground/20 border-b px-3 py-1.5">
         <span className="text-muted-foreground text-xs font-medium">Preview</span>
       </div>
       <div className="flex justify-center p-6">
-        <div
-          className={cn(
-            "w-full select-none space-y-6",
-            !wide && "max-w-sm",
-          )}
-        >
-          {children}
-        </div>
+        <div className={cn("w-full space-y-6 select-none", !wide && "max-w-sm")}>{children}</div>
       </div>
     </div>
   );

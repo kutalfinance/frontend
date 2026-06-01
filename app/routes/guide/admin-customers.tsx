@@ -15,8 +15,8 @@ export default function AdminCustomersGuide() {
       <p>
         The Customers page lets you manage all customer accounts. Each customer belongs to a branch
         and has a contribution amount, contact information, and a next of kin. You can create
-        customers individually, upload them in bulk via CSV, search and filter the list, and download
-        account statements.
+        customers individually, upload them in bulk via CSV, search and filter the list, and
+        download account statements.
       </p>
 
       {/* Accessing Customers */}
@@ -113,11 +113,7 @@ export default function AdminCustomersGuide() {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Branch</Label>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between font-normal"
-                  disabled
-                >
+                <Button variant="outline" className="w-full justify-between font-normal" disabled>
                   <span className="text-muted-foreground text-xs">Select branch</span>
                   <ChevronDown className="text-muted-foreground size-4" />
                 </Button>
@@ -187,9 +183,7 @@ export default function AdminCustomersGuide() {
             <strong>Contribution Amount</strong> — the customer&apos;s agreed daily or periodic
             contribution in GHS
           </li>
-          <li>
-            If no branches exist yet, the dialog shows a prompt to create one first.
-          </li>
+          <li>If no branches exist yet, the dialog shows a prompt to create one first.</li>
         </ul>
       </div>
 
@@ -343,8 +337,8 @@ export default function AdminCustomersGuide() {
             <strong>Contribution</strong> — the customer&apos;s agreed contribution amount in GHS
           </li>
           <li>
-            <strong>Download statement</strong> (<Download className="inline size-3.5" />) — downloads
-            the customer&apos;s account statement as a PDF for a selected date range
+            <strong>Download statement</strong> (<Download className="inline size-3.5" />) —
+            downloads the customer&apos;s account statement as a PDF for a selected date range
           </li>
         </ul>
       </div>

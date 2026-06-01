@@ -24,8 +24,8 @@ export default function AgentWithdrawalsGuide() {
       {/* Step 1 */}
       <div className="space-y-3">
         <StepLabel n={1}>
-          Find the customer on the dashboard and click <strong>View contributions</strong> (shown
-          as <strong>View</strong> on mobile)
+          Find the customer on the dashboard and click <strong>View contributions</strong> (shown as{" "}
+          <strong>View</strong> on mobile)
         </StepLabel>
         <Preview wide>
           <div className="rounded-lg border">
@@ -111,9 +111,7 @@ export default function AgentWithdrawalsGuide() {
             Once approved, the withdrawal is marked as <strong>Completed</strong> and the
             customer&apos;s balance is updated. If rejected, the balance remains unchanged.
           </li>
-          <li>
-            On mobile, the dialog takes the full screen width for easier input.
-          </li>
+          <li>On mobile, the dialog takes the full screen width for easier input.</li>
         </ul>
       </div>
 

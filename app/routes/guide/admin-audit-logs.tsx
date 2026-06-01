@@ -32,8 +32,8 @@ export default function AdminAuditLogsGuide() {
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Page Overview</h3>
         <p>
-          The page shows a header, a search and filter toolbar, and a table of all audit log
-          entries sorted by most recent first.
+          The page shows a header, a search and filter toolbar, and a table of all audit log entries
+          sorted by most recent first.
         </p>
         <Preview wide>
           <div>
@@ -91,8 +91,8 @@ export default function AdminAuditLogsGuide() {
             log fields
           </li>
           <li>
-            <strong>Action</strong> — filter by a specific action type (e.g. LOGIN, CUSTOMER_CREATED,
-            TRANSACTION_DEPOSIT, BRANCH_UPDATED, etc.)
+            <strong>Action</strong> — filter by a specific action type (e.g. LOGIN,
+            CUSTOMER_CREATED, TRANSACTION_DEPOSIT, BRANCH_UPDATED, etc.)
           </li>
           <li>
             <strong>Entity</strong> — filter by entity type: Admin, Agent, Branch, Customer,
@@ -232,8 +232,8 @@ export default function AdminAuditLogsGuide() {
             <strong>Description</strong> — a human-readable summary of what happened
           </li>
           <li>
-            <strong>IP Address</strong> — the IP address from which the action was performed
-            (hidden on smaller screens)
+            <strong>IP Address</strong> — the IP address from which the action was performed (hidden
+            on smaller screens)
           </li>
         </ul>
       </div>

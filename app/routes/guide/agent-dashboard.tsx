@@ -121,13 +121,16 @@ export default function AgentDashboardGuide() {
           <li>
             <strong>Sort direction</strong> — toggle ascending or descending
           </li>
-          <li>On mobile, the search bar takes the full width and the sort controls wrap below it.</li>
+          <li>
+            On mobile, the search bar takes the full width and the sort controls wrap below it.
+          </li>
         </ul>
 
         <h4 className="text-foreground text-sm font-medium">Customer Card</h4>
         <p>
-          Each card shows the customer&apos;s name and email. Click <strong>View contributions</strong>{" "}
-          to see their transaction history, or expand the card to see more details.
+          Each card shows the customer&apos;s name and email. Click{" "}
+          <strong>View contributions</strong> to see their transaction history, or expand the card
+          to see more details.
         </p>
         <Preview wide>
           <div className="space-y-2">
@@ -175,9 +178,7 @@ export default function AgentDashboardGuide() {
                   <div>
                     <Paragraph className="text-muted-foreground text-xs">Next of Kin</Paragraph>
                     <Paragraph>Kofi Darko</Paragraph>
-                    <Paragraph className="text-muted-foreground text-sm">
-                      kofi@mail.com
-                    </Paragraph>
+                    <Paragraph className="text-muted-foreground text-sm">kofi@mail.com</Paragraph>
                     <Paragraph className="text-muted-foreground text-sm">020 123 4567</Paragraph>
                   </div>
                 </div>
@@ -211,8 +212,8 @@ export default function AgentDashboardGuide() {
             <strong>View</strong> to save space.
           </li>
           <li>
-            <strong>Expand arrow</strong> — toggles extra details: phone, branch, location, and
-            next of kin
+            <strong>Expand arrow</strong> — toggles extra details: phone, branch, location, and next
+            of kin
           </li>
         </ul>
       </div>

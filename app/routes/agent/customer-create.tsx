@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import { branchByAgent } from "@/hooks/data/branches";
 import { useCreateCustomer } from "@/hooks/data/customers";
 import { siteConfig } from "@/lib/config";
+import { isOfflineMode } from "@/lib/offline-mode";
 import {
   customerDetailsSchema as customerSchema,
   nextOfKinSchema,
@@ -77,7 +78,12 @@ export default function CreateCustomer({}: Route.ComponentProps) {
     const customerData = customerForm.getValues();
     createCustomer(
       { ...customerData, branchId: branchData.data.id, nextOfKin: data },
-      { onSuccess: () => handleClose() }
+      {
+        onSuccess: () => handleClose(),
+        onError: (error: any) => {
+          if (error.isOffline || isOfflineMode()) handleClose();
+        },
+      }
     );
   };
 

@@ -33,7 +33,7 @@ export type Agent = {
 export type CustomerNextOfKin = {
   name: string;
   phoneNumber: string;
-  email: string;
+  email?: string;
 };
 
 export type Customer = {

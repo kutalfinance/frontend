@@ -42,6 +42,7 @@ export default defineConfig({
           },
         ],
       },
+      includeManifestIcons: false,
       manifest: {
         name: "KSS",
         short_name: "KSS",

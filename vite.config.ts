@@ -29,17 +29,9 @@ export default defineConfig({
         start_url: "/agent",
         icons: [
           { src: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
-          {
-            src: "https://res.cloudinary.com/dweh5irid/image/upload/w_192,h_192,c_fill,f_png/v1780326041/kss-logo.jpg",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "https://res.cloudinary.com/dweh5irid/image/upload/w_512,h_512,c_fill,f_png/v1780326041/kss-logo.jpg",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any maskable",
-          },
+          { src: "/kss-logo.jpg", sizes: "192x192", type: "image/jpeg" },
+          { src: "/kss-logo.jpg", sizes: "512x512", type: "image/jpeg", purpose: "any" },
+          { src: "/kss-logo.jpg", sizes: "512x512", type: "image/jpeg", purpose: "maskable" },
         ],
       },
     }),

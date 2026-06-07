@@ -228,7 +228,10 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
   );
 }
 
-const withdrawalSchema = z.object({ customerId: z.string().min(1) });
+const withdrawalSchema = z.object({
+  customerId: z.string().min(1),
+  amount: z.coerce.number().positive().optional() as z.ZodOptional<z.ZodNumber>,
+});
 type WithdrawalForm = z.infer<typeof withdrawalSchema>;
 
 export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof DialogTrigger>) {
@@ -236,52 +239,55 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
   const customerIdParam = searchParams.get("customerId");
 
   const [open, setOpen] = useState(false);
-  const [pendingCustomerId, setPendingCustomerId] = useState<string | null>(null);
-  const { mutate: createTransaction } = useMutation(createWithdrawalOptions);
+  const [pendingData, setPendingData] = useState<WithdrawalForm | null>(null);
+  const { mutate: createTransaction, isPending } = useMutation(createWithdrawalOptions);
   const { data } = useCustomers();
   const idempotencyKeyRef = useRef(crypto.randomUUID());
   const customers = data?.data ?? [];
 
   const form = useForm<WithdrawalForm>({
     resolver: zodResolver(withdrawalSchema),
-    defaultValues: { customerId: customerIdParam ?? "" },
+    defaultValues: { customerId: customerIdParam ?? "", amount: undefined },
   });
 
-  const handleSubmit = (data: WithdrawalForm) => {
-    setPendingCustomerId(data.customerId);
-  };
+  const handleSubmit = (data: WithdrawalForm) => setPendingData(data);
 
   const handleConfirm = () => {
-    if (!pendingCustomerId) return;
+    if (!pendingData) return;
     setOpen(false);
-    setPendingCustomerId(null);
+    setPendingData(null);
     const idempotencyKey = idempotencyKeyRef.current;
     idempotencyKeyRef.current = crypto.randomUUID();
-    createTransaction({ customerId: pendingCustomerId, idempotencyKey });
+    createTransaction(
+      { customerId: pendingData.customerId, amount: pendingData.amount, idempotencyKey },
+      { onSuccess: () => form.reset({ customerId: customerIdParam ?? "", amount: undefined }) }
+    );
   };
 
-  const pendingCustomerName = pendingCustomerId
-    ? customers.find((c) => c.id === pendingCustomerId)?.name
+  const pendingCustomerName = pendingData
+    ? customers.find((c) => c.id === pendingData.customerId)?.name
     : null;
 
   return (
     <>
-      <AlertDialog
-        open={!!pendingCustomerId}
-        onOpenChange={(o) => !o && setPendingCustomerId(null)}
-      >
+      <AlertDialog open={!!pendingData} onOpenChange={(o) => !o && setPendingData(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Record Withdrawal?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will withdraw the entire balance for customer{" "}
-              <strong>{pendingCustomerName}</strong>.
+              This will initiate a withdrawal
+              {pendingData?.amount !== undefined
+                ? ` of ${formatMoney(pendingData.amount)}`
+                : " of the entire balance"}{" "}
+              for <strong>{pendingCustomerName}</strong>. A service charge will be deducted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction asChild onClick={handleConfirm}>
-              <Button variant="destructive-outline">Record Withdrawal</Button>
+              <Button variant="destructive-outline" isLoading={isPending}>
+                Record Withdrawal
+              </Button>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -354,6 +360,29 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
                         </Command>
                       </PopoverContent>
                     </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Withdrawal Amount{" "}
+                      <span className="text-muted-foreground font-normal">(leave blank for full balance)</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter withdrawal amount"
+                        step="1"
+                        min="1"
+                        {...field}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

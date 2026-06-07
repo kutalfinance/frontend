@@ -81,8 +81,10 @@ export const createWithdrawalOptions = mutationOptions({
     if (isOfflineMode()) {
       return Promise.reject(Object.assign(new Error("offline"), { isOffline: true }));
     }
+    const body: { customerId: string; amount?: number } = { customerId: data.customerId };
+    if (data.amount !== undefined) body.amount = data.amount;
     return api
-      .post("transaction/withdraw", { json: data, headers: { "Idempotency-Key": idempotencyKey } })
+      .post("transaction/withdraw", { json: body, headers: { "Idempotency-Key": idempotencyKey } })
       .json<APIResponse<Transaction>>();
   },
   onSuccess: () => {
@@ -178,7 +180,10 @@ export const rejectTransactionOptions = mutationOptions({
   onError: errorToast,
 });
 
-const validateMetricsSearch = validateTransactionsSearch.pick({ customerId: true });
+const validateMetricsSearch = validateTransactionsSearch.pick({ customerId: true }).extend({
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});
 type TransactionsMetricsSearchParams = z.infer<typeof validateMetricsSearch>;
 
 export const transactionsMetricsOptions = ({
@@ -191,9 +196,17 @@ export const transactionsMetricsOptions = ({
     queryFn: async () => {
       if (isOfflineMode()) {
         const all = await getOfflineTransactions();
-        const filtered = searchParams.customerId
+        let filtered = searchParams.customerId
           ? all.filter((t) => t.customer.id === searchParams.customerId)
           : all;
+        if (searchParams.startDate) {
+          const start = new Date(searchParams.startDate).getTime();
+          filtered = filtered.filter((t) => new Date(t.createdAt).getTime() >= start);
+        }
+        if (searchParams.endDate) {
+          const end = new Date(searchParams.endDate + "T23:59:59").getTime();
+          filtered = filtered.filter((t) => new Date(t.createdAt).getTime() <= end);
+        }
         const completed = (type: TransactionTypes) =>
           filtered
             .filter((t) => t.type === type && t.status === "COMPLETED")

@@ -33,10 +33,6 @@ import { formatMoney } from "@/lib/utils/money";
 
 import { ApproveTransaction, RejectTransaction } from "./approval-actions";
 
-function deriveServiceCharge(customer: Customer): { amount: number; periods: number } {
-  const periods = Math.ceil(customer.daysContributed / 30);
-  return { amount: customer.contributionAmount * periods, periods };
-}
 
 export function WithdrawalRequestSheet({
   transaction,
@@ -93,8 +89,9 @@ function CustomerDetails({ transaction }: { transaction: Transaction }) {
 
   if (!customer) return null;
 
-  const { amount: serviceCharge, periods: serviceChargePeriods } = deriveServiceCharge(customer);
-  const grossBalance = transaction.amount + serviceCharge;
+  const serviceCharge = transaction.serviceChargeAmount ?? 0;
+  const netPayout = transaction.amount - serviceCharge;
+  const serviceChargePeriods = transaction.serviceChargePeriods ?? 0;
 
   return (
     <div className="container space-y-6 py-4">
@@ -143,8 +140,8 @@ function CustomerDetails({ transaction }: { transaction: Transaction }) {
       <Section title="Withdrawal Breakdown" icon={ReceiptText}>
         <div className="bg-muted/50 space-y-2 rounded-lg p-3 text-sm">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Gross Balance</span>
-            <span className="font-medium">{formatMoney(grossBalance)}</span>
+            <span className="text-muted-foreground">Withdrawal Amount</span>
+            <span className="font-medium">{formatMoney(transaction.amount)}</span>
           </div>
           <div className="text-destructive flex justify-between">
             <span>
@@ -158,7 +155,7 @@ function CustomerDetails({ transaction }: { transaction: Transaction }) {
           <Separator />
           <div className="flex justify-between font-semibold">
             <span>Net Payout</span>
-            <span>{formatMoney(transaction.amount)}</span>
+            <span>{formatMoney(netPayout)}</span>
           </div>
         </div>
       </Section>

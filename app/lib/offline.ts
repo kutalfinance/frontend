@@ -60,6 +60,15 @@ export async function enqueueOperation(op: Omit<QueuedOperation, "id">) {
   const db = await getDb();
   await db.add(QUEUE_STORE, op);
   window.dispatchEvent(new Event("kss:queue-updated"));
+  // Register a Background Sync tag so the browser can flush the queue even if
+  // the tab is closed when connectivity returns.
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.ready
+      .then((reg) => {
+        if ("sync" in reg) return (reg as unknown as { sync: { register(tag: string): Promise<void> } }).sync.register("kss-queue-sync");
+      })
+      .catch(() => {});
+  }
 }
 
 export async function dequeueOperation(id: number) {

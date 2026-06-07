@@ -14,7 +14,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -149,36 +148,109 @@ export function AgentRecordDeposit({
   );
 }
 
+const withdrawalSchema = z.object({
+  amount: z.coerce.number().positive().optional() as z.ZodOptional<z.ZodNumber>,
+});
+type WithdrawalForm = z.infer<typeof withdrawalSchema>;
+
 export function AgentRecordWithdrawal({
   customer,
   ...props
-}: React.ComponentProps<typeof AlertDialogTrigger> & { customer: Customer }) {
-  const { mutate: createTransaction } = useMutation(createWithdrawalOptions);
+}: React.ComponentProps<typeof DialogTrigger> & { customer: Customer }) {
+  const [open, setOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<WithdrawalForm | null>(null);
+  const { mutate: createTransaction, isPending } = useMutation(createWithdrawalOptions);
   const idempotencyKeyRef = useRef(crypto.randomUUID());
 
-  function handleConfirm() {
+  const form = useForm<WithdrawalForm>({
+    resolver: zodResolver(withdrawalSchema),
+    defaultValues: { amount: undefined },
+  });
+
+  const handleSubmit = (data: WithdrawalForm) => setPendingData(data);
+
+  const handleConfirm = () => {
+    if (!pendingData) return;
+    setOpen(false);
+    setPendingData(null);
     const idempotencyKey = idempotencyKeyRef.current;
     idempotencyKeyRef.current = crypto.randomUUID();
-    createTransaction({ customerId: customer.id, idempotencyKey, customerName: customer.name });
-  }
+    createTransaction(
+      { customerId: customer.id, amount: pendingData.amount, idempotencyKey, customerName: customer.name },
+      { onSuccess: () => form.reset() }
+    );
+  };
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild {...props} />
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Record Withdrawal?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This will withdraw the entire balance for customer <strong>{customer.name}</strong>.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction asChild onClick={handleConfirm}>
-            <Button variant="destructive-outline">Record Withdrawal</Button>
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <>
+      <AlertDialog open={!!pendingData} onOpenChange={(o) => !o && setPendingData(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Record Withdrawal?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will initiate a withdrawal
+              {pendingData?.amount !== undefined
+                ? ` of ${formatMoney(pendingData.amount)}`
+                : " of the entire balance"}{" "}
+              for <strong>{customer.name}</strong>. A service charge will be deducted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction asChild onClick={handleConfirm}>
+              <Button variant="destructive-outline" isLoading={isPending}>
+                Record Withdrawal
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild {...props} />
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Record Withdrawal</DialogTitle>
+            <DialogDescription>
+              Record a withdrawal for <strong>{customer.name}</strong>
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Withdrawal Amount{" "}
+                      <span className="text-muted-foreground font-normal">(leave blank for full balance)</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter withdrawal amount"
+                        step="1"
+                        min="1"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" variant="destructive-outline">
+                  Record Withdrawal
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

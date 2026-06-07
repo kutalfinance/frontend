@@ -10,37 +10,13 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths(),
     VitePWA({
+      strategies: "injectManifest",
+      srcDir: "app",
+      filename: "sw.ts",
       registerType: "autoUpdate",
       injectRegister: null,
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,svg,woff,woff2}"],
-        navigateFallback: "/index.html",
-        runtimeCaching: [
-          {
-            // Cache navigation requests (app shell) so the app loads offline
-            urlPattern: ({ request }) => request.mode === "navigate",
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "kss-shell",
-              networkTimeoutSeconds: 3,
-              cacheableResponse: { statuses: [200] },
-            },
-          },
-          {
-            // Cache API responses as a secondary offline fallback
-            urlPattern: /\/api\/v1\//,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "kss-api",
-              networkTimeoutSeconds: 5,
-              expiration: {
-                maxEntries: 500,
-                maxAgeSeconds: 60 * 60 * 24, // 24h
-              },
-              cacheableResponse: { statuses: [200] },
-            },
-          },
-        ],
       },
       includeManifestIcons: false,
       manifest: {

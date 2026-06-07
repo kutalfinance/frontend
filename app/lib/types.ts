@@ -73,6 +73,8 @@ export type Transaction = {
   id: string;
   customer: { id: string; name: string };
   amount: number;
+  serviceChargeAmount?: number; // only set for WITHDRAWAL type
+  serviceChargePeriods?: number; // only set for WITHDRAWAL type
   recordedBy: { id: string; name: string };
   type: TransactionTypes;
   status: TransactionStatus;

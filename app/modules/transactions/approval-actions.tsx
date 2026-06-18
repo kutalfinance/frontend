@@ -24,7 +24,7 @@ export function ApproveTransaction({
   ...props
 }: React.ComponentProps<typeof AlertDialogTrigger> & { transaction: Transaction }) {
   const [open, setOpen] = useState(false);
-  const { mutate } = useMutation(approveTransactionOptions);
+  const { mutate, isPending } = useMutation(approveTransactionOptions);
 
   function onApprove() {
     mutate(transaction.id);
@@ -33,7 +33,7 @@ export function ApproveTransaction({
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild {...props} />
+      <AlertDialogTrigger asChild disabled={isPending} {...props} />
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Approve Transaction?</AlertDialogTitle>
@@ -59,7 +59,7 @@ export function RejectTransaction({
   ...props
 }: React.ComponentProps<typeof AlertDialogTrigger> & { transaction: Transaction }) {
   const [open, setOpen] = useState(false);
-  const { mutate } = useMutation(rejectTransactionOptions);
+  const { mutate, isPending } = useMutation(rejectTransactionOptions);
 
   function onReject() {
     mutate(transaction.id);
@@ -68,7 +68,7 @@ export function RejectTransaction({
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild {...props} />
+      <AlertDialogTrigger asChild disabled={isPending} {...props} />
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Reject Transaction?</AlertDialogTitle>

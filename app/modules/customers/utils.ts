@@ -1,20 +1,16 @@
 import z from "zod";
 
-/**
- * The phone regex supports common international formats like:
- * - +1 (555) 123-4567
- * - +44 20 7123 4567
- * - 555-123-4567
- * - (555) 123 4567
- * */
-const phoneRegex = /^[\+]?[\d\s\-\(\)]+$/;
+// Matches local (0XXXXXXXXX) and international (+233XXXXXXXXX) Ghanaian mobile numbers
+// Valid operator prefixes: 020 023 024 025 026 027 028 050 053 054 055 056 057 059
+const ghanaPhoneRegex = /^(0|\+233)(20|23|24|25|26|27|28|50|53|54|55|56|57|59)\d{7}$/;
+const ghanaPhoneMessage = "Enter a valid Ghanaian phone number (e.g. 0241234567 or +233241234567)";
 
 export const customerDetailsSchema = z.object({
   name: z.string().min(1, "Name is required"),
   phoneNumber: z
     .string()
     .min(1, "Phone number is required")
-    .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)")
+    .regex(ghanaPhoneRegex, ghanaPhoneMessage)
     .optional(),
   email: z.union([z.email("Please enter a valid email address"), z.literal("")]).optional(),
   location: z.string().min(1, "Location is required"),
@@ -27,7 +23,7 @@ export const nextOfKinSchema = z.object({
   phoneNumber: z
     .string()
     .min(1, "Next of kin phone number is required")
-    .regex(phoneRegex, "Please enter a valid phone number (numbers, spaces, +, -, (), allowed)"),
+    .regex(ghanaPhoneRegex, ghanaPhoneMessage),
   email: z
     .union([z.email("Please enter a valid next of kin email address"), z.literal("")])
     .optional(),

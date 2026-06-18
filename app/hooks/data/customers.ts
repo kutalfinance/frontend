@@ -158,9 +158,11 @@ export function useUploadStatus(jobId: string | null) {
     queryKey: ["upload-status", jobId],
     queryFn: () => api.get(`data/upload-status/${jobId}`).json<APIResponse<UploadJob>>(),
     enabled: !!jobId,
+    retry: 2,
     refetchInterval: (query) => {
       const status = query.state.data?.data?.status;
       if (status === "DONE" || status === "FAILED") return false;
+      if (query.state.error) return false;
       return 2000;
     },
   });
@@ -174,15 +176,17 @@ export const downloadStatementOptions = mutationOptions({
 
     const blob = await api.get("data/account-statement", { searchParams }).blob();
 
-    // Trigger browser download
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = `statement-${data.customerId}-${Date.now()}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+    try {
+      document.body.appendChild(a);
+      a.click();
+    } finally {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }
 
     return { success: true };
   },

@@ -70,7 +70,7 @@ function SyncStatusIcon({ status }: { status: SyncStatus }) {
 
 // ─── main component ──────────────────────────────────────────────────────────
 
-export function NotificationBell() {
+export function OfflineSyncButton() {
   const isOnline = useOnlineStatus();
   const [open, setOpen] = useState(false);
 

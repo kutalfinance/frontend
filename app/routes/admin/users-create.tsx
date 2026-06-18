@@ -44,12 +44,14 @@ const userTypeOptions = [
   {
     value: UserRoles.AGENT,
     label: "Agent",
-    description: "Limited access to assigned tasks and support tickets",
+    description: "Branch-scoped access for recording deposits and managing customers",
+    superAdminOnly: false,
   },
   {
     value: UserRoles.ADMIN,
     label: "Administrator",
-    description: "Access to administrative panel and user management",
+    description: "Full system access with approval authority and reporting capabilities",
+    superAdminOnly: true,
   },
 ];
 
@@ -120,20 +122,27 @@ export default function CreateUser() {
           <form className="space-y-3" onSubmit={() => setStep("details")}>
             <div>
               <RadioGroup onValueChange={handleUserTypeChange} value={userType}>
-                {userTypeOptions.map((option) => (
-                  <div
-                    key={option.label}
-                    className="border-input has-data-[state=checked]:border-primary relative flex w-full items-start gap-2 rounded-md border p-4 shadow-xs outline-none"
-                  >
-                    <div className="grid flex-1 gap-1">
-                      <Label htmlFor={option.value}>{option.label}</Label>
-                      <Paragraph className="text-muted-foreground text-xs">
-                        {option.description}
-                      </Paragraph>
+                {userTypeOptions.map((option) => {
+                  const radio = (
+                    <div
+                      key={option.value}
+                      className="border-input has-data-[state=checked]:border-primary relative flex w-full items-start gap-2 rounded-md border p-4 shadow-xs outline-none"
+                    >
+                      <div className="grid flex-1 gap-1">
+                        <Label htmlFor={option.value}>{option.label}</Label>
+                        <Paragraph className="text-muted-foreground text-xs">
+                          {option.description}
+                        </Paragraph>
+                      </div>
+                      <RadioGroupItem value={option.value} className="after:absolute after:inset-0" />
                     </div>
-                    <RadioGroupItem value={option.value} className="after:absolute after:inset-0" />
-                  </div>
-                ))}
+                  );
+                  return option.superAdminOnly ? (
+                    <SuperAdminOnly key={option.value}>{radio}</SuperAdminOnly>
+                  ) : (
+                    radio
+                  );
+                })}
               </RadioGroup>
             </div>
 

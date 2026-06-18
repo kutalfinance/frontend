@@ -4,7 +4,7 @@ import { Building2, CheckCircle, Download, History, Home, Menu, Users } from "lu
 import { Contact, type LucideIcon } from "lucide-react";
 
 import { AppLogo } from "@/components/app-logo";
-import { NotificationBell } from "@/components/notification-bell";
+import { OfflineSyncButton } from "@/components/offline-sync-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -180,7 +180,7 @@ function UserMenu() {
         </Button>
       )}
 
-      {!isAdmin && <NotificationBell />}
+      {!isAdmin && <OfflineSyncButton />}
 
       {canInstall && (
         <Button variant="ghost" size="icon" onClick={install} title="Install app">

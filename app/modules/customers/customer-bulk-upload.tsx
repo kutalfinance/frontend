@@ -78,7 +78,7 @@ export function CustomerBulkUpload({ ...props }: React.ComponentProps<typeof Dia
   const [jobId, setJobId] = useState<string | null>(() => localStorage.getItem(UPLOAD_JOB_KEY));
   const toastIdRef = useRef<string | number | null>(null);
 
-  const { data: jobData } = useUploadStatus(jobId);
+  const { data: jobData, isError: isPollingError } = useUploadStatus(jobId);
   const job = jobData?.data;
 
   const form = useForm<UploadForm>({
@@ -91,6 +91,18 @@ export function CustomerBulkUpload({ ...props }: React.ComponentProps<typeof Dia
   // Show persistent toast when job is in progress (handles page reloads)
   useEffect(() => {
     if (!jobId) return;
+
+    if (isPollingError) {
+      toast.error("Upload status unavailable", {
+        id: toastIdRef.current ?? undefined,
+        description: "Could not check upload progress. Please refresh the page.",
+        icon: undefined,
+      });
+      toastIdRef.current = null;
+      setJobId(null);
+      localStorage.removeItem(UPLOAD_JOB_KEY);
+      return;
+    }
 
     if (!job || job.status === "QUEUED" || job.status === "PROCESSING") {
       if (!toastIdRef.current) {
@@ -127,7 +139,7 @@ export function CustomerBulkUpload({ ...props }: React.ComponentProps<typeof Dia
     toastIdRef.current = null;
     setJobId(null);
     localStorage.removeItem(UPLOAD_JOB_KEY);
-  }, [job?.status, jobId]);
+  }, [job?.status, jobId, isPollingError]);
 
   const handleSubmit = (data: UploadForm) => {
     const file = data.file[0];

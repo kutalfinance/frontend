@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { BanknoteArrowDown, BanknoteArrowUp, CheckCircle, Loader, UserRoundPlus, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -10,6 +11,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { queryKeys } from "@/hooks/data/utils";
 import { type QueuedOperation } from "@/lib/offline";
 import { formatMoney } from "@/lib/utils/money";
 import type { SyncCompleteDetail, SyncItemResultDetail, SyncStartedDetail } from "@/lib/sync-queue";
@@ -48,6 +50,7 @@ function opTypeLabel(url: string): string {
 export function SyncProgressSheet() {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<SyncItem[]>([]);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const handleStarted = (e: Event) => {
@@ -67,6 +70,10 @@ export function SyncProgressSheet() {
 
     const handleComplete = (e: Event) => {
       const { flushed, failed } = (e as CustomEvent<SyncCompleteDetail>).detail;
+      if (flushed > 0) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
+        queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
+      }
       setTimeout(() => {
         setOpen(false);
         if (flushed > 0)

@@ -5,11 +5,12 @@ export function successToast(description: string) {
 }
 
 export async function errorToast(err: any) {
-  const errResponse = await err.response?.json();
-
-  const title = "Error"; // errResponse?.title ?? "Error";
-  const description = errResponse?.detail ?? "Something went wrong. Please try again";
-  toast.error(title, { description });
+  let description = "Something went wrong. Please try again";
+  try {
+    const errResponse = await err.response?.json();
+    if (errResponse?.detail) description = errResponse.detail;
+  } catch {}
+  toast.error("Error", { description });
 }
 
 /**

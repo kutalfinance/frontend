@@ -193,10 +193,13 @@ export const downloadAgentDailyReportOptions = mutationOptions({
     const a = document.createElement("a");
     a.href = url;
     a.download = `agent-report-${data.reportDate || new Date().toISOString().split("T")[0]}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+    try {
+      document.body.appendChild(a);
+      a.click();
+    } finally {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }
 
     return { success: true };
   },
@@ -217,10 +220,13 @@ export const downloadAdminDailyReportOptions = mutationOptions({
     const a = document.createElement("a");
     a.href = url;
     a.download = `admin-report-${data.reportDate || new Date().toISOString().split("T")[0]}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+    try {
+      document.body.appendChild(a);
+      a.click();
+    } finally {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }
 
     return { success: true };
   },

@@ -15,10 +15,7 @@ export const links: Route.LinksFunction = () => [
     href: "https://res.cloudinary.com/dweh5irid/image/upload/w_32,h_32,c_fill,f_png/v1780326041/kss-logo.jpg",
     type: "image/png",
   },
-  {
-    rel: "apple-touch-icon",
-    href: "https://res.cloudinary.com/dweh5irid/image/upload/w_180,h_180,c_fill,f_png/v1780326041/kss-logo.jpg",
-  },
+  { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",

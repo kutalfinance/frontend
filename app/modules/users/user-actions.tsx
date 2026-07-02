@@ -52,6 +52,11 @@ import { type User, UserRoles } from "@/lib/types";
 const editUserSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.email("Please enter a valid email address"),
+  phoneNumber: z
+    .string()
+    .regex(/^0\d{9}$/, "Must be a valid Ghana number (e.g. 0241234567)")
+    .optional()
+    .or(z.literal("")),
   isApprover: z.boolean().optional(),
   isSuperAdmin: z.boolean().optional(),
 });
@@ -70,13 +75,17 @@ export function EditUser({
     values: {
       name: user.name,
       email: user.email,
+      phoneNumber: user.phoneNumber ?? "",
       isApprover: user.approver ?? false,
       isSuperAdmin: user.superAdmin ?? false,
     },
   });
 
   function onSubmit(data: EditUserForm) {
-    mutate({ id: user.id, ...data }, { onSuccess: () => setOpen(false) });
+    mutate(
+      { id: user.id, ...data, phoneNumber: data.phoneNumber || undefined },
+      { onSuccess: () => setOpen(false) }
+    );
   }
 
   return (
@@ -112,6 +121,23 @@ export function EditUser({
                   <FormLabel>Email Address</FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="Enter email address" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Phone Number{" "}
+                    <span className="text-muted-foreground font-normal">(optional — for SMS OTP)</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="tel" placeholder="e.g. 0241234567" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

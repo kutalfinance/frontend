@@ -84,6 +84,7 @@ export function useUpdateUser() {
       id: string;
       name: string;
       email: string;
+      phoneNumber?: string;
       isApprover?: boolean;
       isSuperAdmin?: boolean;
     }) => api.patch(`user/${id}`, { json: data }).json<APIResponse<User>>(),

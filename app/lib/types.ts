@@ -12,6 +12,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
+  phoneNumber?: string;
   role: UserRoles;
   createdAt: string; // date-time
   updatedAt: string; // date-time

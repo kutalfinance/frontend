@@ -60,6 +60,11 @@ const userDetailsSchema = z.object({
   approver: z.boolean().optional(),
   name: z.string("Name is required"),
   email: z.email("Please enter a valid email address"),
+  phoneNumber: z
+    .string()
+    .regex(/^0\d{9}$/, "Must be a valid Ghana number (e.g. 0241234567)")
+    .optional()
+    .or(z.literal("")),
 });
 
 const otpSchema = z.object({
@@ -83,7 +88,7 @@ export default function CreateUser() {
 
   const detailsForm = useForm<UserDetailsForm>({
     resolver: zodResolver(userDetailsSchema),
-    defaultValues: { approver: true, superAdmin: false, email: "" },
+    defaultValues: { approver: true, superAdmin: false, email: "", phoneNumber: "" },
   });
 
   const otpForm = useForm<OTPForm>({
@@ -100,11 +105,15 @@ export default function CreateUser() {
   };
 
   const handleDetailsSubmit = (data: UserDetailsForm) => {
+    const payload = {
+      ...data,
+      phoneNumber: data.phoneNumber || undefined,
+    };
     if (userType === UserRoles.AGENT) {
-      return createAgent(data, { onSuccess: handleClose });
+      return createAgent(payload, { onSuccess: handleClose });
     }
 
-    createAdmin(data, { onSuccess: handleClose });
+    createAdmin(payload, { onSuccess: handleClose });
   };
 
   return (
@@ -184,6 +193,23 @@ export default function CreateUser() {
                         placeholder={`Enter ${userType} email address`}
                         {...field}
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={detailsForm.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Phone Number{" "}
+                      <span className="text-muted-foreground font-normal">(optional)</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input type="tel" placeholder="e.g. 0241234567" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

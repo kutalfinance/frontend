@@ -28,6 +28,7 @@ export default [
   ]),
 
   layout("./routes/auth/auth-layout.tsx", [
+    route("/reset-password", "./routes/auth/admin/reset-password.tsx"),
     ...prefix("auth", [
       index("./routes/auth/auth-home.tsx"),
       route("/admin/login", "./routes/auth/admin/login.tsx"),

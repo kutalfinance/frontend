@@ -17,7 +17,7 @@ import {
 import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAdminAuthIsActive, useAdminAuthLogin } from "@/hooks/auth/admin";
+import { useAdminAuthIsActive, useAdminAuthLogin, useSendPasswordResetLink } from "@/hooks/auth/admin";
 import { siteConfig } from "@/lib/config";
 
 export function meta() {
@@ -91,6 +91,7 @@ const loginSchema = z.object({ email: z.email(), password: z.string() });
 
 function AdminLogin({ email }: { email: string }) {
   const { mutate, isPending } = useAdminAuthLogin();
+  const { mutate: sendResetLink, isPending: isSendingReset } = useSendPasswordResetLink();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -144,9 +145,19 @@ function AdminLogin({ email }: { email: string }) {
               Sign in
             </Button>
 
-            <Link to="/auth/admin/login" className="link">
-              Back to email
-            </Link>
+            <div className="flex items-center justify-between">
+              <Link to="/auth/admin/login" className="link">
+                Back to email
+              </Link>
+              <button
+                type="button"
+                onClick={() => sendResetLink({ email })}
+                disabled={isSendingReset}
+                className="link text-sm disabled:opacity-50"
+              >
+                {isSendingReset ? "Sending…" : "Forgot password?"}
+              </button>
+            </div>
           </form>
         </Form>
       </div>

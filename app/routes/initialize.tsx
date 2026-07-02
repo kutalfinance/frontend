@@ -40,7 +40,7 @@ export async function clientLoader() {
   }
 
   // If the check returns true, admin is already initialized
-  redirect(href("/auth"));
+  return redirect(href("/auth"));
 }
 
 export default function AdminInitialize() {

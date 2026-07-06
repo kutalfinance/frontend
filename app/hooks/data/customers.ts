@@ -118,7 +118,7 @@ export function useDeleteCustomer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => api.delete(`customer/${id}`).json<APIResponse<unknown>>(),
+    mutationFn: (id: string) => api.delete("customer", { json: { ids: [id] } }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       invalidationHelpers.customers.related().forEach((queryKey) => {
         queryClient.invalidateQueries({ queryKey });

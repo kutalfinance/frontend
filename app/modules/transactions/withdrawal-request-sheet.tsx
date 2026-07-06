@@ -74,7 +74,7 @@ export function WithdrawalRequestSheet({
 }
 
 function CustomerDetails({ transaction }: { transaction: Transaction }) {
-  const { data, isPending } = useQuery(customerByIdQueryOptions(transaction.customer.id));
+  const { data, isPending, isError } = useQuery(customerByIdQueryOptions(transaction.customer.id));
   const customer = data?.data;
 
   if (isPending) {
@@ -87,7 +87,13 @@ function CustomerDetails({ transaction }: { transaction: Transaction }) {
     );
   }
 
-  if (!customer) return null;
+  if (isError || !customer) {
+    return (
+      <div className="container py-8 text-center text-sm text-muted-foreground">
+        Failed to load customer details.
+      </div>
+    );
+  }
 
   const serviceCharge = transaction.serviceChargeAmount ?? 0;
   const netPayout = transaction.amount - serviceCharge;

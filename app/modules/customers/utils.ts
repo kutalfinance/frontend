@@ -14,7 +14,7 @@ export const customerDetailsSchema = z.object({
     .optional(),
   email: z.union([z.email("Please enter a valid email address"), z.literal("")]).optional(),
   location: z.string().min(1, "Location is required"),
-  contributionAmount: z.coerce.number<number>().min(0, "Contribution amount cannot be negative"),
+  contributionAmount: z.coerce.number<number>().min(1, "Contribution amount must be at least 1"),
   branchId: z.string().min(1, "Branch selection is required"),
 });
 

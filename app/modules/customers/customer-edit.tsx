@@ -47,7 +47,7 @@ export function EditCustomer({
 }: React.ComponentProps<typeof DialogTrigger> & { customer: Customer }) {
   const [open, setOpen] = useState(false);
   const { mutate, isPending } = useUpdateCustomer();
-  const hasActiveContribution = !!customer.contributionStartDate && customer.daysContributed > 0;
+  const hasActiveContribution = customer.hasPendingWithdrawal;
 
   const form = useForm<EditForm>({
     resolver: zodResolver(editSchema),
@@ -163,7 +163,7 @@ export function EditCustomer({
                       </TooltipTrigger>
                       {hasActiveContribution && (
                         <TooltipContent>
-                          Cannot change while a contribution is active
+                          Cannot change while a withdrawal is pending approval
                         </TooltipContent>
                       )}
                     </Tooltip>

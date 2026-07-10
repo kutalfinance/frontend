@@ -55,6 +55,7 @@ export type Customer = {
   daysContributed: number; // count of unique contribution days
   lastDepositDate: string; // date
   deleted: boolean;
+  hasPendingWithdrawal: boolean;
 };
 
 export enum TransactionTypes {

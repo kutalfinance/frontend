@@ -96,7 +96,7 @@ function CustomerDetails({ transaction }: { transaction: Transaction }) {
   }
 
   const serviceCharge = transaction.serviceChargeAmount ?? 0;
-  const netPayout = transaction.amount - serviceCharge;
+  const totalDeducted = transaction.amount + serviceCharge;
   const serviceChargePeriods = transaction.serviceChargePeriods ?? 0;
 
   return (
@@ -146,7 +146,7 @@ function CustomerDetails({ transaction }: { transaction: Transaction }) {
       <Section title="Withdrawal Breakdown" icon={ReceiptText}>
         <div className="bg-muted/50 space-y-2 rounded-lg p-3 text-sm">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Withdrawal Amount</span>
+            <span className="text-muted-foreground">Customer Payout</span>
             <span className="font-medium">{formatMoney(transaction.amount)}</span>
           </div>
           <div className="text-destructive flex justify-between">
@@ -156,12 +156,12 @@ function CustomerDetails({ transaction }: { transaction: Transaction }) {
                 ({serviceChargePeriods} {serviceChargePeriods === 1 ? "period" : "periods"})
               </span>
             </span>
-            <span>− {formatMoney(serviceCharge)}</span>
+            <span>+ {formatMoney(serviceCharge)}</span>
           </div>
           <Separator />
           <div className="flex justify-between font-semibold">
-            <span>Net Payout</span>
-            <span>{formatMoney(netPayout)}</span>
+            <span>Total Deducted</span>
+            <span>{formatMoney(totalDeducted)}</span>
           </div>
         </div>
       </Section>

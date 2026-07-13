@@ -58,8 +58,7 @@ stages:
           - task: AzureStaticWebApp@0
             displayName: "Deploy to SWA"
             inputs:
-              app_location: "/"
-              output_location: "build/client"
+              app_location: "build/client"
               skip_app_build: true
             env:
               azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN)
@@ -90,8 +89,7 @@ stages:
           - task: AzureStaticWebApp@0
             displayName: "Deploy to SWA Staging"
             inputs:
-              app_location: "/"
-              output_location: "build/client"
+              app_location: "build/client"
               skip_app_build: true
               deployment_environment: staging
             env:

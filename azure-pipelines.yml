@@ -5,15 +5,12 @@ trigger:
       - staging
       - main
 
-variables:
-  - group: KssGlobal
-
 pool:
   vmImage: "ubuntu-latest"
 
 stages:
-  - stage: ScanAndBuild
-    displayName: "Scan and Build app"
+  - stage: SecretScan
+    displayName: "Secret Scan"
     condition: eq(variables['Build.SourceBranchName'], 'dev')
     jobs:
       - job: SecretScan
@@ -34,8 +31,15 @@ stages:
                 exit 1
               fi
             displayName: "Run TruffleHog Secret Scan"
-      - job: ReactBuild
-        displayName: "React Vite Build"
+
+  - stage: DeployProduction
+    displayName: "Deploy to Production"
+    condition: eq(variables['Build.SourceBranchName'], 'main')
+    variables:
+      - group: KssFrontendProd
+    jobs:
+      - job: BuildAndDeploy
+        displayName: "Build and Deploy"
         steps:
           - checkout: self
           - task: NodeTool@0
@@ -45,83 +49,50 @@ stages:
           - script: |
               corepack enable
               pnpm install
-              pnpm run build
-            displayName: "Build App"
+            displayName: "Install dependencies"
+          - script: pnpm build
+            displayName: "Build"
+            env:
+              VITE_API_URL: $(VITE_API_URL)
+              VITE_ENVIRONMENT: $(VITE_ENVIRONMENT)
+          - task: AzureStaticWebApp@0
+            displayName: "Deploy to SWA"
+            inputs:
+              app_location: "/"
+              output_location: "build/client"
+              skip_app_build: true
+            env:
+              azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN)
 
-  - stage: DockerBuildPush
-    displayName: "Docker Build and Push"
-    dependsOn: ScanAndBuild
-    condition: |
-      and(
-        in(variables['Build.SourceBranchName'], 'dev', 'staging', 'main'),
-        in(dependencies.ScanAndBuild.result, 'Succeeded', 'Skipped')
-      )
+  - stage: DeployStaging
+    displayName: "Deploy to Staging"
+    condition: eq(variables['Build.SourceBranchName'], 'staging')
     variables:
-      - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-          - group: KssFrontendProd
-      - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-          - group: KssFrontendDev
-      - name: CONTAINER_IMAGE_NAME
-        value: "$(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.SourceVersion)"
+      - group: KssFrontendDev
     jobs:
-      - job: BuildPushDockerImage
-        displayName: "Build and Push Docker Image"
+      - job: BuildAndDeploy
+        displayName: "Build and Deploy"
         steps:
           - checkout: self
-          - task: AzureCLI@2
+          - task: NodeTool@0
             inputs:
-              azureSubscription: "KssArmConnection"
-              scriptType: "bash"
-              scriptLocation: "inlineScript"
-              inlineScript: |
-                az acr login --name $(ACR_NAME)
-                docker build \
-                  --build-arg VITE_API_URL=$(VITE_API_URL) \
-                  --build-arg VITE_ENVIRONMENT=$(VITE_ENVIRONMENT) \
-                  -t $CONTAINER_IMAGE_NAME .
-                docker push $CONTAINER_IMAGE_NAME
-            displayName: "Build and Push to ACR"
-
-  - stage: UpdateContainer
-    displayName: "Update Container"
-    dependsOn: DockerBuildPush
-    condition: in(variables['Build.SourceBranchName'], 'staging', 'main')
-    variables:
-      - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-          - group: KssFrontendProd
-      - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-          - group: KssFrontendDev
-      - name: CONTAINER_IMAGE_NAME
-        value: "$(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.SourceVersion)"
-
-    jobs:
-      - job: UpdateContainerApp
-        displayName: "Update Container App"
-        steps:
-          - checkout: none
-          - task: AzureCLI@2
+              versionSpec: "22.x"
+            displayName: "Install Node.js"
+          - script: |
+              corepack enable
+              pnpm install
+            displayName: "Install dependencies"
+          - script: pnpm build
+            displayName: "Build"
+            env:
+              VITE_API_URL: $(VITE_API_URL)
+              VITE_ENVIRONMENT: $(VITE_ENVIRONMENT)
+          - task: AzureStaticWebApp@0
+            displayName: "Deploy to SWA Staging"
             inputs:
-              azureSubscription: "KssArmConnection"
-              scriptType: "bash"
-              scriptLocation: "inlineScript"
-              inlineScript: |
-                echo "Updating Container App: $(CONTAINER_APP_NAME)"
-                echo "Resource Group: $(RESOURCE_GROUP)"
-                echo "New Image: $(CONTAINER_IMAGE_NAME)"
-
-                # Update the container app with new image
-                az containerapp update \
-                  --name $(CONTAINER_APP_NAME) \
-                  --resource-group $(RESOURCE_GROUP) \
-                  --image $(CONTAINER_IMAGE_NAME)
-
-                echo "Container App updated successfully!"
-
-                # Show the current revision status
-                az containerapp revision list \
-                  --name $CONTAINER_APP_NAME \
-                  --resource-group $RESOURCE_GROUP \
-                  --query '[].{Name:name,CreatedTime:properties.createdTime,Active:properties.active,Image:properties.template.containers[0].image}' \
-                  --output table
-
-            displayName: "Update Container App Image"
+              app_location: "/"
+              output_location: "build/client"
+              skip_app_build: true
+              deployment_environment: staging
+            env:
+              azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN)

@@ -24,6 +24,7 @@ const initSchema = z.object({
   name: z.string(),
   email: z.email(),
   password: z.string(),
+  phoneNumber: z.string(),
 });
 
 export async function clientLoader() {
@@ -48,7 +49,7 @@ export default function AdminInitialize() {
 
   const form = useForm<z.infer<typeof initSchema>>({
     resolver: zodResolver(initSchema),
-    defaultValues: { name: "", email: "", password: "" },
+    defaultValues: { name: "", email: "", password: "", phoneNumber: "" },
   });
 
   function onInitialize(values: z.infer<typeof initSchema>) {
@@ -102,6 +103,19 @@ export default function AdminInitialize() {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <PasswordInput placeholder="Create your admin password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input type="tel" placeholder="Enter your phone number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

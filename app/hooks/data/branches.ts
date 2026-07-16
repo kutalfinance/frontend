@@ -89,13 +89,44 @@ export function useDeleteBranch() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) =>
-      api.delete("branch", { searchParams: { id } }).json<APIResponse<unknown>>(),
+    mutationFn: (ids: string[]) =>
+      api.delete("branch", { json: { ids } }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       invalidationHelpers.branches.related().forEach((queryKey) => {
         queryClient.invalidateQueries({ queryKey });
       });
       successToast("Branch deleted successfully");
+    },
+    onError: errorToast,
+  });
+}
+
+export function useDeactivateBranch() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (ids: string[]) =>
+      api.delete("branch/deactivate", { json: { ids } }).json<APIResponse<unknown>>(),
+    onSuccess: () => {
+      invalidationHelpers.branches.related().forEach((queryKey) => {
+        queryClient.invalidateQueries({ queryKey });
+      });
+      successToast("Branch disabled successfully");
+    },
+    onError: errorToast,
+  });
+}
+
+export function useRelieveAgent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (branchId: string) =>
+      api.patch(`branch/${branchId}/relieve-agent`).json<APIResponse<unknown>>(),
+    onSuccess: () => {
+      invalidationHelpers.branches.related().forEach((queryKey) => {
+        queryClient.invalidateQueries({ queryKey });
+      });
     },
     onError: errorToast,
   });

@@ -114,16 +114,32 @@ export function useUpdateCustomer() {
   });
 }
 
-export function useDeleteCustomer() {
+export function useDeleteCustomers() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => api.delete("customer", { json: { ids: [id] } }).json<APIResponse<unknown>>(),
+    mutationFn: (ids: string[]) => api.delete("customer", { json: { ids } }).json<APIResponse<unknown>>(),
     onSuccess: () => {
       invalidationHelpers.customers.related().forEach((queryKey) => {
         queryClient.invalidateQueries({ queryKey });
       });
-      successToast("Customer deleted successfully");
+      successToast("Customer(s) deleted successfully");
+    },
+    onError: errorToast,
+  });
+}
+
+export function useMoveCustomers() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { ids: string[]; targetBranchId: string }) =>
+      api.post("customer/move", { json: data }).json<APIResponse<unknown>>(),
+    onSuccess: () => {
+      invalidationHelpers.customers.related().forEach((queryKey) => {
+        queryClient.invalidateQueries({ queryKey });
+      });
+      successToast("Customers moved successfully");
     },
     onError: errorToast,
   });

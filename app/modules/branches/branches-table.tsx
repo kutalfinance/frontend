@@ -13,16 +13,16 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { SquarePen, Trash2 } from "lucide-react";
+import { PowerOff, SquarePen, Trash2 } from "lucide-react";
 
-import { SuperAdminOnly } from "@/components/protected";
+import { AdminOnly } from "@/components/protected";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import type { Branch } from "@/lib/types";
-import { DeleteBranch } from "@/modules/branches/branch-actions";
+import { BranchActionDialog } from "@/modules/branches/branch-actions";
 import { EditBranchAdmin } from "@/modules/branches/edit-branch-admin";
 
 export function BranchesTable({ branches, isLoading }: { branches: Branch[]; isLoading: boolean }) {
@@ -47,10 +47,7 @@ export function BranchesTable({ branches, isLoading }: { branches: Branch[]; isL
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: {
-        pageIndex: 0,
-        pageSize: 20,
-      },
+      pagination: { pageIndex: 0, pageSize: 20 },
     },
   });
 
@@ -62,28 +59,44 @@ export function BranchesTable({ branches, isLoading }: { branches: Branch[]; isL
   );
 }
 
+function BranchRowActions({ branch }: { branch: Branch }) {
+  const [dialog, setDialog] = useState<"disable" | "delete" | null>(null);
+
+  return (
+    <>
+      <div className="flex gap-2">
+        <EditBranchAdmin asChild branch={branch}>
+          <Button variant="ghost" size="icon">
+            <span className="sr-only">Edit</span>
+            <SquarePen />
+          </Button>
+        </EditBranchAdmin>
+
+        <AdminOnly>
+          <Button variant="ghost" size="icon" onClick={() => setDialog("disable")}>
+            <span className="sr-only">Disable</span>
+            <PowerOff className="text-amber-500" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => setDialog("delete")}>
+            <span className="sr-only">Delete</span>
+            <Trash2 className="text-destructive" />
+          </Button>
+        </AdminOnly>
+      </div>
+
+      {dialog && (
+        <BranchActionDialog
+          branch={branch}
+          mode={dialog}
+          open={!!dialog}
+          onOpenChange={(open) => !open && setDialog(null)}
+        />
+      )}
+    </>
+  );
+}
+
 const columns: ColumnDef<Branch>[] = [
-  /* {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  }, */
   {
     accessorKey: "name",
     header: "Branch Name",
@@ -105,6 +118,7 @@ const columns: ColumnDef<Branch>[] = [
   {
     accessorKey: "agent.name",
     header: "Assigned Agent",
+    cell: ({ row }) => row.original.agent?.name ?? <span className="text-muted-foreground">—</span>,
   },
   {
     id: "approvers",
@@ -142,26 +156,6 @@ const columns: ColumnDef<Branch>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <div className="flex gap-2">
-          <EditBranchAdmin asChild branch={row.original}>
-            <Button variant="ghost" size="icon">
-              <span className="sr-only">Edit</span>
-              <SquarePen />
-            </Button>
-          </EditBranchAdmin>
-
-          <SuperAdminOnly>
-            <DeleteBranch asChild branch={row.original}>
-              <Button variant="ghost" size="icon">
-                <span className="sr-only">Delete</span>
-                <Trash2 className="text-destructive" />
-              </Button>
-            </DeleteBranch>
-          </SuperAdminOnly>
-        </div>
-      );
-    },
+    cell: ({ row }) => <BranchRowActions branch={row.original} />,
   },
 ];

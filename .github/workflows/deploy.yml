@@ -52,12 +52,21 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_ENVIRONMENT: ${{ secrets.VITE_ENVIRONMENT }}
-      - name: Deploy to SWA
-        uses: Azure/static-web-apps-deploy@v1
+          VITE_API_URL: ${{ github.ref_name == 'main' && 'https://api.kss.kutalfinance.com' || 'https://api-dev.kss.kutalfinance.com' }}
+      - uses: azure/login@v2
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          action: upload
-          app_location: build/client
-          skip_app_build: true
+          creds: >
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+            }
+      - name: Deploy to SWA
+        run: |
+          SWA_NAME=${{ github.ref_name == 'main' && 'kss-prod-swa' || 'kss-dev-swa' }}
+          RG=${{ github.ref_name == 'main' && 'kss-prod-frontend-rg' || 'kss-dev-frontend-rg' }}
+          TOKEN=$(az staticwebapp secrets list --name $SWA_NAME --resource-group $RG --query "properties.apiKey" -o tsv)
+          npx --yes @azure/static-web-apps-cli deploy build/client \
+            --deployment-token $TOKEN \
+            --env production

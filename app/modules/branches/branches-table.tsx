@@ -31,7 +31,7 @@ export function BranchesTable({ branches, isLoading }: { branches: Branch[]; isL
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 8 });
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 7 });
 
   const table = useReactTable({
     data: branches,

@@ -152,7 +152,7 @@ export function CustomersTable({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 8 });
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 7 });
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [moveDialog, setMoveDialog] = useState(false);
 

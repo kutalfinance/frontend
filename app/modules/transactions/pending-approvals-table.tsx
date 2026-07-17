@@ -46,7 +46,7 @@ export function PendingApprovalsTable({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    initialState: { pagination: { pageIndex: 0, pageSize: 8 } },
+    initialState: { pagination: { pageIndex: 0, pageSize: 7 } },
     state: {
       sorting,
       columnFilters,

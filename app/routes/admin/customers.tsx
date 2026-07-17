@@ -1,6 +1,6 @@
 import { Link, Outlet } from "react-router";
 
-import { Plus, Upload } from "lucide-react";
+import { Contact, Plus, Upload } from "lucide-react";
 
 import {
   ModuleActions,
@@ -10,9 +10,14 @@ import {
   ModuleTitle,
 } from "@/components/module-heading";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Heading, Paragraph } from "@/components/ui/text";
 
 import { useCustomers, validateCustomerSearch } from "@/hooks/data/customers";
+import { useAdminMetrics } from "@/hooks/data/users";
 import { siteConfig } from "@/lib/config";
+import { formatMoney } from "@/lib/utils/money";
 import { CustomerBulkUpload } from "@/modules/customers/customer-bulk-upload";
 import { CustomersTable } from "@/modules/customers/customers-table";
 import {
@@ -51,7 +56,7 @@ export default function Customers({ loaderData }: Route.ComponentProps) {
   const customers = data?.data ?? [];
 
   return (
-    <div className="container">
+    <div className="container space-y-10">
       <Outlet />
 
       <ModuleHeading>
@@ -76,13 +81,38 @@ export default function Customers({ loaderData }: Route.ComponentProps) {
         </ModuleActions>
       </ModuleHeading>
 
-      <CustomerFilters disabled={isPending}>
-        <CustomerSearchFilter />
-        <CustomerBranchFilter />
-        <CustomerClearFilters />
-        <CustomerSortFilter />
-      </CustomerFilters>
-      <CustomersTable customers={customers} isLoading={isPending} />
+      <CustomerStats />
+
+      <div className="flex flex-col gap-2">
+        <CustomerFilters disabled={isPending}>
+          <CustomerSearchFilter />
+          <CustomerBranchFilter />
+          <CustomerClearFilters />
+          <CustomerSortFilter />
+        </CustomerFilters>
+        <CustomersTable customers={customers} isLoading={isPending} />
+      </div>
+    </div>
+  );
+}
+
+function CustomerStats() {
+  const { data, isPending } = useAdminMetrics();
+  const total = data?.data?.totalCustomers;
+
+  return (
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <Card className="gap-2">
+        <CardHeader>
+          <div className="w-fit rounded-md border p-2">
+            <Contact className="text-muted-foreground size-5" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Paragraph className="text-muted-foreground text-sm">Customers</Paragraph>
+          <Heading>{isPending ? <Skeleton className="h-8 w-20" /> : formatMoney(total ?? 0, { style: "decimal" })}</Heading>
+        </CardContent>
+      </Card>
     </div>
   );
 }

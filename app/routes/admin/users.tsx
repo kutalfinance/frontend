@@ -1,6 +1,6 @@
 import { Link, Outlet } from "react-router";
 
-import { Archive, Building2, Contact, Plus, Users } from "lucide-react";
+import { Archive, Plus, Users } from "lucide-react";
 
 import {
   ModuleActions,
@@ -101,16 +101,6 @@ function DashboardStats() {
 
   const metricsData = [
     {
-      icon: Building2,
-      label: "Branches",
-      value: formatMoney(metrics?.totalBranches ?? 0, { style: "decimal" }),
-    },
-    {
-      icon: Contact,
-      label: "Customers",
-      value: formatMoney(metrics?.totalCustomers ?? 0, { style: "decimal" }),
-    },
-    {
       icon: Users,
       label: "Users",
       value: formatMoney(metrics?.totalUsers ?? 0, { style: "decimal" }),
@@ -118,7 +108,7 @@ function DashboardStats() {
   ];
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(17rem,auto))] gap-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
       {metricsData.map((metric) => (
         <Card key={metric.label} className="gap-2">
           <CardHeader>

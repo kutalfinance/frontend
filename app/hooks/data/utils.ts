@@ -1,0 +1,105 @@
+import { toast } from "sonner";
+
+export function successToast(description: string) {
+  toast.success("Success", { description });
+}
+
+export async function errorToast(err: any) {
+  let description = "Something went wrong. Please try again";
+  try {
+    const errResponse = await err.response?.json();
+    if (errResponse?.detail) description = errResponse.detail;
+  } catch {}
+  toast.error("Error", { description });
+}
+
+/**
+ * Centralized query keys factory for React Query
+ * Provides consistent, type-safe query keys across the application
+ */
+export const queryKeys = {
+  // Auth related queries
+  auth: {
+    check: () => ["auth", "check"] as const,
+    user: () => ["auth", "user"] as const,
+    me: () => ["auth", "me"] as const,
+  },
+
+  // Users queries
+  users: {
+    all: () => ["users"],
+    filters: (filters?: Record<string, unknown>) => ["users", filters] as const,
+    detail: (id: string) => ["users", id] as const,
+    me: () => ["users", "me"] as const,
+  },
+
+  // Customers queries
+  customers: {
+    all: () => ["customers"],
+    filters: (filters?: Record<string, unknown>) => ["customers", filters],
+    detail: (id: string) => ["customers", id],
+  },
+
+  // Transactions queries
+  transactions: {
+    metrics: (searchParams?: Record<string, unknown>) =>
+      ["transactions", "metrics", searchParams] as const,
+    all: () => ["transactions"] as const,
+    filters: (filters?: Record<string, unknown>) => ["transactions", filters] as const,
+    pendingApprovals: () => ["transactions", "pending-approvals"] as const,
+  },
+
+  // Branches queries
+  branches: {
+    all: () => ["branches"],
+    agent: () => ["branches", "agent"] as const,
+    filters: (filters?: Record<string, unknown>) => ["branches", filters],
+    detail: (id: string) => ["branches", id] as const,
+    withCustomers: (id: string) => ["branches", id, "customers"] as const,
+  },
+
+  // Metrics queries
+  metrics: {
+    admin: () => ["metrics", "admin"] as const,
+    agent: () => ["metrics", "agent"] as const,
+  },
+
+  // Generic utility for creating scoped keys
+  scoped: (scope: string) => ({
+    all: () => [scope] as const,
+    detail: (id: string) => [scope, id] as const,
+    filtered: (filters: Record<string, unknown>) => [scope, "filtered", filters] as const,
+  }),
+} as const;
+
+// Type helpers for query key inference
+export type QueryKeys = typeof queryKeys;
+export type AuthQueryKeys = QueryKeys["auth"];
+export type UsersQueryKeys = QueryKeys["users"];
+export type CustomersQueryKeys = QueryKeys["customers"];
+export type BranchesQueryKeys = QueryKeys["branches"];
+
+// Helper function to get all query keys for a specific scope (useful for invalidation)
+export const getQueryKeysForScope = (scope: keyof typeof queryKeys) => {
+  return queryKeys[scope];
+};
+
+// Helper function to invalidate all queries for a specific entity
+export const invalidationHelpers = {
+  customers: {
+    all: () => queryKeys.customers.all(),
+    related: () => [queryKeys.customers.all(), queryKeys.branches.all()] as const,
+  },
+  users: {
+    all: () => queryKeys.users.all(),
+    related: () => [queryKeys.users.all(), queryKeys.auth.me()] as const,
+  },
+  branches: {
+    all: () => queryKeys.branches.all(),
+    related: () => [queryKeys.branches.all(), queryKeys.customers.all()] as const,
+  },
+  transactions: {
+    all: () => queryKeys.transactions.all(),
+    related: () => [queryKeys.transactions.all(), queryKeys.customers.all()] as const,
+  },
+};

@@ -1,0 +1,200 @@
+import { createContext, useContext, useMemo } from "react";
+import { useSearchParams } from "react-router";
+
+import { ArrowUpDown, SearchIcon } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { useBranchesAdmin } from "@/hooks/data/branches";
+import { useDebounce } from "@/hooks/use-debounce";
+
+// Context
+interface CustomerFiltersContextValue {
+  searchParams: URLSearchParams;
+  setSearchParams: (params: URLSearchParams | ((prev: URLSearchParams) => URLSearchParams)) => void;
+  disabled?: boolean;
+  hasFilters: boolean;
+}
+
+const CustomerFiltersContext = createContext<CustomerFiltersContextValue | null>(null);
+
+function useCustomerFilters() {
+  const context = useContext(CustomerFiltersContext);
+  if (!context) {
+    throw new Error("Customer filter components must be used within CustomerFilters");
+  }
+  return context;
+}
+
+// Main container component
+export function CustomerFilters({
+  children,
+  disabled,
+}: {
+  children: React.ReactNode;
+  disabled?: boolean;
+}) {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const hasFilters = useMemo(
+    () =>
+      Array.from(searchParams.keys()).some(
+        (key) => !["q", "sortBy", "sortDirection"].includes(key)
+      ),
+    [searchParams]
+  );
+
+  return (
+    <CustomerFiltersContext.Provider
+      value={{ searchParams, setSearchParams, disabled, hasFilters }}
+    >
+      <div className="mb-4 flex flex-wrap items-center gap-2">{children}</div>
+    </CustomerFiltersContext.Provider>
+  );
+}
+
+// Individual filter components
+export function CustomerSearchFilter() {
+  const { searchParams, setSearchParams, disabled } = useCustomerFilters();
+
+  const debouncedSearch = useDebounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams((prev) => {
+      if (e.target.value) prev.set("q", e.target.value);
+      else prev.delete("q");
+      return prev;
+    });
+  });
+
+  return (
+    <div className="relative w-full md:max-w-xs">
+      <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+      <Input
+        placeholder="Search customers..."
+        type="search"
+        className="w-full pl-9"
+        defaultValue={searchParams.get("q") || ""}
+        onChange={debouncedSearch}
+        disabled={disabled}
+      />
+    </div>
+  );
+}
+
+export function CustomerBranchFilter() {
+  const { searchParams, setSearchParams, disabled } = useCustomerFilters();
+  const { data: branchesData } = useBranchesAdmin();
+  const branches = branchesData?.data ?? [];
+
+  return (
+    <Select
+      disabled={disabled}
+      value={searchParams.get("branchId") || "all"}
+      onValueChange={(value) => {
+        setSearchParams((prev) => {
+          if (value === "all") value = "";
+
+          if (value) prev.set("branchId", value);
+          else prev.delete("branchId");
+          return prev;
+        });
+      }}
+    >
+      <SelectTrigger>
+        <div className="flex items-center gap-1.5">
+          <span className="text-muted-foreground">Branch:</span>
+          <SelectValue placeholder="Branch" />
+        </div>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All branches</SelectItem>
+        {branches.map((branch) => (
+          <SelectItem key={branch.id} value={branch.id}>
+            {branch.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+export function CustomerSortFilter() {
+  const { searchParams, setSearchParams, disabled } = useCustomerFilters();
+
+  return (
+    <div className="ml-auto flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="icon"
+        disabled={disabled}
+        onClick={() => {
+          setSearchParams((prev) => {
+            const current = prev.get("sortDirection") || "desc";
+            prev.set("sortDirection", current === "asc" ? "desc" : "asc");
+            return prev;
+          });
+        }}
+        title={(searchParams.get("sortDirection") || "desc") === "asc" ? "Ascending" : "Descending"}
+      >
+        <ArrowUpDown className="size-4" />
+      </Button>
+
+      <Select
+        disabled={disabled}
+        value={searchParams.get("sortBy") || "createdAt"}
+        onValueChange={(value) => {
+          setSearchParams((prev) => {
+            if (value) {
+              prev.set("sortBy", value);
+              prev.set("sortDirection", value === "createdAt" ? "desc" : "asc");
+            } else {
+              prev.delete("sortBy");
+              prev.delete("sortDirection");
+            }
+            return prev;
+          });
+        }}
+      >
+        <SelectTrigger>
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground">Sort by:</span>
+            <SelectValue placeholder="Sort By" />
+          </div>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="name">Name</SelectItem>
+          <SelectItem value="email">Email</SelectItem>
+          <SelectItem value="location">Location</SelectItem>
+          <SelectItem value="createdAt">Created At</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+export function CustomerClearFilters() {
+  const { hasFilters, setSearchParams } = useCustomerFilters();
+
+  if (!hasFilters) return null;
+
+  return (
+    <Button
+      variant="link"
+      onClick={() =>
+        setSearchParams((prev) => {
+          prev.delete("branchId");
+          return prev;
+        })
+      }
+    >
+      Clear filters
+    </Button>
+  );
+}

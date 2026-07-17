@@ -53,6 +53,7 @@ jobs:
         run: pnpm build
         env:
           VITE_API_URL: ${{ github.ref_name == 'main' && 'https://api.kss.kutalfinance.com' || 'https://api-dev.kss.kutalfinance.com' }}
+          VITE_ENVIRONMENT: ${{ github.ref_name == 'main' && 'production' || 'development' }}
       - uses: azure/login@v2
         with:
           creds: >

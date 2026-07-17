@@ -4,6 +4,7 @@ import { Link, href } from "react-router";
 import {
   type ColumnDef,
   type ColumnFiltersState,
+  type PaginationState,
   type SortingState,
   type VisibilityState,
   getCoreRowModel,
@@ -151,6 +152,7 @@ export function CustomersTable({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 7 });
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [moveDialog, setMoveDialog] = useState(false);
 
@@ -165,12 +167,13 @@ export function CustomersTable({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: { pageIndex: 0, pageSize: 20 },
+      pagination,
     },
   });
 

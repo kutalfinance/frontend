@@ -4,6 +4,7 @@ import { Link, href } from "react-router";
 import {
   type ColumnDef,
   type ColumnFiltersState,
+  type PaginationState,
   type SortingState,
   type VisibilityState,
   getCoreRowModel,
@@ -30,6 +31,7 @@ export function BranchesTable({ branches, isLoading }: { branches: Branch[]; isL
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 7 });
 
   const table = useReactTable({
     data: branches,
@@ -42,12 +44,13 @@ export function BranchesTable({ branches, isLoading }: { branches: Branch[]; isL
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: { pageIndex: 0, pageSize: 20 },
+      pagination,
     },
   });
 

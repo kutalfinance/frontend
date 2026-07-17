@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   type ColumnDef,
   type ColumnFiltersState,
+  type PaginationState,
   type SortingState,
   type VisibilityState,
   getCoreRowModel,
@@ -30,6 +31,7 @@ export function UsersTable({ users, isLoading }: { users: User[]; isLoading: boo
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 7 });
 
   const table = useReactTable({
     data: users,
@@ -42,12 +44,13 @@ export function UsersTable({ users, isLoading }: { users: User[]; isLoading: boo
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: { pageIndex: 0, pageSize: 20 },
+      pagination,
     },
     /* meta: {
       getRowClassName: (row) => cn(row.original.status === "INACTIVE" && "bg-muted"),

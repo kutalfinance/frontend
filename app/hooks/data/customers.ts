@@ -5,7 +5,7 @@ import z from "zod";
 import { queryClient } from "@/components/query-provider";
 
 import { api } from "@/lib/api";
-import { enqueueOperation, getOfflineCustomerById, getOfflineCustomers } from "@/lib/offline";
+import { enqueueOperation } from "@/lib/offline";
 import { isOfflineMode } from "@/lib/offline-mode";
 import type { APIResponse, Customer, UploadJob } from "@/lib/types";
 
@@ -15,8 +15,8 @@ export const validateCustomerSearch = z
   .object({
     q: z.string(),
     branchId: z.string(),
-    createdBefore: z.string(), // date-time
-    createdAfter: z.string(), // date-time
+    createdBefore: z.string(),
+    createdAfter: z.string(),
     sortBy: z.string(),
     sortDirection: z.enum(["asc", "desc"]),
   })
@@ -24,10 +24,7 @@ export const validateCustomerSearch = z
 
 export type CustomerSearchParams = z.infer<typeof validateCustomerSearch>;
 
-function filterCustomersOffline(
-  customers: Customer[],
-  searchParams?: CustomerSearchParams
-): Customer[] {
+function filterCustomers(customers: Customer[], searchParams?: CustomerSearchParams): Customer[] {
   let result = customers;
   if (searchParams?.q) {
     const q = searchParams.q.toLowerCase();
@@ -37,6 +34,17 @@ function filterCustomersOffline(
         c.phoneNumber.includes(q) ||
         c.accountNumber.toLowerCase().includes(q)
     );
+  }
+  if (searchParams?.branchId) {
+    result = result.filter((c) => c.branch?.id === searchParams.branchId);
+  }
+  if (searchParams?.createdAfter) {
+    const after = new Date(searchParams.createdAfter).getTime();
+    result = result.filter((c) => new Date(c.createdAt).getTime() >= after);
+  }
+  if (searchParams?.createdBefore) {
+    const before = new Date(searchParams.createdBefore).getTime();
+    result = result.filter((c) => new Date(c.createdAt).getTime() <= before);
   }
   if (searchParams?.sortBy) {
     const dir = searchParams.sortDirection === "desc" ? -1 : 1;
@@ -48,19 +56,11 @@ function filterCustomersOffline(
   return result;
 }
 
-// Customer management hooks
 export function useCustomers({ searchParams }: { searchParams?: CustomerSearchParams } = {}) {
   return useQuery({
-    queryKey: queryKeys.customers.filters(searchParams),
-    queryFn: async () => {
-      if (isOfflineMode()) {
-        const all = await getOfflineCustomers();
-        return { msg: "ok", data: filterCustomersOffline(all, searchParams) } as APIResponse<
-          Customer[]
-        >;
-      }
-      return api.get("customer", { searchParams }).json<APIResponse<Customer[]>>();
-    },
+    queryKey: queryKeys.customers.all(),
+    queryFn: () => api.get("customer").json<APIResponse<Customer[]>>(),
+    select: (data) => ({ ...data, data: filterCustomers(data.data, searchParams) }),
   });
 }
 
@@ -81,7 +81,7 @@ export function useCreateCustomer() {
       successToast("Customer created successfully");
     },
     onError: (error: any, variables) => {
-      if (error.isOffline || isOfflineMode()) {
+      if (error.isOffline || isOfflineMode() || !navigator.onLine) {
         enqueueOperation({
           url: "customer",
           method: "POST",
@@ -147,15 +147,13 @@ export function useMoveCustomers() {
 
 export const customerByIdQueryOptions = (id: string) => ({
   queryKey: queryKeys.customers.detail(id),
-  queryFn: async () => {
-    if (isOfflineMode()) {
-      const customer = await getOfflineCustomerById(id);
-      if (!customer) throw new Error("Customer not available in offline data");
-      return { msg: "ok", data: customer } as APIResponse<Customer>;
-    }
-    return api.get(`customer/${id}`).json<APIResponse<Customer>>();
-  },
+  queryFn: () => api.get(`customer/${id}`).json<APIResponse<Customer>>(),
   enabled: !!id,
+  placeholderData: (): APIResponse<Customer> | undefined => {
+    const all = queryClient.getQueryData<APIResponse<Customer[]>>(queryKeys.customers.all());
+    const found = all?.data.find((c) => c.id === id);
+    return found ? { msg: "ok", data: found } : undefined;
+  },
 });
 
 export const uploadCustomersOptions = mutationOptions({

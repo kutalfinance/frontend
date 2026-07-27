@@ -5,7 +5,7 @@ import z from "zod";
 import { queryClient } from "@/components/query-provider";
 
 import { api } from "@/lib/api";
-import { enqueueOperation, getOfflineTransactions, syncTransactionsOffline } from "@/lib/offline";
+import { enqueueOperation } from "@/lib/offline";
 import { isOfflineMode } from "@/lib/offline-mode";
 import { TransactionTypes } from "@/lib/types";
 import type { APIResponse, Transaction, TransactionMetrics } from "@/lib/types";
@@ -17,8 +17,8 @@ export const validateTransactionsSearch = z
     q: z.string(),
     customerId: z.string(),
     userId: z.string(),
-    recordedBefore: z.string(), // date-time
-    recordedAfter: z.string(), // date-time
+    recordedBefore: z.string(),
+    recordedAfter: z.string(),
     type: z.enum(["DEPOSIT", "WITHDRAWAL", "SERVICE_CHARGE"]),
     status: z.enum(["COMPLETED", "REJECTED", "PENDING", "FAILED"]),
     sortBy: z.string(),
@@ -28,7 +28,7 @@ export const validateTransactionsSearch = z
 
 export type TransactionsSearchParams = z.infer<typeof validateTransactionsSearch>;
 
-function filterTransactionsOffline(
+function filterTransactions(
   transactions: Transaction[],
   searchParams?: TransactionsSearchParams
 ): Transaction[] {
@@ -46,6 +46,14 @@ function filterTransactionsOffline(
     const q = searchParams.q.toLowerCase();
     result = result.filter((t) => t.customer.name.toLowerCase().includes(q));
   }
+  if (searchParams?.recordedAfter) {
+    const after = new Date(searchParams.recordedAfter).getTime();
+    result = result.filter((t) => new Date(t.createdAt).getTime() >= after);
+  }
+  if (searchParams?.recordedBefore) {
+    const before = new Date(searchParams.recordedBefore).getTime();
+    result = result.filter((t) => new Date(t.createdAt).getTime() <= before);
+  }
   return result;
 }
 
@@ -55,16 +63,9 @@ export const transactionsQueryOptions = ({
   searchParams?: TransactionsSearchParams;
 }) =>
   queryOptions({
-    queryKey: queryKeys.transactions.filters(searchParams),
-    queryFn: async () => {
-      if (isOfflineMode()) {
-        const all = await getOfflineTransactions();
-        return { msg: "ok", data: filterTransactionsOffline(all, searchParams) } as APIResponse<
-          Transaction[]
-        >;
-      }
-      return api.get("transaction", { searchParams }).json<APIResponse<Transaction[]>>();
-    },
+    queryKey: queryKeys.transactions.all(),
+    queryFn: () => api.get("transaction").json<APIResponse<Transaction[]>>(),
+    select: (data) => ({ ...data, data: filterTransactions(data.data, searchParams) }),
   });
 
 export const createWithdrawalOptions = mutationOptions({
@@ -90,11 +91,10 @@ export const createWithdrawalOptions = mutationOptions({
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
-    syncTransactionsOffline().catch(() => {});
     successToast("Withdrawal request initiated");
   },
   onError: (error: any, variables) => {
-    if (error.isOffline || isOfflineMode()) {
+    if (error.isOffline || isOfflineMode() || !navigator.onLine) {
       enqueueOperation({
         url: "transaction/withdraw",
         method: "POST",
@@ -131,11 +131,10 @@ export const createDepositOptions = mutationOptions({
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
-    syncTransactionsOffline().catch(() => {});
     successToast("Deposit recorded successfully");
   },
   onError: (error: any, variables) => {
-    if (error.isOffline || isOfflineMode()) {
+    if (error.isOffline || isOfflineMode() || !navigator.onLine) {
       const name = variables.customerName ? ` – ${variables.customerName}` : "";
       enqueueOperation({
         url: "transaction/deposit",
@@ -186,6 +185,40 @@ const validateMetricsSearch = validateTransactionsSearch.pick({ customerId: true
 });
 type TransactionsMetricsSearchParams = z.infer<typeof validateMetricsSearch>;
 
+function computeMetricsFromCache(
+  searchParams: TransactionsMetricsSearchParams
+): APIResponse<TransactionMetrics> | undefined {
+  const all = queryClient.getQueryData<APIResponse<Transaction[]>>(queryKeys.transactions.all());
+  if (!all) return undefined;
+  let filtered = searchParams.customerId
+    ? all.data.filter((t) => t.customer.id === searchParams.customerId)
+    : all.data;
+  if (searchParams.startDate) {
+    const start = new Date(searchParams.startDate).getTime();
+    filtered = filtered.filter((t) => new Date(t.createdAt).getTime() >= start);
+  }
+  if (searchParams.endDate) {
+    const end = new Date(searchParams.endDate + "T23:59:59").getTime();
+    filtered = filtered.filter((t) => new Date(t.createdAt).getTime() <= end);
+  }
+  const completed = (type: TransactionTypes) =>
+    filtered
+      .filter((t) => t.type === type && t.status === "COMPLETED")
+      .reduce((sum, t) => sum + t.amount, 0);
+  const totalDeposited = completed(TransactionTypes.DEPOSIT);
+  const totalWithdrawn = completed(TransactionTypes.WITHDRAWAL);
+  const totalCharged = completed(TransactionTypes.SERVICE_CHARGE);
+  return {
+    msg: "ok",
+    data: {
+      totalDeposited,
+      totalWithdrawn,
+      totalCharged,
+      balance: totalDeposited - totalWithdrawn - totalCharged,
+    } as TransactionMetrics,
+  };
+}
+
 export const transactionsMetricsOptions = ({
   searchParams,
 }: {
@@ -193,39 +226,7 @@ export const transactionsMetricsOptions = ({
 }) =>
   queryOptions({
     queryKey: queryKeys.transactions.metrics(searchParams),
-    queryFn: async () => {
-      if (isOfflineMode()) {
-        const all = await getOfflineTransactions();
-        let filtered = searchParams.customerId
-          ? all.filter((t) => t.customer.id === searchParams.customerId)
-          : all;
-        if (searchParams.startDate) {
-          const start = new Date(searchParams.startDate).getTime();
-          filtered = filtered.filter((t) => new Date(t.createdAt).getTime() >= start);
-        }
-        if (searchParams.endDate) {
-          const end = new Date(searchParams.endDate + "T23:59:59").getTime();
-          filtered = filtered.filter((t) => new Date(t.createdAt).getTime() <= end);
-        }
-        const completed = (type: TransactionTypes) =>
-          filtered
-            .filter((t) => t.type === type && t.status === "COMPLETED")
-            .reduce((sum, t) => sum + t.amount, 0);
-        const totalDeposited = completed(TransactionTypes.DEPOSIT);
-        const totalWithdrawn = completed(TransactionTypes.WITHDRAWAL);
-        const totalCharged = completed(TransactionTypes.SERVICE_CHARGE);
-        return {
-          msg: "ok",
-          data: {
-            totalDeposited,
-            totalWithdrawn,
-            totalCharged,
-            balance: totalDeposited - totalWithdrawn - totalCharged,
-          } as TransactionMetrics,
-        } as APIResponse<TransactionMetrics>;
-      }
-      return api
-        .get("transaction/metrics", { searchParams })
-        .json<APIResponse<TransactionMetrics>>();
-    },
+    queryFn: () =>
+      api.get("transaction/metrics", { searchParams }).json<APIResponse<TransactionMetrics>>(),
+    placeholderData: () => computeMetricsFromCache(searchParams),
   });

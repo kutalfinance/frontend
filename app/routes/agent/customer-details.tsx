@@ -1,4 +1,4 @@
-import { Link, Outlet, data, href } from "react-router";
+import { Link, Outlet, href } from "react-router";
 
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import {
@@ -69,22 +69,18 @@ export function meta() {
 }
 
 export async function clientLoader({ request, params }: Route.ClientLoaderArgs) {
-  try {
-    await queryClient.ensureQueryData(customerByIdQueryOptions(params.customerId));
-  } catch (err) {
-    throw data("Customer not found", { status: 404 });
-  }
+  // Seed the per-customer cache from the all-customers list so the detail page
+  // renders instantly (including offline) even if never individually fetched.
+  queryClient.prefetchQuery(customerByIdQueryOptions(params.customerId)).catch(() => {});
 
   const url = new URL(request.url);
   const searchParams = Object.fromEntries(url.searchParams);
-
+  searchParams.customerId = params.customerId;
   try {
-    searchParams.customerId = params.customerId;
     const validatedParams = validateTransactionsSearch.parse(searchParams);
     return { searchParams: validatedParams };
-  } catch (error) {
-    console.error("Failed to validate search params:", error);
-    return { searchParams: {} };
+  } catch {
+    return { searchParams: { customerId: params.customerId } };
   }
 }
 

@@ -2,8 +2,6 @@ import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/r
 import z from "zod";
 
 import { api } from "@/lib/api";
-import { getMisc } from "@/lib/offline";
-import { isOfflineMode } from "@/lib/offline-mode";
 import type { APIResponse, Branch } from "@/lib/types";
 
 import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";
@@ -35,10 +33,6 @@ export function useBranchesAdmin({ searchParams }: { searchParams?: BranchSearch
 export const branchByAgent = queryOptions({
   queryKey: queryKeys.branches.agent(),
   queryFn: async () => {
-    if (isOfflineMode()) {
-      const cached = await getMisc<APIResponse<Branch | null>>("branch");
-      if (cached) return cached;
-    }
     const response = await api.get("branch").json<APIResponse<Branch[]>>();
     return { ...response, data: response.data[0] ?? null };
   },

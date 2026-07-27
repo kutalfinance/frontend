@@ -10,11 +10,7 @@ import { ENVIRONMENT } from "./lib/config";
 import { flushSyncQueue } from "./lib/sync-queue";
 
 export const links: Route.LinksFunction = () => [
-  {
-    rel: "icon",
-    href: "https://res.cloudinary.com/dweh5irid/image/upload/w_32,h_32,c_fill,f_png/v1780326041/kss-logo.jpg",
-    type: "image/png",
-  },
+  { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
   { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {

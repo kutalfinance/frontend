@@ -1,4 +1,4 @@
-import { Link, data, href } from "react-router";
+import { Link, href } from "react-router";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
@@ -9,7 +9,6 @@ import {
   ModuleHeading,
   ModuleTitle,
 } from "@/components/module-heading";
-import { queryClient } from "@/components/query-provider";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -43,20 +42,12 @@ export function meta() {
 }
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
-  try {
-    await queryClient.ensureQueryData(branchByAgent);
-  } catch (err) {
-    throw data("Branch not found", { status: 404 });
-  }
-
   const url = new URL(request.url);
   const params = Object.fromEntries(url.searchParams);
-
   try {
     const validatedParams = validateCustomerSearch.omit({ branchId: true }).parse(params);
     return { searchParams: validatedParams };
-  } catch (error) {
-    console.error("Failed to validate search params:", error);
+  } catch {
     return { searchParams: {} };
   }
 }

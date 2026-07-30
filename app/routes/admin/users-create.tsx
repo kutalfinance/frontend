@@ -143,7 +143,10 @@ export default function CreateUser() {
                           {option.description}
                         </Paragraph>
                       </div>
-                      <RadioGroupItem value={option.value} className="after:absolute after:inset-0" />
+                      <RadioGroupItem
+                        value={option.value}
+                        className="after:absolute after:inset-0"
+                      />
                     </div>
                   );
                   return option.superAdminOnly ? (

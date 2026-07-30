@@ -21,9 +21,11 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+
 import { useOnlineStatus } from "@/hooks/use-online-status";
 import { type QueuedOperation, getQueuedOperations } from "@/lib/offline";
 import { setOfflineMode } from "@/lib/offline-mode";
+import { downloadOfflineData } from "@/lib/offline-session";
 import type { SyncCompleteDetail, SyncItemResultDetail, SyncStartedDetail } from "@/lib/sync-queue";
 import { formatMoney } from "@/lib/utils/money";
 
@@ -80,6 +82,30 @@ export function OfflineSyncButton() {
   // sync progress
   const [syncing, setSyncing] = useState(false);
   const [syncItems, setSyncItems] = useState<SyncItem[]>([]);
+
+  // offline-session preparation (downloading the data snapshot)
+  const [preparing, setPreparing] = useState(false);
+
+  async function toggleOfflineMode() {
+    if (!isOnline) {
+      // Going online: flip the flag; the root effect flushes the queue and
+      // refreshes data once the sync completes.
+      setOfflineMode(false);
+      return;
+    }
+    // Going offline: download a fresh snapshot of everything the agent needs
+    // BEFORE flipping the flag, so the app is fully usable without a connection.
+    setPreparing(true);
+    try {
+      await downloadOfflineData();
+      setOfflineMode(true);
+      toast.success("Offline data downloaded — the app now works without a connection");
+    } catch {
+      toast.error("Couldn't download offline data. Check your connection and try again.");
+    } finally {
+      setPreparing(false);
+    }
+  }
 
   useEffect(() => {
     const refreshQueue = () => getQueuedOperations().then(setPendingOps);
@@ -140,7 +166,9 @@ export function OfflineSyncButton() {
   let sheetDescription: string;
 
   if (syncing) {
-    sheetTitle = allSyncDone ? "Sync complete" : `Syncing ${syncItems.length} ${syncItems.length === 1 ? "action" : "actions"}...`;
+    sheetTitle = allSyncDone
+      ? "Sync complete"
+      : `Syncing ${syncItems.length} ${syncItems.length === 1 ? "action" : "actions"}...`;
     sheetDescription = allSyncDone
       ? `${syncItems.filter((i) => i.status === "synced").length} synced, ${syncItems.filter((i) => i.status === "failed").length} failed`
       : `${done} of ${syncItems.length} done`;
@@ -173,7 +201,7 @@ export function OfflineSyncButton() {
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="top" className="px-0 pb-6 pt-8">
+        <SheetContent side="top" className="px-0 pt-8 pb-6">
           <SheetHeader className="px-6">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
@@ -190,9 +218,19 @@ export function OfflineSyncButton() {
                 <Button
                   variant={isOnline ? "outline" : "default"}
                   size="sm"
-                  onClick={() => setOfflineMode(isOnline)}
+                  disabled={preparing}
+                  onClick={toggleOfflineMode}
                 >
-                  {isOnline ? "Go Offline" : "Go Online"}
+                  {preparing ? (
+                    <>
+                      <Loader className="size-4 animate-spin" />
+                      Downloading data...
+                    </>
+                  ) : isOnline ? (
+                    "Go Offline"
+                  ) : (
+                    "Go Online"
+                  )}
                 </Button>
               )}
             </div>
@@ -226,7 +264,9 @@ export function OfflineSyncButton() {
                 <li key={op.id} className="flex items-center gap-3 px-6 py-3">
                   <OpIcon url={op.url} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{op.label || opTypeLabel(op.url)}</p>
+                    <p className="truncate text-sm font-medium">
+                      {op.label || opTypeLabel(op.url)}
+                    </p>
                     {opAmount(op) && (
                       <p className="text-muted-foreground text-xs">{opAmount(op)}</p>
                     )}

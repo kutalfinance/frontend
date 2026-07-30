@@ -33,7 +33,6 @@ import { formatMoney } from "@/lib/utils/money";
 
 import { ApproveTransaction, RejectTransaction } from "./approval-actions";
 
-
 export function WithdrawalRequestSheet({
   transaction,
   ...props
@@ -89,7 +88,7 @@ function CustomerDetails({ transaction }: { transaction: Transaction }) {
 
   if (isError || !customer) {
     return (
-      <div className="container py-8 text-center text-sm text-muted-foreground">
+      <div className="text-muted-foreground container py-8 text-center text-sm">
         Failed to load customer details.
       </div>
     );

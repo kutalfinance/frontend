@@ -372,7 +372,9 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
                   <FormItem>
                     <FormLabel>
                       Withdrawal Amount{" "}
-                      <span className="text-muted-foreground font-normal">(leave blank for full balance)</span>
+                      <span className="text-muted-foreground font-normal">
+                        (leave blank for full balance)
+                      </span>
                     </FormLabel>
                     <FormControl>
                       <Input

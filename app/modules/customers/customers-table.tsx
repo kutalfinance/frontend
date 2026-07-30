@@ -31,7 +31,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { Label } from "@/components/ui/label";
-import { Paragraph } from "@/components/ui/text";
 import {
   Select,
   SelectContent,
@@ -39,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Paragraph } from "@/components/ui/text";
 
 import { useBranchesAdmin } from "@/hooks/data/branches";
 import { useDeleteCustomers, useMoveCustomers } from "@/hooks/data/customers";
@@ -127,10 +127,7 @@ function MoveCustomersDialog({
           <Button
             disabled={isPending || !targetBranchId}
             onClick={() =>
-              moveCustomers(
-                { ids, targetBranchId },
-                { onSuccess: () => onOpenChange(false) }
-              )
+              moveCustomers({ ids, targetBranchId }, { onSuccess: () => onOpenChange(false) })
             }
           >
             Move Customers
@@ -177,30 +174,20 @@ export function CustomersTable({
     },
   });
 
-  const selectedIds = table
-    .getSelectedRowModel()
-    .rows.map((r) => r.original.id);
+  const selectedIds = table.getSelectedRowModel().rows.map((r) => r.original.id);
 
   return (
     <div className="space-y-4">
       <AdminOnly>
         {selectedIds.length > 0 && (
-          <div className="flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2 text-sm">
+          <div className="bg-muted/50 flex items-center gap-2 rounded-md border px-3 py-2 text-sm">
             <span className="text-muted-foreground">{selectedIds.length} selected</span>
             <div className="ml-auto flex gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setMoveDialog(true)}
-              >
+              <Button size="sm" variant="outline" onClick={() => setMoveDialog(true)}>
                 <ArrowRightLeft className="mr-1 size-3.5" />
                 Move
               </Button>
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={() => setDeleteDialog(true)}
-              >
+              <Button size="sm" variant="destructive" onClick={() => setDeleteDialog(true)}>
                 <Trash2 className="mr-1 size-3.5" />
                 Delete
               </Button>
@@ -238,8 +225,7 @@ const columns: ColumnDef<Customer>[] = [
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"

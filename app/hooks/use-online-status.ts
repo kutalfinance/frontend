@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { OFFLINE_MODE_EVENT, type OfflineModeChangedDetail, isOfflineMode } from "@/lib/offline-mode";
+import {
+  OFFLINE_MODE_EVENT,
+  type OfflineModeChangedDetail,
+  isOfflineMode,
+} from "@/lib/offline-mode";
 
 export function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(() => !isOfflineMode());

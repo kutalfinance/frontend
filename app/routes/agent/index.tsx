@@ -108,12 +108,14 @@ function MetricCard({
   icon: Icon,
   label,
   value,
+  caption,
   isPending,
   color,
 }: {
   icon: React.ElementType;
   label: string;
   value: string;
+  caption?: string;
   isPending: boolean;
   color?: keyof typeof colorClasses;
 }) {
@@ -127,6 +129,9 @@ function MetricCard({
       <CardContent>
         <Paragraph className="text-muted-foreground text-sm">{label}</Paragraph>
         <Heading>{isPending ? <Skeleton className="h-8 w-20" /> : value}</Heading>
+        {caption && !isPending && (
+          <Paragraph className="text-muted-foreground mt-1 text-xs">{caption}</Paragraph>
+        )}
       </CardContent>
     </Card>
   );
@@ -162,6 +167,7 @@ function MetricCards({
       : (metrics?.totalWithdrawalsApprovedThisWeek ?? 0)
   );
   const withdrawalsPending = formatMoney(metrics?.totalWithdrawalsPending ?? 0);
+  const withdrawalsPendingCount = metrics?.totalWithdrawalsPendingCount ?? 0;
 
   return (
     <div className="space-y-2">
@@ -194,6 +200,7 @@ function MetricCards({
         icon={ArrowDownUp}
         label="Withdrawals pending"
         value={withdrawalsPending}
+        caption={`${withdrawalsPendingCount} request${withdrawalsPendingCount === 1 ? "" : "s"} awaiting approval`}
         isPending={isPending}
         color="amber"
       />

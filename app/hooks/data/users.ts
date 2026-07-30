@@ -154,11 +154,13 @@ export function useAdminMetrics() {
   });
 }
 
+export const agentMetricsQueryOptions = {
+  queryKey: queryKeys.metrics.agent(),
+  queryFn: () => api.get("user/agent/metrics").json<APIResponse<AgentMetrics>>(),
+};
+
 export function useAgentMetrics() {
-  return useQuery({
-    queryKey: queryKeys.metrics.agent(),
-    queryFn: () => api.get("user/agent/metrics").json<APIResponse<AgentMetrics>>(),
-  });
+  return useQuery(agentMetricsQueryOptions);
 }
 
 export const downloadAgentDailyReportOptions = mutationOptions({

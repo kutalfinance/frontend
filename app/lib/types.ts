@@ -81,6 +81,7 @@ export type Transaction = {
   type: TransactionTypes;
   status: TransactionStatus;
   createdAt: string; // date-time
+  approvedAt?: string; // date-time, set when an admin approves the transaction
 };
 
 export type TransactionMetrics = {
@@ -139,6 +140,7 @@ export type AgentMetrics = {
   totalWithdrawalsApprovedToday: number;
   totalWithdrawalsApprovedThisWeek: number;
   totalWithdrawalsPending: number;
+  totalWithdrawalsPendingCount: number;
 };
 
 export type VerifyOtp = {

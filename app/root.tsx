@@ -3,7 +3,7 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import { QueryProvider } from "./components/query-provider";
+import { QueryProvider, queryClient } from "./components/query-provider";
 import { Toaster } from "./components/ui/sonner";
 import { useOnlineStatus } from "./hooks/use-online-status";
 import { ENVIRONMENT } from "./lib/config";
@@ -61,7 +61,12 @@ export default function App() {
   const isOnline = useOnlineStatus();
 
   useEffect(() => {
-    if (isOnline) flushSyncQueue();
+    if (!isOnline) return;
+    // Flush writes queued while offline, then refetch everything so the UI
+    // reflects the synced data (offline snapshot is stale by definition).
+    flushSyncQueue().then(({ flushed }) => {
+      if (flushed > 0) queryClient.invalidateQueries();
+    });
   }, [isOnline]);
 
   return (

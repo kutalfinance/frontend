@@ -9,6 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+
 import { type QueuedOperation, getQueuedOperations } from "@/lib/offline";
 import { formatMoney } from "@/lib/utils/money";
 
@@ -58,7 +59,7 @@ export function OfflineBanner() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex w-full items-center justify-center gap-2 bg-amber-500 px-4 py-2 text-xs font-medium text-white hover:bg-amber-600 transition-colors"
+        className="flex w-full items-center justify-center gap-2 bg-amber-500 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-amber-600"
       >
         <WifiOff className="size-3.5 shrink-0" />
         <span>
@@ -74,7 +75,7 @@ export function OfflineBanner() {
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="top" className="px-0 pb-6 pt-8">
+        <SheetContent side="top" className="px-0 pt-8 pb-6">
           <SheetHeader className="px-6">
             <div className="flex items-center gap-2">
               <WifiOff className="size-4 text-amber-500" />
@@ -95,10 +96,10 @@ export function OfflineBanner() {
                   <li key={op.id} className="flex items-center gap-3 px-6 py-3">
                     <OpIcon url={op.url} />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{op.label || opTypeLabel(op.url)}</p>
-                      {amount && (
-                        <p className="text-muted-foreground text-xs">{amount}</p>
-                      )}
+                      <p className="truncate text-sm font-medium">
+                        {op.label || opTypeLabel(op.url)}
+                      </p>
+                      {amount && <p className="text-muted-foreground text-xs">{amount}</p>}
                     </div>
                     <span className="text-muted-foreground shrink-0 text-xs">
                       {timeAgo(op.queuedAt)}

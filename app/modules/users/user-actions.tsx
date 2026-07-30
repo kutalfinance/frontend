@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { SuperAdminOnly } from "@/components/protected";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -37,7 +38,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Paragraph } from "@/components/ui/text";
-import { SuperAdminOnly } from "@/components/protected";
 
 import {
   downloadAdminDailyReportOptions,
@@ -134,7 +134,9 @@ export function EditUser({
                 <FormItem>
                   <FormLabel>
                     Phone Number{" "}
-                    <span className="text-muted-foreground font-normal">(optional — for SMS OTP)</span>
+                    <span className="text-muted-foreground font-normal">
+                      (optional — for SMS OTP)
+                    </span>
                   </FormLabel>
                   <FormControl>
                     <Input type="tel" placeholder="e.g. 0241234567" {...field} />
@@ -182,7 +184,8 @@ export function EditUser({
                             <div className="flex-1 space-y-1">
                               <FormLabel>Super Administrator</FormLabel>
                               <Paragraph className="text-muted-foreground text-xs">
-                                Grant full administrative privileges and user management capabilities
+                                Grant full administrative privileges and user management
+                                capabilities
                               </Paragraph>
                             </div>
                             <Checkbox

@@ -50,9 +50,9 @@ export async function enqueueOperation(op: Omit<QueuedOperation, "id">) {
     navigator.serviceWorker.ready
       .then((reg) => {
         if ("sync" in reg)
-          return (reg as unknown as { sync: { register(tag: string): Promise<void> } }).sync.register(
-            "kss-queue-sync"
-          );
+          return (
+            reg as unknown as { sync: { register(tag: string): Promise<void> } }
+          ).sync.register("kss-queue-sync");
       })
       .catch(() => {});
   }

@@ -1,11 +1,13 @@
 /// <reference lib="webworker" />
+import { CacheableResponsePlugin } from "workbox-cacheable-response";
+import { ExpirationPlugin } from "workbox-expiration";
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { NavigationRoute, registerRoute } from "workbox-routing";
 import { NetworkFirst } from "workbox-strategies";
-import { CacheableResponsePlugin } from "workbox-cacheable-response";
-import { ExpirationPlugin } from "workbox-expiration";
 
 declare let self: ServiceWorkerGlobalScope;
+
+const API_BASE = `${import.meta.env.VITE_API_URL ?? "http://localhost:8080"}/api/v1`;
 
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
@@ -21,9 +23,11 @@ registerRoute(
   )
 );
 
-// Cache API responses as a secondary offline fallback
+// Cache API GET responses as a secondary offline fallback.
+// NOTE: the API lives on a different origin, and Workbox only matches regex
+// routes cross-origin from the start of the URL — so match on the full URL.
 registerRoute(
-  /\/api\/v1\//,
+  ({ url, request }) => request.method === "GET" && url.href.startsWith(API_BASE),
   new NetworkFirst({
     cacheName: "kss-api",
     networkTimeoutSeconds: 5,
@@ -43,7 +47,6 @@ const DB_NAME = "kss-offline";
 const DB_VERSION = 2;
 const QUEUE_STORE = "sync-queue";
 const MISC_STORE = "offline-misc";
-const API_BASE = `${import.meta.env.VITE_API_URL ?? "http://localhost:8080"}/api/v1`;
 
 interface SyncEvent extends Event {
   readonly tag: string;

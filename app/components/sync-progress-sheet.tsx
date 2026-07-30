@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { BanknoteArrowDown, BanknoteArrowUp, CheckCircle, Loader, UserRoundPlus, XCircle } from "lucide-react";
+import {
+  BanknoteArrowDown,
+  BanknoteArrowUp,
+  CheckCircle,
+  Loader,
+  UserRoundPlus,
+  XCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -11,10 +18,11 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+
 import { queryKeys } from "@/hooks/data/utils";
 import { type QueuedOperation } from "@/lib/offline";
-import { formatMoney } from "@/lib/utils/money";
 import type { SyncCompleteDetail, SyncItemResultDetail, SyncStartedDetail } from "@/lib/sync-queue";
+import { formatMoney } from "@/lib/utils/money";
 
 type SyncItemStatus = "pending" | "synced" | "failed";
 type SyncItem = QueuedOperation & { status: SyncItemStatus };
@@ -77,9 +85,7 @@ export function SyncProgressSheet() {
       setTimeout(() => {
         setOpen(false);
         if (flushed > 0)
-          toast.success(
-            `${flushed} ${flushed === 1 ? "action" : "actions"} synced successfully`
-          );
+          toast.success(`${flushed} ${flushed === 1 ? "action" : "actions"} synced successfully`);
         if (failed > 0)
           toast.error(
             `${failed} ${failed === 1 ? "action" : "actions"} failed to sync — will retry on reconnect`
@@ -103,10 +109,12 @@ export function SyncProgressSheet() {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetContent side="top" className="px-0 pb-6 pt-8">
+      <SheetContent side="top" className="px-0 pt-8 pb-6">
         <SheetHeader className="px-6">
           <SheetTitle>
-            {allDone ? "Sync complete" : `Syncing ${total} pending ${total === 1 ? "action" : "actions"}...`}
+            {allDone
+              ? "Sync complete"
+              : `Syncing ${total} pending ${total === 1 ? "action" : "actions"}...`}
           </SheetTitle>
           <SheetDescription>
             {allDone

@@ -23,11 +23,7 @@ import {
 } from "@/components/ui/select";
 
 import { useBranchesAdmin } from "@/hooks/data/branches";
-import {
-  useDeactivateBranch,
-  useDeleteBranch,
-  useRelieveAgent,
-} from "@/hooks/data/branches";
+import { useDeactivateBranch, useDeleteBranch, useRelieveAgent } from "@/hooks/data/branches";
 import { useCustomers } from "@/hooks/data/customers";
 import { useDeleteCustomers, useMoveCustomers } from "@/hooks/data/customers";
 import type { Branch } from "@/lib/types";
@@ -90,8 +86,7 @@ export function BranchActionDialog({ branch, mode, open, onOpenChange }: BranchA
   const title = isDelete ? `Delete branch "${branch.name}"?` : `Disable branch "${branch.name}"?`;
   const confirmLabel = isDelete ? "Delete Branch" : "Disable Branch";
 
-  const canConfirm =
-    customerAction !== "move" || (customerAction === "move" && !!targetBranchId);
+  const canConfirm = customerAction !== "move" || (customerAction === "move" && !!targetBranchId);
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -107,8 +102,8 @@ export function BranchActionDialog({ branch, mode, open, onOpenChange }: BranchA
               </p>
 
               {branch.agent && (
-                <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 flex gap-2">
-                  <AlertCircle className="size-4 shrink-0 mt-0.5" />
+                <div className="flex gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+                  <AlertCircle className="mt-0.5 size-4 shrink-0" />
                   <span>
                     Agent <strong>{branch.agent.name}</strong> will be{" "}
                     {isDelete ? "relieved from this branch" : "unlinked if you choose to disable"}.
@@ -117,7 +112,7 @@ export function BranchActionDialog({ branch, mode, open, onOpenChange }: BranchA
               )}
 
               <div className="space-y-2">
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-foreground text-sm font-medium">
                   {customers.length > 0
                     ? `What should happen to the ${customers.length} customer(s)?`
                     : "This branch has no customers."}
@@ -168,11 +163,7 @@ export function BranchActionDialog({ branch, mode, open, onOpenChange }: BranchA
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-          <Button
-            variant="destructive"
-            onClick={handleConfirm}
-            disabled={isPending || !canConfirm}
-          >
+          <Button variant="destructive" onClick={handleConfirm} disabled={isPending || !canConfirm}>
             {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
             {confirmLabel}
           </Button>

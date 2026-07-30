@@ -76,7 +76,12 @@ export function AgentRecordDeposit({
     const idempotencyKey = idempotencyKeyRef.current;
     idempotencyKeyRef.current = crypto.randomUUID();
     createTransaction(
-      { customerId: customer.id, amount: pendingData.amount, idempotencyKey, customerName: customer.name },
+      {
+        customerId: customer.id,
+        amount: pendingData.amount,
+        idempotencyKey,
+        customerName: customer.name,
+      },
       { onSuccess: () => form.reset() }
     );
   };
@@ -176,7 +181,12 @@ export function AgentRecordWithdrawal({
     const idempotencyKey = idempotencyKeyRef.current;
     idempotencyKeyRef.current = crypto.randomUUID();
     createTransaction(
-      { customerId: customer.id, amount: pendingData.amount, idempotencyKey, customerName: customer.name },
+      {
+        customerId: customer.id,
+        amount: pendingData.amount,
+        idempotencyKey,
+        customerName: customer.name,
+      },
       { onSuccess: () => form.reset() }
     );
   };
@@ -224,7 +234,9 @@ export function AgentRecordWithdrawal({
                   <FormItem>
                     <FormLabel>
                       Withdrawal Amount{" "}
-                      <span className="text-muted-foreground font-normal">(leave blank for full balance)</span>
+                      <span className="text-muted-foreground font-normal">
+                        (leave blank for full balance)
+                      </span>
                     </FormLabel>
                     <FormControl>
                       <Input

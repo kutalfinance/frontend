@@ -93,7 +93,13 @@ function BranchStats() {
         </CardHeader>
         <CardContent>
           <Paragraph className="text-muted-foreground text-sm">Branches</Paragraph>
-          <Heading>{isPending ? <Skeleton className="h-8 w-20" /> : formatMoney(total ?? 0, { style: "decimal" })}</Heading>
+          <Heading>
+            {isPending ? (
+              <Skeleton className="h-8 w-20" />
+            ) : (
+              formatMoney(total ?? 0, { style: "decimal" })
+            )}
+          </Heading>
         </CardContent>
       </Card>
     </div>

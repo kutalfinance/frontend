@@ -17,7 +17,11 @@ import {
 import { Input, PasswordInput } from "@/components/ui/input";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAdminAuthIsActive, useAdminAuthLogin, useSendPasswordResetLink } from "@/hooks/auth/admin";
+import {
+  useAdminAuthIsActive,
+  useAdminAuthLogin,
+  useSendPasswordResetLink,
+} from "@/hooks/auth/admin";
 import { siteConfig } from "@/lib/config";
 
 export function meta() {

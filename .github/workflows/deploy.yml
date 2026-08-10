@@ -2,7 +2,9 @@ name: Deploy
 
 on:
   push:
-    branches: [staging, main]
+    # staging removed until the new staging subscription exists — re-add it
+    # here (and point the GH "dev" environment secrets at the new sub) then
+    branches: [main]
   workflow_dispatch:
     inputs:
       apply_infra:

@@ -2,7 +2,15 @@ name: Deploy
 
 on:
   push:
-    branches: [staging, main]
+    # staging removed until the new staging subscription exists — re-add it
+    # here (and point the GH "dev" environment secrets at the new sub)
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      apply_infra:
+        description: "Apply Terraform changes (required to change prod infra)"
+        type: boolean
+        default: false
 
 env:
   TF_VERSION: "1.10.5"
@@ -30,10 +38,23 @@ jobs:
           WORKSPACE=${{ github.ref_name == 'main' && 'prod' || 'dev' }}
           terraform init
           terraform workspace select $WORKSPACE 2>/dev/null || terraform workspace new $WORKSPACE
+          set +e
           terraform plan \
+            -detailed-exitcode \
             -var-file=$TF_VARS_FILE \
             -out=tfplan
-          terraform apply -auto-approve tfplan
+          PLAN_EXIT=$?
+          set -e
+          [ $PLAN_EXIT -eq 1 ] && exit 1
+          # Prod infra never changes on a plain push — review the plan above, then
+          # Actions → Deploy → Run workflow (main) with apply_infra checked.
+          if [ $PLAN_EXIT -eq 2 ] && [ "$WORKSPACE" = "prod" ] && [ "${{ inputs.apply_infra }}" != "true" ]; then
+            echo "::error::Terraform changes detected for prod; apply is gated. Re-run via workflow_dispatch with apply_infra=true."
+            exit 1
+          fi
+          if [ $PLAN_EXIT -eq 2 ]; then
+            terraform apply -auto-approve tfplan
+          fi
 
   deploy:
     name: Deploy to SWA

@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     # staging removed until the new staging subscription exists — re-add it
-    # here (and point the GH "dev" environment secrets at the new sub) then
+    # here (and point the GH "dev" environment secrets at the new sub)
     branches: [main]
   workflow_dispatch:
     inputs:

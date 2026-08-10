@@ -32,6 +32,8 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
+          # The wrapper swallows terraform's exit code, breaking -detailed-exitcode
+          terraform_wrapper: false
       - name: Terraform Init, Plan, Apply
         working-directory: terraform
         run: |

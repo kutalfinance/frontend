@@ -23,7 +23,7 @@ export function TransactionMetrics({ customerId }: { customerId?: string }) {
   const [appliedFrom, setAppliedFrom] = useState("");
   const [appliedTo, setAppliedTo] = useState("");
 
-  const { data, isPending } = useQuery(
+  const { data, isPending, isPlaceholderData, isFetching } = useQuery(
     transactionsMetricsOptions({
       searchParams: {
         customerId,
@@ -33,6 +33,12 @@ export function TransactionMetrics({ customerId }: { customerId?: string }) {
     })
   );
   const metrics = data?.data;
+
+  // Placeholder data (a client-side estimate from cache) can be wrong, so show
+  // the loading state while the authoritative fetch is in flight rather than
+  // flashing stale numbers. If the fetch fails (e.g. offline), the estimate is
+  // still shown as a fallback.
+  const showLoading = isPending || (isPlaceholderData && isFetching);
 
   const hasDateFilter = appliedFrom || appliedTo;
 
@@ -147,7 +153,7 @@ export function TransactionMetrics({ customerId }: { customerId?: string }) {
             </CardHeader>
             <CardContent>
               <Paragraph className="text-muted-foreground text-sm">{metric.label}</Paragraph>
-              <Heading>{isPending ? <Skeleton className="h-8 w-20" /> : metric.value}</Heading>
+              <Heading>{showLoading ? <Skeleton className="h-8 w-20" /> : metric.value}</Heading>
             </CardContent>
           </Card>
         ))}

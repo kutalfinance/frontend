@@ -69,6 +69,18 @@ export function TransactionsTable({
 
 const columns: ColumnDef<Transaction>[] = [
   {
+    accessorKey: "createdAt",
+    header: "Date & Time",
+    cell: ({ row }) => {
+      const date = new Date(row.original.createdAt);
+      return (
+        <span className="text-muted-foreground whitespace-nowrap">
+          {format(date, "MMM dd, yyyy 'at' h:mm a")}
+        </span>
+      );
+    },
+  },
+  {
     accessorKey: "amount",
     header: "Amount",
     cell: ({ row }) => (
@@ -134,17 +146,5 @@ const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => (
       <span className="text-muted-foreground">{row.original.recordedBy.name}</span>
     ),
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Date & Time",
-    cell: ({ row }) => {
-      const date = new Date(row.original.createdAt);
-      return (
-        <span className="text-muted-foreground whitespace-nowrap">
-          {format(date, "MMM dd, yyyy 'at' h:mm a")}
-        </span>
-      );
-    },
   },
 ];

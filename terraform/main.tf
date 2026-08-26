@@ -6,12 +6,8 @@ terraform {
     }
   }
 
-  backend "azurerm" {
-    resource_group_name  = "kss-tfstate-rg"
-    storage_account_name = "ksstfstate"
-    container_name       = "tfstate"
-    key                  = "frontend.tfstate"
-  }
+  # Partial config — supply per-env values via -backend-config=<env>.backend.hcl
+  backend "azurerm" {}
 }
 
 provider "azurerm" {

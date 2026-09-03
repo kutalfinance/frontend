@@ -2,9 +2,9 @@ name: Deploy
 
 on:
   push:
-    # staging removed until the new staging subscription exists — re-add it
-    # here (and point the GH "dev" environment secrets at the new sub)
-    branches: [main]
+    # main → prod (kss-prod-*), staging → staging (kss-staging-*, Sponsorship sub).
+    # The GitHub "prod" and "staging" environments hold the per-sub secrets.
+    branches: [main, staging]
   workflow_dispatch:
     inputs:
       apply_infra:
@@ -19,14 +19,14 @@ jobs:
   terraform:
     name: Terraform Apply
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+    environment: ${{ github.ref_name == 'main' && 'prod' || 'staging' }}
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_USE_CLI: false
-      TF_VARS_FILE: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}.tfvars
+      TF_VARS_FILE: ${{ github.ref_name == 'main' && 'prod' || 'staging' }}.tfvars
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
@@ -37,7 +37,7 @@ jobs:
       - name: Terraform Init, Plan, Apply
         working-directory: terraform
         run: |
-          WORKSPACE=${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+          WORKSPACE=${{ github.ref_name == 'main' && 'prod' || 'staging' }}
           terraform init
           terraform workspace select $WORKSPACE 2>/dev/null || terraform workspace new $WORKSPACE
           set +e
@@ -62,7 +62,7 @@ jobs:
     name: Deploy to SWA
     runs-on: ubuntu-latest
     needs: terraform
-    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+    environment: ${{ github.ref_name == 'main' && 'prod' || 'staging' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -75,7 +75,7 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          VITE_API_URL: ${{ github.ref_name == 'main' && 'https://api.kss.kutalfinance.com' || 'https://api-dev.kss.kutalfinance.com' }}
+          VITE_API_URL: ${{ github.ref_name == 'main' && 'https://api.kss.kutalfinance.com' || 'https://api-staging.kss.kutalfinance.com' }}
           VITE_ENVIRONMENT: ${{ github.ref_name == 'main' && 'production' || 'development' }}
       - uses: azure/login@v2
         with:
@@ -88,8 +88,8 @@ jobs:
             }
       - name: Deploy to SWA
         run: |
-          SWA_NAME=${{ github.ref_name == 'main' && 'kss-prod-swa' || 'kss-dev-swa' }}
-          RG=${{ github.ref_name == 'main' && 'kss-prod-frontend-rg' || 'kss-dev-frontend-rg' }}
+          SWA_NAME=${{ github.ref_name == 'main' && 'kss-prod-swa' || 'kss-staging-swa' }}
+          RG=${{ github.ref_name == 'main' && 'kss-prod-frontend-rg' || 'kss-staging-frontend-rg' }}
           TOKEN=$(az staticwebapp secrets list --name $SWA_NAME --resource-group $RG --query "properties.apiKey" -o tsv)
           npx --yes @azure/static-web-apps-cli deploy build/client \
             --deployment-token $TOKEN \

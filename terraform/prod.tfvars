@@ -1,3 +1,3 @@
-subscription_id   = "699755a6-cfae-4f14-a9d4-1b38cb0fc429"
+subscription_id   = "c3692486-34f6-45d7-ae96-3b452dc30495"
 swa_sku_tier      = "Standard"
 frontend_hostname = "kss.kutalfinance.com"

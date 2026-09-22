@@ -1,6 +1,6 @@
 import { Link, type LinkProps, href, useLocation } from "react-router";
 
-import { Building2, CheckCircle, Download, History, Home, Menu, Users } from "lucide-react";
+import { Building2, CheckCircle, Download, FileBarChart2, History, Home, Menu, Users } from "lucide-react";
 import { Contact, type LucideIcon } from "lucide-react";
 
 import { AppLogo } from "@/components/app-logo";
@@ -232,6 +232,12 @@ const adminNavLinks: {
     href: href("/admin/audit"),
     pathRegex: /\/admin\/audit/,
     icon: History,
+  },
+  {
+    title: "Reports",
+    href: href("/admin/reports"),
+    pathRegex: /\/admin\/reports/,
+    icon: FileBarChart2,
   },
 ];
 

@@ -155,6 +155,7 @@ export function AgentRecordDeposit({
 
 const withdrawalSchema = z.object({
   amount: z.coerce.number().positive().optional() as z.ZodOptional<z.ZodNumber>,
+  serviceCharge: z.coerce.number().min(0).optional() as z.ZodOptional<z.ZodNumber>,
 });
 type WithdrawalForm = z.infer<typeof withdrawalSchema>;
 
@@ -169,7 +170,7 @@ export function AgentRecordWithdrawal({
 
   const form = useForm<WithdrawalForm>({
     resolver: zodResolver(withdrawalSchema),
-    defaultValues: { amount: undefined },
+    defaultValues: { amount: undefined, serviceCharge: undefined },
   });
 
   const handleSubmit = (data: WithdrawalForm) => setPendingData(data);
@@ -184,6 +185,7 @@ export function AgentRecordWithdrawal({
       {
         customerId: customer.id,
         amount: pendingData.amount,
+        serviceCharge: pendingData.serviceCharge,
         idempotencyKey,
         customerName: customer.name,
       },
@@ -202,7 +204,10 @@ export function AgentRecordWithdrawal({
               {pendingData?.amount !== undefined
                 ? ` of ${formatMoney(pendingData.amount)}`
                 : " of the entire balance"}{" "}
-              for <strong>{customer.name}</strong>. A service charge will be deducted.
+              for <strong>{customer.name}</strong>.
+              {pendingData?.serviceCharge
+                ? ` A service charge of ${formatMoney(pendingData.serviceCharge)} will be applied.`
+                : " No service charge will be applied."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -244,6 +249,28 @@ export function AgentRecordWithdrawal({
                         placeholder="Enter withdrawal amount"
                         step="1"
                         min="1"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="serviceCharge"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Service Fee{" "}
+                      <span className="text-muted-foreground font-normal">(optional)</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter service fee"
+                        step="1"
+                        min="0"
                         {...field}
                       />
                     </FormControl>

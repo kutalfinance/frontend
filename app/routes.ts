@@ -54,6 +54,7 @@ export default [
     ]),
     route("pending-approvals", "./routes/admin/pending-approvals.tsx"),
     route("audit", "./routes/admin/audit.tsx"),
+    route("reports", "./routes/admin/reports.tsx"),
   ]),
 
   route("/agent", "./routes/agent/layout.tsx", [
@@ -61,5 +62,6 @@ export default [
     route("customers", "./routes/agent/customers.tsx"),
     route("customers/create", "./routes/agent/customer-create.tsx"),
     route("customers/:customerId", "./routes/agent/customer-details.tsx"),
+    route("pending-withdrawals", "./routes/agent/pending-withdrawals.tsx"),
   ]),
 ] satisfies RouteConfig;

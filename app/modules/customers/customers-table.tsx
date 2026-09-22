@@ -156,6 +156,7 @@ export function CustomersTable({
   const table = useReactTable({
     data: customers,
     columns,
+    getRowId: (row) => row.id,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

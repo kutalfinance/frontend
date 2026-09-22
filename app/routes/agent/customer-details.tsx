@@ -35,6 +35,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Heading, Paragraph } from "@/components/ui/text";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 import { customerByIdQueryOptions } from "@/hooks/data/customers";
 import {
@@ -97,16 +98,9 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
   );
   const balance = metricsData?.data?.balance;
 
-  const { data: pendingData } = useQuery(
-    transactionsQueryOptions({
-      searchParams: { customerId: customer.id, type: "WITHDRAWAL", status: "PENDING" },
-    })
-  );
-  const hasPendingWithdrawal = (pendingData?.data?.length ?? 0) > 0;
-
   let withdrawalDisabledReason: string | null = null;
   switch (true) {
-    case hasPendingWithdrawal:
+    case customer.hasPendingWithdrawal:
       withdrawalDisabledReason = "A withdrawal request is already pending for this customer";
       break;
     case balance !== undefined && balance <= 0:
@@ -221,17 +215,27 @@ export default function CustomerTransactions({ loaderData, params }: Route.Compo
               <BanknoteArrowUp /> Record deposit
             </Button>
           </AgentRecordDeposit>
-          <span onClick={() => withdrawalDisabledReason && toast.info(withdrawalDisabledReason)}>
-            <AgentRecordWithdrawal asChild customer={customer}>
-              <Button
-                variant="destructive-outline"
-                disabled={!!withdrawalDisabledReason}
-                className={withdrawalDisabledReason ? "pointer-events-none" : undefined}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                onClick={() => withdrawalDisabledReason && toast.info(withdrawalDisabledReason)}
+                className={withdrawalDisabledReason ? "cursor-not-allowed" : undefined}
               >
-                <BanknoteArrowDown /> Record withdrawal
-              </Button>
-            </AgentRecordWithdrawal>
-          </span>
+                <AgentRecordWithdrawal asChild customer={customer}>
+                  <Button
+                    variant="destructive-outline"
+                    disabled={!!withdrawalDisabledReason}
+                    className={withdrawalDisabledReason ? "pointer-events-none" : undefined}
+                  >
+                    <BanknoteArrowDown /> Record withdrawal
+                  </Button>
+                </AgentRecordWithdrawal>
+              </span>
+            </TooltipTrigger>
+            {withdrawalDisabledReason && (
+              <TooltipContent>{withdrawalDisabledReason}</TooltipContent>
+            )}
+          </Tooltip>
         </ModuleActions>
       </ModuleHeading>
 

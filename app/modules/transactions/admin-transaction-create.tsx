@@ -231,6 +231,7 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
 const withdrawalSchema = z.object({
   customerId: z.string().min(1),
   amount: z.coerce.number().positive().optional() as z.ZodOptional<z.ZodNumber>,
+  serviceCharge: z.coerce.number().min(0).optional() as z.ZodOptional<z.ZodNumber>,
 });
 type WithdrawalForm = z.infer<typeof withdrawalSchema>;
 
@@ -247,7 +248,7 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
 
   const form = useForm<WithdrawalForm>({
     resolver: zodResolver(withdrawalSchema),
-    defaultValues: { customerId: customerIdParam ?? "", amount: undefined },
+    defaultValues: { customerId: customerIdParam ?? "", amount: undefined, serviceCharge: undefined },
   });
 
   const handleSubmit = (data: WithdrawalForm) => setPendingData(data);
@@ -259,8 +260,16 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
     const idempotencyKey = idempotencyKeyRef.current;
     idempotencyKeyRef.current = crypto.randomUUID();
     createTransaction(
-      { customerId: pendingData.customerId, amount: pendingData.amount, idempotencyKey },
-      { onSuccess: () => form.reset({ customerId: customerIdParam ?? "", amount: undefined }) }
+      {
+        customerId: pendingData.customerId,
+        amount: pendingData.amount,
+        serviceCharge: pendingData.serviceCharge,
+        idempotencyKey,
+      },
+      {
+        onSuccess: () =>
+          form.reset({ customerId: customerIdParam ?? "", amount: undefined, serviceCharge: undefined }),
+      }
     );
   };
 
@@ -279,7 +288,10 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
               {pendingData?.amount !== undefined
                 ? ` of ${formatMoney(pendingData.amount)}`
                 : " of the entire balance"}{" "}
-              for <strong>{pendingCustomerName}</strong>. A service charge will be deducted.
+              for <strong>{pendingCustomerName}</strong>.
+              {pendingData?.serviceCharge
+                ? ` A service charge of ${formatMoney(pendingData.serviceCharge)} will be applied.`
+                : " No service charge will be applied."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -382,6 +394,29 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
                         placeholder="Enter withdrawal amount"
                         step="1"
                         min="1"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="serviceCharge"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Service Fee{" "}
+                      <span className="text-muted-foreground font-normal">(optional)</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter service fee"
+                        step="1"
+                        min="0"
                         {...field}
                       />
                     </FormControl>

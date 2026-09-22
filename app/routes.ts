@@ -61,5 +61,6 @@ export default [
     route("customers", "./routes/agent/customers.tsx"),
     route("customers/create", "./routes/agent/customer-create.tsx"),
     route("customers/:customerId", "./routes/agent/customer-details.tsx"),
+    route("pending-withdrawals", "./routes/agent/pending-withdrawals.tsx"),
   ]),
 ] satisfies RouteConfig;

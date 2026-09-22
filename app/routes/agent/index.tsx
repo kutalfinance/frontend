@@ -224,7 +224,7 @@ function MetricCards({
         caption={`${withdrawalsPendingCount} request${withdrawalsPendingCount === 1 ? "" : "s"} awaiting approval`}
         isPending={isPending}
         color="amber"
-        to={`${href("/agent/customers")}?hasPendingWithdrawal=true`}
+        to={href("/agent/pending-withdrawals")}
       />
       <MetricCard
         icon={ArrowDownUp}

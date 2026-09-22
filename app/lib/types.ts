@@ -62,6 +62,8 @@ export enum TransactionTypes {
   DEPOSIT = "DEPOSIT",
   WITHDRAWAL = "WITHDRAWAL",
   SERVICE_CHARGE = "SERVICE_CHARGE",
+  OPENING_BALANCE = "OPENING_BALANCE",
+  REVERSAL = "REVERSAL",
 }
 
 export enum TransactionStatus {
@@ -82,6 +84,8 @@ export type Transaction = {
   status: TransactionStatus;
   createdAt: string; // date-time
   approvedAt?: string; // date-time, set when an admin approves the transaction
+  originalTransactionId?: string; // set on REVERSAL transactions
+  isReversed: boolean; // true when this transaction has been reversed
 };
 
 export type TransactionMetrics = {

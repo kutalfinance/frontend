@@ -4,6 +4,7 @@ import { Link, href } from "react-router";
 import {
   type ColumnDef,
   type ColumnFiltersState,
+  type RowData,
   type SortingState,
   type VisibilityState,
   getCoreRowModel,
@@ -13,14 +14,24 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { BanknoteArrowDown, BanknoteArrowUp } from "lucide-react";
+import { BanknoteArrowDown, BanknoteArrowUp, Undo2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
 import { type Transaction, TransactionStatus, TransactionTypes } from "@/lib/types";
 import { formatMoney } from "@/lib/utils/money";
+
+import { ReverseTransaction } from "./transaction-reverse";
+
+declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface TableMeta<TData extends RowData> {
+    isAgentView?: boolean;
+  }
+}
 
 export function TransactionsTable({
   transactions,
@@ -103,19 +114,30 @@ const columns: ColumnDef<Transaction>[] = [
     accessorKey: "type",
     header: "Type",
     cell: ({ row }) => {
-      const type = row.original.type;
+      const { type, isReversed } = row.original;
       if (type === TransactionTypes.DEPOSIT) {
         return (
-          <Badge>
-            <BanknoteArrowUp />
-            {type}
-          </Badge>
+          <div className="flex flex-col gap-1">
+            <Badge variant={isReversed ? "outline" : "default"} className={isReversed ? "line-through opacity-60" : undefined}>
+              <BanknoteArrowUp />
+              {type}
+            </Badge>
+          </div>
         );
       } else if (type === TransactionTypes.WITHDRAWAL) {
         return (
-          <Badge variant="destructive">
-            <BanknoteArrowDown />
-            {type}
+          <div className="flex flex-col gap-1">
+            <Badge variant={isReversed ? "outline" : "destructive"} className={isReversed ? "line-through opacity-60" : undefined}>
+              <BanknoteArrowDown />
+              {type}
+            </Badge>
+          </div>
+        );
+      } else if (type === TransactionTypes.REVERSAL) {
+        return (
+          <Badge variant="secondary">
+            <Undo2 />
+            REVERSAL
           </Badge>
         );
       } else {
@@ -146,5 +168,26 @@ const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => (
       <span className="text-muted-foreground">{row.original.recordedBy.name}</span>
     ),
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row, table }) => {
+      if (table.options.meta?.isAgentView) return null;
+      const tx = row.original;
+      const canReverse =
+        tx.status === TransactionStatus.COMPLETED &&
+        tx.type !== TransactionTypes.REVERSAL &&
+        !tx.isReversed;
+      if (!canReverse) return null;
+      return (
+        <ReverseTransaction transaction={tx}>
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive">
+            <Undo2 className="size-4" />
+            Reverse
+          </Button>
+        </ReverseTransaction>
+      );
+    },
   },
 ];

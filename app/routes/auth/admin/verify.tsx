@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link, href, redirect } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useAdminAuthVerify } from "@/hooks/auth/admin";
+import { useAdminAuthVerify, useAdminResendOtp } from "@/hooks/auth/admin";
 import { siteConfig } from "@/lib/config";
 
 import type { Route } from "./+types/verify";
@@ -32,11 +33,22 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   return { email };
 }
 
+const OTP_TTL = 5 * 60; // seconds, matches backend expiry
+
 const otpSchema = z.object({ otp: z.string() });
 
 export default function AdminVerify({ loaderData }: Route.ComponentProps) {
   const { email } = loaderData;
   const { mutate, isPending } = useAdminAuthVerify();
+  const { mutate: resend, isPending: isResending } = useAdminResendOtp();
+
+  const [secondsLeft, setSecondsLeft] = useState(OTP_TTL);
+
+  useEffect(() => {
+    if (secondsLeft <= 0) return;
+    const id = setInterval(() => setSecondsLeft((s) => s - 1), 1000);
+    return () => clearInterval(id);
+  }, [secondsLeft]);
 
   const form = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
@@ -46,6 +58,18 @@ export default function AdminVerify({ loaderData }: Route.ComponentProps) {
   function onVerify(values: z.infer<typeof otpSchema>) {
     mutate({ ...values, email });
   }
+
+  function onResend() {
+    resend(email, {
+      onSuccess: () => {
+        setSecondsLeft(OTP_TTL);
+        form.reset();
+      },
+    });
+  }
+
+  const mm = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
+  const ss = String(secondsLeft % 60).padStart(2, "0");
 
   return (
     <>
@@ -85,8 +109,24 @@ export default function AdminVerify({ loaderData }: Route.ComponentProps) {
             Verify & Sign in
           </Button>
 
-          <Link to="/auth/admin/login" className="link">
-            Back to email
+          {secondsLeft > 0 ? (
+            <p className="text-muted-foreground text-center text-sm">
+              Resend OTP in {mm}:{ss}
+            </p>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={onResend}
+              isLoading={isResending}
+            >
+              Resend OTP
+            </Button>
+          )}
+
+          <Link to="/auth/admin/login" className="link text-center text-sm">
+            Back to login
           </Link>
         </form>
       </Form>

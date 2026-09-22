@@ -23,6 +23,15 @@ export function useAgentAuthLogin() {
   });
 }
 
+export function useAgentResendOtp() {
+  return useMutation({
+    mutationFn: (email: string) =>
+      api.post("user/agent/login", { json: { email } }).json<APIResponse<unknown>>(),
+    onSuccess: () => successToast("A new OTP has been sent to your email"),
+    onError: errorToast,
+  });
+}
+
 export function useAgentAuthVerify() {
   return useMutation({
     mutationFn: (data: VerifyOtp) =>

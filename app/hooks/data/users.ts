@@ -220,3 +220,45 @@ export const downloadAdminDailyReportOptions = mutationOptions({
   },
   onError: errorToast,
 });
+
+async function downloadBlob(blob: Blob, filename: string) {
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  try {
+    document.body.appendChild(a);
+    a.click();
+  } finally {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }
+}
+
+export const downloadAgentReportCsvOptions = mutationOptions({
+  mutationFn: async (data: { agentId: string; startDate?: string; endDate?: string }) => {
+    const today = new Date().toISOString().split("T")[0];
+    const searchParams: Record<string, string> = { agentId: data.agentId };
+    if (data.startDate) searchParams.startDate = data.startDate;
+    if (data.endDate) searchParams.endDate = data.endDate;
+    const blob = await api.get("data/agent-daily-report/csv", { searchParams }).blob();
+    await downloadBlob(blob, `agent-report-${data.startDate || today}.csv`);
+    return { success: true };
+  },
+  onSuccess: () => successToast("CSV downloaded successfully"),
+  onError: errorToast,
+});
+
+export const downloadAdminReportCsvOptions = mutationOptions({
+  mutationFn: async (data: { startDate?: string; endDate?: string }) => {
+    const today = new Date().toISOString().split("T")[0];
+    const searchParams: Record<string, string> = {};
+    if (data.startDate) searchParams.startDate = data.startDate;
+    if (data.endDate) searchParams.endDate = data.endDate;
+    const blob = await api.get("data/admin-daily-report/csv", { searchParams }).blob();
+    await downloadBlob(blob, `admin-report-${data.startDate || today}.csv`);
+    return { success: true };
+  },
+  onSuccess: () => successToast("CSV downloaded successfully"),
+  onError: errorToast,
+});

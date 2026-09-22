@@ -41,7 +41,9 @@ import { Paragraph } from "@/components/ui/text";
 
 import {
   downloadAdminDailyReportOptions,
+  downloadAdminReportCsvOptions,
   downloadAgentDailyReportOptions,
+  downloadAgentReportCsvOptions,
   useDeactivateUser,
   useDeleteUser,
   useRestoreUser,
@@ -383,10 +385,9 @@ export function DownloadAgentSelfReport({
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(today);
   const { mutate, isPending } = useMutation(downloadAgentDailyReportOptions);
+  const { mutate: downloadCsv, isPending: isCsvPending } = useMutation(downloadAgentReportCsvOptions);
 
-  function onDownload() {
-    mutate({ agentId: user.id, startDate, endDate }, { onSuccess: () => setOpen(false) });
-  }
+  const payload = { agentId: user.id, startDate, endDate };
 
   return (
     <Dialog open={open} onOpenChange={setOpen} {...props}>
@@ -410,8 +411,11 @@ export function DownloadAgentSelfReport({
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={onDownload} disabled={isPending}>
-            {isPending ? "Downloading..." : "Download Report"}
+          <Button variant="secondary" onClick={() => downloadCsv(payload, { onSuccess: () => setOpen(false) })} isLoading={isCsvPending}>
+            CSV
+          </Button>
+          <Button onClick={() => mutate(payload, { onSuccess: () => setOpen(false) })} isLoading={isPending}>
+            PDF
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -425,10 +429,9 @@ export function DownloadAdminReport({ children, ...props }: React.ComponentProps
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(today);
   const { mutate, isPending } = useMutation(downloadAdminDailyReportOptions);
+  const { mutate: downloadCsv, isPending: isCsvPending } = useMutation(downloadAdminReportCsvOptions);
 
-  function onDownload() {
-    mutate({ startDate, endDate }, { onSuccess: () => setOpen(false) });
-  }
+  const payload = { startDate, endDate };
 
   return (
     <Dialog open={open} onOpenChange={setOpen} {...props}>
@@ -455,8 +458,11 @@ export function DownloadAdminReport({ children, ...props }: React.ComponentProps
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={onDownload} disabled={isPending}>
-            {isPending ? "Downloading..." : "Download Report"}
+          <Button variant="secondary" onClick={() => downloadCsv(payload, { onSuccess: () => setOpen(false) })} isLoading={isCsvPending}>
+            CSV
+          </Button>
+          <Button onClick={() => mutate(payload, { onSuccess: () => setOpen(false) })} isLoading={isPending}>
+            PDF
           </Button>
         </DialogFooter>
       </DialogContent>

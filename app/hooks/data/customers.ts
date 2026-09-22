@@ -214,3 +214,29 @@ export const downloadStatementOptions = mutationOptions({
   },
   onError: errorToast,
 });
+
+export const downloadStatementCsvOptions = mutationOptions({
+  mutationFn: async (data: { customerId: string; startDate?: string; endDate?: string }) => {
+    const searchParams: Record<string, string> = { customerId: data.customerId };
+    if (data.startDate) searchParams.startDate = data.startDate;
+    if (data.endDate) searchParams.endDate = data.endDate;
+
+    const blob = await api.get("data/account-statement/csv", { searchParams }).blob();
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `statement-${data.customerId}-${Date.now()}.csv`;
+    try {
+      document.body.appendChild(a);
+      a.click();
+    } finally {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }
+
+    return { success: true };
+  },
+  onSuccess: () => successToast("CSV downloaded successfully"),
+  onError: errorToast,
+});

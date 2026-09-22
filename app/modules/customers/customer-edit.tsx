@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -64,6 +64,21 @@ export function EditCustomer({
       },
     },
   });
+
+  useEffect(() => {
+    form.reset({
+      name: customer.name ?? "",
+      phoneNumber: customer.phoneNumber ?? "",
+      email: customer.email ?? "",
+      location: customer.location ?? "",
+      contributionAmount: customer.contributionAmount ?? 0,
+      nextOfKin: {
+        name: customer.nextOfKin?.name ?? "",
+        phoneNumber: customer.nextOfKin?.phoneNumber ?? "",
+        email: customer.nextOfKin?.email ?? "",
+      },
+    });
+  }, [customer.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function onSubmit(data: EditForm) {
     mutate({ id: customer.id, ...data }, { onSuccess: () => setOpen(false) });

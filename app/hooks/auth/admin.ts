@@ -43,6 +43,15 @@ export function useAdminAuthInitialize() {
   });
 }
 
+export function useAdminResendOtp() {
+  return useMutation({
+    mutationFn: (email: string) =>
+      api.post("user/admin/resend-otp", { searchParams: { email } }).json<APIResponse<unknown>>(),
+    onSuccess: () => successToast("A new OTP has been sent to your email"),
+    onError: errorToast,
+  });
+}
+
 export function useAdminAuthVerify() {
   return useMutation({
     mutationFn: async (data: { otp: string; email: string }) =>

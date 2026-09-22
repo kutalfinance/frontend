@@ -14,7 +14,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { BanknoteArrowDown, BanknoteArrowUp, Undo2 } from "lucide-react";
+import { BanknoteArrowDown, BanknoteArrowUp, Percent, Undo2, Wallet } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -117,27 +117,37 @@ const columns: ColumnDef<Transaction>[] = [
       const { type, isReversed } = row.original;
       if (type === TransactionTypes.DEPOSIT) {
         return (
-          <div className="flex flex-col gap-1">
-            <Badge variant={isReversed ? "outline" : "default"} className={isReversed ? "line-through opacity-60" : undefined}>
-              <BanknoteArrowUp />
-              {type}
-            </Badge>
-          </div>
+          <Badge variant={isReversed ? "outline" : "default"} className={isReversed ? "line-through opacity-60" : undefined}>
+            <BanknoteArrowUp />
+            Deposit
+          </Badge>
         );
       } else if (type === TransactionTypes.WITHDRAWAL) {
         return (
-          <div className="flex flex-col gap-1">
-            <Badge variant={isReversed ? "outline" : "destructive"} className={isReversed ? "line-through opacity-60" : undefined}>
-              <BanknoteArrowDown />
-              {type}
-            </Badge>
-          </div>
+          <Badge variant={isReversed ? "outline" : "destructive"} className={isReversed ? "line-through opacity-60" : undefined}>
+            <BanknoteArrowDown />
+            Withdrawal
+          </Badge>
         );
       } else if (type === TransactionTypes.REVERSAL) {
         return (
           <Badge variant="secondary">
             <Undo2 />
-            REVERSAL
+            Reversal
+          </Badge>
+        );
+      } else if (type === TransactionTypes.SERVICE_CHARGE) {
+        return (
+          <Badge variant="outline">
+            <Percent />
+            Service Charge
+          </Badge>
+        );
+      } else if (type === TransactionTypes.OPENING_BALANCE) {
+        return (
+          <Badge variant="outline">
+            <Wallet />
+            Opening Balance
           </Badge>
         );
       } else {

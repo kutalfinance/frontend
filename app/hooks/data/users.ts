@@ -164,16 +164,18 @@ export function useAgentMetrics() {
 }
 
 export const downloadAgentDailyReportOptions = mutationOptions({
-  mutationFn: async (data: { agentId: string; reportDate?: string }) => {
+  mutationFn: async (data: { agentId: string; startDate?: string; endDate?: string }) => {
+    const today = new Date().toISOString().split("T")[0];
     const searchParams: Record<string, string> = { agentId: data.agentId };
-    if (data.reportDate) searchParams.reportDate = data.reportDate;
+    if (data.startDate) searchParams.startDate = data.startDate;
+    if (data.endDate) searchParams.endDate = data.endDate;
 
     const blob = await api.get("data/agent-daily-report", { searchParams }).blob();
 
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `agent-report-${data.reportDate || new Date().toISOString().split("T")[0]}.pdf`;
+    a.download = `agent-report-${data.startDate || today}.pdf`;
     try {
       document.body.appendChild(a);
       a.click();
@@ -191,16 +193,18 @@ export const downloadAgentDailyReportOptions = mutationOptions({
 });
 
 export const downloadAdminDailyReportOptions = mutationOptions({
-  mutationFn: async (data: { reportDate?: string }) => {
+  mutationFn: async (data: { startDate?: string; endDate?: string }) => {
+    const today = new Date().toISOString().split("T")[0];
     const searchParams: Record<string, string> = {};
-    if (data.reportDate) searchParams.reportDate = data.reportDate;
+    if (data.startDate) searchParams.startDate = data.startDate;
+    if (data.endDate) searchParams.endDate = data.endDate;
 
     const blob = await api.get("data/admin-daily-report", { searchParams }).blob();
 
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `admin-report-${data.reportDate || new Date().toISOString().split("T")[0]}.pdf`;
+    a.download = `admin-report-${data.startDate || today}.pdf`;
     try {
       document.body.appendChild(a);
       a.click();

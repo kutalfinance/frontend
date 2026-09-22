@@ -54,6 +54,7 @@ export default [
     ]),
     route("pending-approvals", "./routes/admin/pending-approvals.tsx"),
     route("audit", "./routes/admin/audit.tsx"),
+    route("reports", "./routes/admin/reports.tsx"),
   ]),
 
   route("/agent", "./routes/agent/layout.tsx", [

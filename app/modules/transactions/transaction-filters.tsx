@@ -123,6 +123,7 @@ export function TransactionTypeFilter() {
         <SelectItem value={TransactionTypes.DEPOSIT}>Deposit</SelectItem>
         <SelectItem value={TransactionTypes.WITHDRAWAL}>Withdrawal</SelectItem>
         <SelectItem value={TransactionTypes.SERVICE_CHARGE}>Service Charge</SelectItem>
+        <SelectItem value={TransactionTypes.REVERSAL}>Reversal</SelectItem>
       </SelectContent>
     </Select>
   );

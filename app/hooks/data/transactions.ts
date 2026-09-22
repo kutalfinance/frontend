@@ -76,14 +76,16 @@ export const createWithdrawalOptions = mutationOptions({
   }: {
     customerId: string;
     amount?: number;
+    serviceCharge?: number;
     idempotencyKey: string;
     customerName?: string;
   }) => {
     if (isOfflineMode()) {
       return Promise.reject(Object.assign(new Error("offline"), { isOffline: true }));
     }
-    const body: { customerId: string; amount?: number } = { customerId: data.customerId };
+    const body: { customerId: string; amount?: number; serviceCharge?: number } = { customerId: data.customerId };
     if (data.amount !== undefined) body.amount = data.amount;
+    if (data.serviceCharge !== undefined) body.serviceCharge = data.serviceCharge;
     return api
       .post("transaction/withdraw", { json: body, headers: { "Idempotency-Key": idempotencyKey } })
       .json<APIResponse<Transaction>>();

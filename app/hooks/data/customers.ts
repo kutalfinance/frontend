@@ -19,6 +19,7 @@ export const validateCustomerSearch = z
     createdAfter: z.string(),
     sortBy: z.string(),
     sortDirection: z.enum(["asc", "desc"]),
+    hasPendingWithdrawal: z.enum(["true"]),
   })
   .partial();
 
@@ -45,6 +46,9 @@ function filterCustomers(customers: Customer[], searchParams?: CustomerSearchPar
   if (searchParams?.createdBefore) {
     const before = new Date(searchParams.createdBefore).getTime();
     result = result.filter((c) => new Date(c.createdAt).getTime() <= before);
+  }
+  if (searchParams?.hasPendingWithdrawal === "true") {
+    result = result.filter((c) => c.hasPendingWithdrawal);
   }
   if (searchParams?.sortBy) {
     const dir = searchParams.sortDirection === "desc" ? -1 : 1;

@@ -111,6 +111,7 @@ function MetricCard({
   caption,
   isPending,
   color,
+  to,
 }: {
   icon: React.ElementType;
   label: string;
@@ -118,9 +119,12 @@ function MetricCard({
   caption?: string;
   isPending: boolean;
   color?: keyof typeof colorClasses;
+  to?: string;
 }) {
-  return (
-    <Card className={`gap-2 ${color ? colorClasses[color] : ""}`}>
+  const card = (
+    <Card
+      className={`gap-2 ${color ? colorClasses[color] : ""}${to ? " hover:bg-muted/30 transition-colors" : ""}`}
+    >
       <CardHeader>
         <div className="w-fit rounded-md border p-2">
           <Icon className="text-muted-foreground size-5" />
@@ -135,6 +139,15 @@ function MetricCard({
       </CardContent>
     </Card>
   );
+
+  if (to) {
+    return (
+      <Link to={to} className="block">
+        {card}
+      </Link>
+    );
+  }
+  return card;
 }
 
 function MetricCards({
@@ -147,6 +160,12 @@ function MetricCards({
   isPending: boolean;
 }) {
   const isToday = scope === "today";
+
+  const todayStr = new Date().toISOString().split("T")[0];
+  const weekStartDate = new Date();
+  weekStartDate.setDate(weekStartDate.getDate() - ((weekStartDate.getDay() + 6) % 7));
+  const weekStartStr = weekStartDate.toISOString().split("T")[0];
+  const newCustomersLink = `${href("/agent/customers")}?createdAfter=${isToday ? todayStr : weekStartStr}`;
 
   const totalCollections = formatMoney(
     isToday ? (metrics?.totalDepositsToday ?? 0) : (metrics?.totalDepositsThisWeek ?? 0)
@@ -178,6 +197,7 @@ function MetricCards({
           value={customersVisited}
           isPending={isPending}
           color="blue"
+          to={href("/agent/customers")}
         />
         <MetricCard
           icon={Users}
@@ -185,6 +205,7 @@ function MetricCards({
           value={newCustomers}
           isPending={isPending}
           color="blue"
+          to={newCustomersLink}
         />
       </div>
 
@@ -203,6 +224,7 @@ function MetricCards({
         caption={`${withdrawalsPendingCount} request${withdrawalsPendingCount === 1 ? "" : "s"} awaiting approval`}
         isPending={isPending}
         color="amber"
+        to={`${href("/agent/customers")}?hasPendingWithdrawal=true`}
       />
       <MetricCard
         icon={ArrowDownUp}

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, href } from "react-router";
 
-import { Building2, Users } from "lucide-react";
+import { Building2, Clock, Users } from "lucide-react";
 import { ChevronDown, Coins, MapPin, Phone, User } from "lucide-react";
 
 import { Loader } from "@/components/loader";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
@@ -62,9 +63,17 @@ export function CustomerListItem({ customer }: { customer: Customer }) {
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="bg-card rounded-lg border">
       <div className="flex items-center justify-between p-4">
         <div className="min-w-0 flex-1">
-          <Heading variant="h4" className="truncate">
-            {customer.name}
-          </Heading>
+          <div className="flex items-center gap-2">
+            <Heading variant="h4" className="truncate">
+              {customer.name}
+            </Heading>
+            {customer.hasPendingWithdrawal && (
+              <Badge variant="outline" className="text-amber-600 border-amber-400 shrink-0 gap-1">
+                <Clock className="size-3" />
+                Pending
+              </Badge>
+            )}
+          </div>
           <Paragraph className="text-muted-foreground truncate text-sm">{customer.email}</Paragraph>
         </div>
 

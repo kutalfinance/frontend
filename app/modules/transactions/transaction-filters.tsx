@@ -195,6 +195,7 @@ export function TransactionStatusFilter() {
         <SelectItem value={TransactionStatus.PENDING}>Pending</SelectItem>
         <SelectItem value={TransactionStatus.REJECTED}>Rejected</SelectItem>
         <SelectItem value={TransactionStatus.FAILED}>Failed</SelectItem>
+        <SelectItem value={TransactionStatus.REVERSED}>Reversed</SelectItem>
       </SelectContent>
     </Select>
   );

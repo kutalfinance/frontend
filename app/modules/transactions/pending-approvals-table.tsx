@@ -16,6 +16,7 @@ import {
 import { format } from "date-fns";
 import { ArrowUpDown, ScanEye, SearchIcon } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
@@ -165,7 +166,16 @@ const columns: ColumnDef<Transaction>[] = [
     accessorKey: "amount",
     header: ({ column }) => <SortableHeader column={column}>Amount</SortableHeader>,
     cell: ({ row }) => (
-      <span className="font-medium whitespace-nowrap">{formatMoney(row.original.amount)}</span>
+      <div className="space-y-1">
+        <span className="font-medium whitespace-nowrap">{formatMoney(row.original.amount)}</span>
+        {(row.original.serviceChargeAmount ?? 0) > 0 && (
+          <div>
+            <Badge variant="secondary" className="text-destructive whitespace-nowrap">
+              + {formatMoney(row.original.serviceChargeAmount!)} fee
+            </Badge>
+          </div>
+        )}
+      </div>
     ),
   },
   {

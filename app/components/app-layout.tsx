@@ -1,6 +1,7 @@
 import { Link, type LinkProps, href, useLocation } from "react-router";
 
-import { Building2, CheckCircle, Download, History, Home, Menu, Users } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Building2, CheckCircle, Download, FileBarChart2, History, Home, Menu, Users } from "lucide-react";
 import { Contact, type LucideIcon } from "lucide-react";
 
 import { AppLogo } from "@/components/app-logo";
@@ -27,6 +28,7 @@ import {
 import { Paragraph } from "@/components/ui/text";
 
 import { useLoggedInUser, useLogout } from "@/hooks/auth/common";
+import { pendingApprovalsQueryOptions } from "@/hooks/data/transactions";
 import { usePwaInstall } from "@/hooks/use-pwa-install";
 import { cn } from "@/lib/utils";
 import { DownloadAdminReport, DownloadAgentSelfReport } from "@/modules/users/user-actions";
@@ -136,6 +138,13 @@ function UserMenu() {
   const isApprover = user.approver;
   const isAdmin = user.role == "ADMIN";
 
+  const { data: pendingData } = useQuery({
+    ...pendingApprovalsQueryOptions(),
+    enabled: !!isApprover,
+  });
+  const pendingCount = pendingData?.data?.length ?? 0;
+  const pendingLabel = pendingCount > 99 ? "99+" : pendingCount > 0 ? String(pendingCount) : null;
+
   const dropdownMenu = (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -154,7 +163,14 @@ function UserMenu() {
         <DropdownMenuSeparator />
         {isApprover && (
           <DropdownMenuItem asChild>
-            <Link to={href("/admin/pending-approvals")}>Pending approvals</Link>
+            <Link to={href("/admin/pending-approvals")} className="flex items-center justify-between gap-4">
+              Pending approvals
+              {pendingLabel && (
+                <span className="bg-destructive text-destructive-foreground rounded-full px-1.5 py-0.5 text-xs font-medium leading-none">
+                  {pendingLabel}
+                </span>
+              )}
+            </Link>
           </DropdownMenuItem>
         )}
         <DialogTrigger asChild>
@@ -176,6 +192,11 @@ function UserMenu() {
           <Link to={href("/admin/pending-approvals")}>
             <CheckCircle className="size-4" />
             <span className="hidden sm:inline">Approvals</span>
+            {pendingLabel && (
+              <span className="bg-destructive text-destructive-foreground rounded-full px-1.5 py-0.5 text-xs font-medium leading-none">
+                {pendingLabel}
+              </span>
+            )}
           </Link>
         </Button>
       )}
@@ -232,6 +253,12 @@ const adminNavLinks: {
     href: href("/admin/audit"),
     pathRegex: /\/admin\/audit/,
     icon: History,
+  },
+  {
+    title: "Reports",
+    href: href("/admin/reports"),
+    pathRegex: /\/admin\/reports/,
+    icon: FileBarChart2,
   },
 ];
 

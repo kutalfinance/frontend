@@ -96,7 +96,6 @@ function CustomerDetails({ transaction }: { transaction: Transaction }) {
 
   const serviceCharge = transaction.serviceChargeAmount ?? 0;
   const totalDeducted = transaction.amount + serviceCharge;
-  const serviceChargePeriods = transaction.serviceChargePeriods ?? 0;
 
   return (
     <div className="container space-y-6 py-4">
@@ -148,20 +147,19 @@ function CustomerDetails({ transaction }: { transaction: Transaction }) {
             <span className="text-muted-foreground">Customer Payout</span>
             <span className="font-medium">{formatMoney(transaction.amount)}</span>
           </div>
-          <div className="text-destructive flex justify-between">
-            <span>
-              Service Charge{" "}
-              <span className="text-muted-foreground font-normal">
-                ({serviceChargePeriods} {serviceChargePeriods === 1 ? "period" : "periods"})
-              </span>
-            </span>
-            <span>+ {formatMoney(serviceCharge)}</span>
-          </div>
-          <Separator />
-          <div className="flex justify-between font-semibold">
-            <span>Total Deducted</span>
-            <span>{formatMoney(totalDeducted)}</span>
-          </div>
+          {serviceCharge > 0 && (
+            <>
+              <div className="text-destructive flex justify-between">
+                <span>Service Charge</span>
+                <span>+ {formatMoney(serviceCharge)}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between font-semibold">
+                <span>Total Deducted</span>
+                <span>{formatMoney(totalDeducted)}</span>
+              </div>
+            </>
+          )}
         </div>
       </Section>
     </div>

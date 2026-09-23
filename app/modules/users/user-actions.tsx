@@ -41,7 +41,9 @@ import { Paragraph } from "@/components/ui/text";
 
 import {
   downloadAdminDailyReportOptions,
+  downloadAdminReportCsvOptions,
   downloadAgentDailyReportOptions,
+  downloadAgentReportCsvOptions,
   useDeactivateUser,
   useDeleteUser,
   useRestoreUser,
@@ -330,12 +332,14 @@ export function DownloadAgentReport({
   user,
   ...props
 }: React.ComponentProps<typeof DialogTrigger> & { user: User }) {
+  const today = new Date().toISOString().split("T")[0];
   const [open, setOpen] = useState(false);
-  const [reportDate, setReportDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
   const { mutate, isPending } = useMutation(downloadAgentDailyReportOptions);
 
   function onDownload() {
-    mutate({ agentId: user.id, reportDate }, { onSuccess: () => setOpen(false) });
+    mutate({ agentId: user.id, startDate, endDate }, { onSuccess: () => setOpen(false) });
   }
 
   return (
@@ -343,19 +347,20 @@ export function DownloadAgentReport({
       <DialogTrigger asChild {...props} />
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Download Daily Report</DialogTitle>
+          <DialogTitle>Download Agent Report</DialogTitle>
           <DialogDescription>
-            Download daily report for {user.name}. Select a date to generate the report.
+            Download report for {user.name}. Select a date or range.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-2">
-          <Label htmlFor="reportDate">Report Date</Label>
-          <Input
-            id="reportDate"
-            type="date"
-            value={reportDate}
-            onChange={(e) => setReportDate(e.target.value)}
-          />
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <Label htmlFor="startDate">From</Label>
+            <Input id="startDate" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="endDate">To</Label>
+            <Input id="endDate" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
@@ -375,13 +380,14 @@ export function DownloadAgentSelfReport({
   children,
   ...props
 }: React.ComponentProps<typeof Dialog> & { user: User }) {
+  const today = new Date().toISOString().split("T")[0];
   const [open, setOpen] = useState(false);
-  const [reportDate, setReportDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
   const { mutate, isPending } = useMutation(downloadAgentDailyReportOptions);
+  const { mutate: downloadCsv, isPending: isCsvPending } = useMutation(downloadAgentReportCsvOptions);
 
-  function onDownload() {
-    mutate({ agentId: user.id, reportDate }, { onSuccess: () => setOpen(false) });
-  }
+  const payload = { agentId: user.id, startDate, endDate };
 
   return (
     <Dialog open={open} onOpenChange={setOpen} {...props}>
@@ -389,25 +395,27 @@ export function DownloadAgentSelfReport({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Download Daily Report</DialogTitle>
-          <DialogDescription>
-            Download your daily report. Select a date to generate the report.
-          </DialogDescription>
+          <DialogDescription>Download your activity report. Select a date or range.</DialogDescription>
         </DialogHeader>
-        <div className="space-y-2">
-          <Label htmlFor="reportDate">Report Date</Label>
-          <Input
-            id="reportDate"
-            type="date"
-            value={reportDate}
-            onChange={(e) => setReportDate(e.target.value)}
-          />
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <Label htmlFor="selfStartDate">From</Label>
+            <Input id="selfStartDate" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="selfEndDate">To</Label>
+            <Input id="selfEndDate" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={onDownload} disabled={isPending}>
-            {isPending ? "Downloading..." : "Download Report"}
+          <Button variant="secondary" onClick={() => downloadCsv(payload, { onSuccess: () => setOpen(false) })} isLoading={isCsvPending}>
+            CSV
+          </Button>
+          <Button onClick={() => mutate(payload, { onSuccess: () => setOpen(false) })} isLoading={isPending}>
+            PDF
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -416,13 +424,14 @@ export function DownloadAgentSelfReport({
 }
 
 export function DownloadAdminReport({ children, ...props }: React.ComponentProps<typeof Dialog>) {
+  const today = new Date().toISOString().split("T")[0];
   const [open, setOpen] = useState(false);
-  const [reportDate, setReportDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
   const { mutate, isPending } = useMutation(downloadAdminDailyReportOptions);
+  const { mutate: downloadCsv, isPending: isCsvPending } = useMutation(downloadAdminReportCsvOptions);
 
-  function onDownload() {
-    mutate({ reportDate }, { onSuccess: () => setOpen(false) });
-  }
+  const payload = { startDate, endDate };
 
   return (
     <Dialog open={open} onOpenChange={setOpen} {...props}>
@@ -432,24 +441,28 @@ export function DownloadAdminReport({ children, ...props }: React.ComponentProps
         <DialogHeader>
           <DialogTitle>Download Admin Report</DialogTitle>
           <DialogDescription>
-            Download daily admin report. Select a date to generate the report.
+            Download admin report across all branches. Select a date or range.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-2">
-          <Label htmlFor="reportDate">Report Date</Label>
-          <Input
-            id="reportDate"
-            type="date"
-            value={reportDate}
-            onChange={(e) => setReportDate(e.target.value)}
-          />
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <Label htmlFor="adminStartDate">From</Label>
+            <Input id="adminStartDate" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="adminEndDate">To</Label>
+            <Input id="adminEndDate" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={onDownload} disabled={isPending}>
-            {isPending ? "Downloading..." : "Download Report"}
+          <Button variant="secondary" onClick={() => downloadCsv(payload, { onSuccess: () => setOpen(false) })} isLoading={isCsvPending}>
+            CSV
+          </Button>
+          <Button onClick={() => mutate(payload, { onSuccess: () => setOpen(false) })} isLoading={isPending}>
+            PDF
           </Button>
         </DialogFooter>
       </DialogContent>

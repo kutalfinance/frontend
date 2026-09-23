@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { downloadStatementOptions } from "@/hooks/data/customers";
+import { downloadStatementCsvOptions, downloadStatementOptions } from "@/hooks/data/customers";
 import type { Customer } from "@/lib/types";
 
 const statementSchema = z.object({
@@ -41,6 +41,7 @@ export function DownloadStatement({
 }: React.ComponentProps<typeof DialogTrigger> & { customer: Customer }) {
   const [open, setOpen] = useState(false);
   const { mutate: downloadStatement, isPending } = useMutation(downloadStatementOptions);
+  const { mutate: downloadCsv, isPending: isCsvPending } = useMutation(downloadStatementCsvOptions);
 
   const form = useForm<StatementForm>({
     resolver: zodResolver(statementSchema),
@@ -50,20 +51,30 @@ export function DownloadStatement({
     },
   });
 
+  function buildPayload(data: StatementForm) {
+    return {
+      customerId: customer.id,
+      startDate: data.startDate || undefined,
+      endDate: data.endDate || undefined,
+    };
+  }
+
   const handleSubmit = (data: StatementForm) => {
-    downloadStatement(
-      {
-        customerId: customer.id,
-        startDate: data.startDate || undefined,
-        endDate: data.endDate || undefined,
+    downloadStatement(buildPayload(data), {
+      onSuccess: () => {
+        setOpen(false);
+        form.reset();
       },
-      {
-        onSuccess: () => {
-          setOpen(false);
-          form.reset();
-        },
-      }
-    );
+    });
+  };
+
+  const handleCsvSubmit = (data: StatementForm) => {
+    downloadCsv(buildPayload(data), {
+      onSuccess: () => {
+        setOpen(false);
+        form.reset();
+      },
+    });
   };
 
   return (
@@ -109,12 +120,20 @@ export function DownloadStatement({
               />
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="flex-col gap-2 sm:flex-row">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                isLoading={isCsvPending}
+                onClick={form.handleSubmit(handleCsvSubmit)}
+              >
+                Download CSV
+              </Button>
               <Button type="submit" isLoading={isPending}>
-                Download Statement
+                Download PDF
               </Button>
             </DialogFooter>
           </form>

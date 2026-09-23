@@ -19,6 +19,7 @@ export const validateCustomerSearch = z
     createdAfter: z.string(),
     sortBy: z.string(),
     sortDirection: z.enum(["asc", "desc"]),
+    hasPendingWithdrawal: z.enum(["true"]),
   })
   .partial();
 
@@ -45,6 +46,9 @@ function filterCustomers(customers: Customer[], searchParams?: CustomerSearchPar
   if (searchParams?.createdBefore) {
     const before = new Date(searchParams.createdBefore).getTime();
     result = result.filter((c) => new Date(c.createdAt).getTime() <= before);
+  }
+  if (searchParams?.hasPendingWithdrawal === "true") {
+    result = result.filter((c) => c.hasPendingWithdrawal);
   }
   if (searchParams?.sortBy) {
     const dir = searchParams.sortDirection === "desc" ? -1 : 1;
@@ -208,5 +212,31 @@ export const downloadStatementOptions = mutationOptions({
   onSuccess: () => {
     successToast("Statement downloaded successfully");
   },
+  onError: errorToast,
+});
+
+export const downloadStatementCsvOptions = mutationOptions({
+  mutationFn: async (data: { customerId: string; startDate?: string; endDate?: string }) => {
+    const searchParams: Record<string, string> = { customerId: data.customerId };
+    if (data.startDate) searchParams.startDate = data.startDate;
+    if (data.endDate) searchParams.endDate = data.endDate;
+
+    const blob = await api.get("data/account-statement/csv", { searchParams }).blob();
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `statement-${data.customerId}-${Date.now()}.csv`;
+    try {
+      document.body.appendChild(a);
+      a.click();
+    } finally {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }
+
+    return { success: true };
+  },
+  onSuccess: () => successToast("CSV downloaded successfully"),
   onError: errorToast,
 });

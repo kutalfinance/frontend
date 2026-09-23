@@ -19,7 +19,7 @@ export const validateTransactionsSearch = z
     userId: z.string(),
     recordedBefore: z.string(),
     recordedAfter: z.string(),
-    type: z.enum(["DEPOSIT", "WITHDRAWAL", "SERVICE_CHARGE"]),
+    type: z.enum(["DEPOSIT", "WITHDRAWAL", "SERVICE_CHARGE", "OPENING_BALANCE", "REVERSAL"]),
     status: z.enum(["COMPLETED", "REJECTED", "PENDING", "FAILED"]),
     sortBy: z.string(),
     sortDirection: z.enum(["asc", "desc"]),
@@ -76,14 +76,16 @@ export const createWithdrawalOptions = mutationOptions({
   }: {
     customerId: string;
     amount?: number;
+    serviceCharge?: number;
     idempotencyKey: string;
     customerName?: string;
   }) => {
     if (isOfflineMode()) {
       return Promise.reject(Object.assign(new Error("offline"), { isOffline: true }));
     }
-    const body: { customerId: string; amount?: number } = { customerId: data.customerId };
+    const body: { customerId: string; amount?: number; serviceCharge?: number } = { customerId: data.customerId };
     if (data.amount !== undefined) body.amount = data.amount;
+    if (data.serviceCharge !== undefined) body.serviceCharge = data.serviceCharge;
     return api
       .post("transaction/withdraw", { json: body, headers: { "Idempotency-Key": idempotencyKey } })
       .json<APIResponse<Transaction>>();
@@ -203,7 +205,7 @@ function computeMetricsFromCache(
   }
   const completed = (type: TransactionTypes) =>
     filtered
-      .filter((t) => t.type === type && t.status === "COMPLETED")
+      .filter((t) => t.type === type && t.status === "COMPLETED" && !t.isReversed)
       .reduce((sum, t) => sum + t.amount, 0);
   const totalDeposited = completed(TransactionTypes.DEPOSIT);
   const totalWithdrawn = completed(TransactionTypes.WITHDRAWAL);
@@ -230,3 +232,14 @@ export const transactionsMetricsOptions = ({
       api.get("transaction/metrics", { searchParams }).json<APIResponse<TransactionMetrics>>(),
     placeholderData: () => computeMetricsFromCache(searchParams),
   });
+
+export const reverseTransactionOptions = mutationOptions({
+  mutationFn: (transactionId: string) =>
+    api.post(`transaction/${transactionId}/reverse`).json<APIResponse<Transaction>>(),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
+    queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
+    successToast("Transaction reversed successfully");
+  },
+  onError: errorToast,
+});

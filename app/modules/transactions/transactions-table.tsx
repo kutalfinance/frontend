@@ -170,8 +170,16 @@ const columns: ColumnDef<Transaction>[] = [
         [TransactionStatus.PENDING]: "secondary",
         [TransactionStatus.REJECTED]: "destructive",
         [TransactionStatus.FAILED]: "destructive",
+        [TransactionStatus.REVERSED]: "outline",
       };
-      return <Badge variant={variantMap[status]}>{status}</Badge>;
+      const labelMap: Record<TransactionStatus, string> = {
+        [TransactionStatus.COMPLETED]: "Completed",
+        [TransactionStatus.PENDING]: "Pending",
+        [TransactionStatus.REJECTED]: "Rejected",
+        [TransactionStatus.FAILED]: "Failed",
+        [TransactionStatus.REVERSED]: "Reversed",
+      };
+      return <Badge variant={variantMap[status]}>{labelMap[status] ?? status}</Badge>;
     },
   },
   {
@@ -191,8 +199,7 @@ const columns: ColumnDef<Transaction>[] = [
         tx.status === TransactionStatus.COMPLETED &&
         tx.type !== TransactionTypes.REVERSAL &&
         tx.type !== TransactionTypes.SERVICE_CHARGE &&
-        tx.type !== TransactionTypes.OPENING_BALANCE &&
-        !tx.isReversed;
+        tx.type !== TransactionTypes.OPENING_BALANCE;
       if (!canReverse) return null;
       return (
         <ReverseTransaction transaction={tx}>

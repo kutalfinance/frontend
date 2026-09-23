@@ -71,6 +71,7 @@ export enum TransactionStatus {
   REJECTED = "REJECTED",
   PENDING = "PENDING",
   FAILED = "FAILED",
+  REVERSED = "REVERSED",
 }
 
 export type Transaction = {

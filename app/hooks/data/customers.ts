@@ -17,6 +17,7 @@ export const validateCustomerSearch = z
     branchId: z.string(),
     createdBefore: z.string(),
     createdAfter: z.string(),
+    lastDepositAfter: z.string(),
     sortBy: z.string(),
     sortDirection: z.enum(["asc", "desc"]),
     hasPendingWithdrawal: z.enum(["true"]),
@@ -46,6 +47,10 @@ function filterCustomers(customers: Customer[], searchParams?: CustomerSearchPar
   if (searchParams?.createdBefore) {
     const before = new Date(searchParams.createdBefore).getTime();
     result = result.filter((c) => new Date(c.createdAt).getTime() <= before);
+  }
+  if (searchParams?.lastDepositAfter) {
+    const after = new Date(searchParams.lastDepositAfter).getTime();
+    result = result.filter((c) => c.lastDepositDate != null && new Date(c.lastDepositDate).getTime() >= after);
   }
   if (searchParams?.hasPendingWithdrawal === "true") {
     result = result.filter((c) => c.hasPendingWithdrawal);

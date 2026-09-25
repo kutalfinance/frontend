@@ -166,6 +166,7 @@ function MetricCards({
   weekStartDate.setDate(weekStartDate.getDate() - ((weekStartDate.getDay() + 6) % 7));
   const weekStartStr = weekStartDate.toISOString().split("T")[0];
   const newCustomersLink = `${href("/agent/customers")}?createdAfter=${isToday ? todayStr : weekStartStr}`;
+  const visitedCustomersLink = `${href("/agent/customers")}?lastDepositAfter=${isToday ? todayStr : weekStartStr}`;
 
   const totalCollections = formatMoney(
     isToday ? (metrics?.totalDepositsToday ?? 0) : (metrics?.totalDepositsThisWeek ?? 0)
@@ -197,7 +198,7 @@ function MetricCards({
           value={customersVisited}
           isPending={isPending}
           color="blue"
-          to={href("/agent/customers")}
+          to={visitedCustomersLink}
         />
         <MetricCard
           icon={Users}

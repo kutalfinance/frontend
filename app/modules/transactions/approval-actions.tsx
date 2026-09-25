@@ -21,14 +21,16 @@ import { formatMoney } from "@/lib/utils/money";
 
 export function ApproveTransaction({
   transaction,
+  onSuccess,
   ...props
-}: React.ComponentProps<typeof AlertDialogTrigger> & { transaction: Transaction }) {
+}: React.ComponentProps<typeof AlertDialogTrigger> & { transaction: Transaction; onSuccess?: () => void }) {
   const [open, setOpen] = useState(false);
   const { mutate, isPending } = useMutation(approveTransactionOptions);
 
   function onApprove() {
     mutate(transaction.id);
     setOpen(false);
+    onSuccess?.();
   }
 
   return (
@@ -56,14 +58,16 @@ export function ApproveTransaction({
 
 export function RejectTransaction({
   transaction,
+  onSuccess,
   ...props
-}: React.ComponentProps<typeof AlertDialogTrigger> & { transaction: Transaction }) {
+}: React.ComponentProps<typeof AlertDialogTrigger> & { transaction: Transaction; onSuccess?: () => void }) {
   const [open, setOpen] = useState(false);
   const { mutate, isPending } = useMutation(rejectTransactionOptions);
 
   function onReject() {
     mutate(transaction.id);
     setOpen(false);
+    onSuccess?.();
   }
 
   return (

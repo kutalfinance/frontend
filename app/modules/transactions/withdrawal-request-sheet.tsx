@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import {
@@ -37,8 +39,14 @@ export function WithdrawalRequestSheet({
   transaction,
   ...props
 }: React.ComponentProps<typeof SheetTrigger> & { transaction: Transaction }) {
+  const [open, setOpen] = useState(false);
+
+  function closeSheet() {
+    setOpen(false);
+  }
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild {...props} />
       <SheetContent className="flex w-full flex-col sm:max-w-md">
         <SheetHeader>
@@ -54,13 +62,13 @@ export function WithdrawalRequestSheet({
         </div>
 
         <SheetFooter className="flex-row gap-2 border-t pt-4">
-          <RejectTransaction transaction={transaction}>
+          <RejectTransaction transaction={transaction} onSuccess={closeSheet}>
             <Button variant="destructive" className="flex-1">
               <X />
               Reject
             </Button>
           </RejectTransaction>
-          <ApproveTransaction transaction={transaction}>
+          <ApproveTransaction transaction={transaction} onSuccess={closeSheet}>
             <Button className="flex-1">
               <Check />
               Approve

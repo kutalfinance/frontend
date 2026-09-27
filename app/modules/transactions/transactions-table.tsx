@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { Link, href } from "react-router";
 
 import {
@@ -115,44 +115,46 @@ const columns: ColumnDef<Transaction>[] = [
     header: "Type",
     cell: ({ row }) => {
       const { type, isReversed } = row.original;
+      let badge: ReactNode;
       if (type === TransactionTypes.DEPOSIT) {
-        return (
+        badge = (
           <Badge variant={isReversed ? "outline" : "default"} className={isReversed ? "line-through opacity-60" : undefined}>
             <BanknoteArrowUp />
             Deposit
           </Badge>
         );
       } else if (type === TransactionTypes.WITHDRAWAL) {
-        return (
+        badge = (
           <Badge variant={isReversed ? "outline" : "destructive"} className={isReversed ? "line-through opacity-60" : undefined}>
             <BanknoteArrowDown />
             Withdrawal
           </Badge>
         );
       } else if (type === TransactionTypes.REVERSAL) {
-        return (
+        badge = (
           <Badge variant="secondary">
             <Undo2 />
             Reversal
           </Badge>
         );
       } else if (type === TransactionTypes.SERVICE_CHARGE) {
-        return (
+        badge = (
           <Badge variant="outline">
             <Percent />
             Service Charge
           </Badge>
         );
       } else if (type === TransactionTypes.OPENING_BALANCE) {
-        return (
+        badge = (
           <Badge variant="outline">
             <Wallet />
             Opening Balance
           </Badge>
         );
       } else {
-        return <Badge variant="outline">{type}</Badge>;
+        badge = <Badge variant="outline">{type}</Badge>;
       }
+      return <div className="flex w-36 justify-center">{badge}</div>;
     },
   },
   {
@@ -168,8 +170,16 @@ const columns: ColumnDef<Transaction>[] = [
         [TransactionStatus.PENDING]: "secondary",
         [TransactionStatus.REJECTED]: "destructive",
         [TransactionStatus.FAILED]: "destructive",
+        [TransactionStatus.REVERSED]: "outline",
       };
-      return <Badge variant={variantMap[status]}>{status}</Badge>;
+      const labelMap: Record<TransactionStatus, string> = {
+        [TransactionStatus.COMPLETED]: "Completed",
+        [TransactionStatus.PENDING]: "Pending",
+        [TransactionStatus.REJECTED]: "Rejected",
+        [TransactionStatus.FAILED]: "Failed",
+        [TransactionStatus.REVERSED]: "Reversed",
+      };
+      return <Badge variant={variantMap[status]}>{labelMap[status] ?? status}</Badge>;
     },
   },
   {
@@ -188,7 +198,8 @@ const columns: ColumnDef<Transaction>[] = [
       const canReverse =
         tx.status === TransactionStatus.COMPLETED &&
         tx.type !== TransactionTypes.REVERSAL &&
-        !tx.isReversed;
+        tx.type !== TransactionTypes.SERVICE_CHARGE &&
+        tx.type !== TransactionTypes.OPENING_BALANCE;
       if (!canReverse) return null;
       return (
         <ReverseTransaction transaction={tx}>

@@ -123,6 +123,7 @@ export function TransactionTypeFilter() {
         <SelectItem value={TransactionTypes.DEPOSIT}>Deposit</SelectItem>
         <SelectItem value={TransactionTypes.WITHDRAWAL}>Withdrawal</SelectItem>
         <SelectItem value={TransactionTypes.SERVICE_CHARGE}>Service Charge</SelectItem>
+        <SelectItem value={TransactionTypes.REVERSAL}>Reversal</SelectItem>
       </SelectContent>
     </Select>
   );
@@ -194,6 +195,7 @@ export function TransactionStatusFilter() {
         <SelectItem value={TransactionStatus.PENDING}>Pending</SelectItem>
         <SelectItem value={TransactionStatus.REJECTED}>Rejected</SelectItem>
         <SelectItem value={TransactionStatus.FAILED}>Failed</SelectItem>
+        <SelectItem value={TransactionStatus.REVERSED}>Reversed</SelectItem>
       </SelectContent>
     </Select>
   );

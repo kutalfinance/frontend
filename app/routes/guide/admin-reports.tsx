@@ -1,12 +1,9 @@
-import { Archive, Download, DownloadIcon } from "lucide-react";
+import { Download, DownloadIcon } from "lucide-react";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Paragraph } from "@/components/ui/text";
 
 import { AdminNavPreview, GuideNavigation, GuideTitle, Preview, StepLabel } from "./components";
 
@@ -16,183 +13,143 @@ export default function AdminReportsGuide() {
       <GuideTitle badge="Admin">Reports</GuideTitle>
 
       <p>
-        The system provides three types of downloadable PDF reports: an admin daily report, an agent
-        daily report, and a customer account statement. There is no dedicated reports page — each
-        report is accessed from a different part of the app.
+        The system provides three types of downloadable reports: a branch report, an admin report,
+        and a customer account statement. The branch and admin reports are on the dedicated Reports
+        page. The customer statement is accessed from the Customers page. All reports support date
+        ranges and can be downloaded as PDF or CSV.
       </p>
 
-      {/* Admin Daily Report */}
+      {/* Reports Page */}
       <div className="space-y-3">
-        <h3 className="text-foreground text-base font-semibold">Admin Daily Report</h3>
+        <h3 className="text-foreground text-base font-semibold">Accessing Reports</h3>
         <p>
-          The admin daily report summarises all transactions across the system for a given date.
+          Click <strong>Reports</strong> in the navigation bar to open the Reports page.
+        </p>
+        <AdminNavPreview highlight="Reports" />
+      </div>
+
+      {/* Branch Report */}
+      <div className="space-y-3">
+        <h3 className="text-foreground text-base font-semibold">Branch Report</h3>
+        <p>
+          The branch report summarises all deposits, withdrawals, and pending requests recorded by a
+          specific branch&apos;s agent for a given date range.
         </p>
 
-        <StepLabel n={1}>Click your profile avatar in the top-right corner of the header</StepLabel>
-        <Preview wide>
-          <div className="flex items-center justify-end gap-3">
-            <span className="text-muted-foreground text-xs">... nav items</span>
-            <Avatar className="border-primary size-8 border-2">
-              <AvatarFallback className="text-xs">AD</AvatarFallback>
-            </Avatar>
-          </div>
-        </Preview>
-
-        <StepLabel n={2}>
-          Select <strong>Download report</strong> from the dropdown menu
+        <StepLabel n={1}>Select a branch from the dropdown</StepLabel>
+        <StepLabel n={2}>Select a date range — From and To both default to today</StepLabel>
+        <StepLabel n={3}>
+          Click <strong>Download PDF</strong> for a printable report, or{" "}
+          <strong>Download CSV</strong> for a spreadsheet
         </StepLabel>
+
         <Preview>
-          <div className="rounded-md border text-xs shadow-sm">
-            <div className="px-3 py-2">
-              <p className="text-foreground text-sm font-medium">Admin User</p>
-              <p className="text-muted-foreground">admin@example.com</p>
-            </div>
-            <Separator />
-            <div className="py-1">
-              <div className="text-muted-foreground px-3 py-1.5">Pending approvals</div>
-              <div className="bg-accent rounded-sm px-3 py-1.5 font-medium">Download report</div>
-              <div className="text-muted-foreground px-3 py-1.5">User guide</div>
-            </div>
-            <Separator />
-            <div className="py-1">
-              <div className="text-muted-foreground px-3 py-1.5">Log out</div>
-            </div>
-          </div>
-        </Preview>
-
-        <StepLabel n={3}>Select a date and click Download Report</StepLabel>
-        <Preview>
-          <div className="space-y-4">
-            <div>
-              <Paragraph className="text-foreground text-sm font-semibold">
-                Download Admin Report
-              </Paragraph>
-              <Paragraph className="text-muted-foreground text-xs">
-                Download daily admin report. Select a date to generate the report.
-              </Paragraph>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs">Report Date</Label>
-              <Input type="date" disabled defaultValue="2025-03-28" />
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <Button size="sm" variant="outline" disabled>
-                Cancel
-              </Button>
-              <Button size="sm" disabled>
-                Download Report
-              </Button>
-            </div>
-          </div>
+          <Card className="gap-2">
+            <CardHeader>
+              <CardTitle className="text-sm">Branch Report</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-xs">Branch</Label>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start font-normal"
+                  disabled
+                  size="sm"
+                >
+                  <span className="text-muted-foreground text-xs">Select a branch</span>
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">From</Label>
+                  <Input type="date" disabled defaultValue="2025-03-28" className="text-xs" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">To</Label>
+                  <Input type="date" disabled defaultValue="2025-03-28" className="text-xs" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="secondary" size="sm" disabled>
+                  Download CSV
+                </Button>
+                <Button size="sm" disabled>
+                  Download PDF
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </Preview>
 
         <ul className="list-inside list-disc space-y-1 pl-1">
-          <li>The date defaults to today.</li>
-          <li>The report downloads as a PDF file.</li>
+          <li>A branch must be selected before either download button becomes active.</li>
+          <li>
+            The PDF includes three sections: deposits, approved withdrawals, and pending withdrawals.
+          </li>
+          <li>
+            The CSV contains the same data in spreadsheet format with columns: Time, Amount, Customer
+            Name, Account Number, Phone Number.
+          </li>
         </ul>
       </div>
 
-      {/* Agent Daily Report */}
+      {/* Admin Report */}
       <div className="space-y-3">
-        <h3 className="text-foreground text-base font-semibold">Agent Daily Report</h3>
+        <h3 className="text-foreground text-base font-semibold">Admin Report</h3>
         <p>
-          The agent daily report summarises all transactions recorded by a specific agent for a
-          given date.
+          The admin report summarises all transactions across every branch — deposits, withdrawals,
+          service charges, and pending approvals — for a given date range.
         </p>
 
-        <StepLabel n={1}>
-          Navigate to the <strong>Users</strong> page
-        </StepLabel>
-        <AdminNavPreview highlight="Users" />
-
+        <StepLabel n={1}>Select a date range — From and To both default to today</StepLabel>
         <StepLabel n={2}>
-          Find the agent in the table and click the download icon (
-          <DownloadIcon className="inline size-3.5" />) on their row
+          Click <strong>Download PDF</strong> or <strong>Download CSV</strong>
         </StepLabel>
-        <Preview wide>
-          <div className="space-y-0 rounded-md border text-xs">
-            <div className="text-muted-foreground grid grid-cols-6 gap-2 border-b px-3 py-2 font-medium">
-              <span />
-              <span>Name</span>
-              <span>Email</span>
-              <span>Role</span>
-              <span>Created</span>
-              <span />
-            </div>
-            {[
-              {
-                name: "Kofi Mensah",
-                email: "kofi@mail.com",
-                role: "AGENT" as const,
-                date: "15/01/2025",
-              },
-              {
-                name: "Ama Serwaa",
-                email: "ama@mail.com",
-                role: "AGENT" as const,
-                date: "22/02/2025",
-              },
-            ].map((row) => (
-              <div
-                key={row.name}
-                className="grid grid-cols-6 items-center gap-2 border-b px-3 py-2.5 last:border-0"
-              >
-                <span />
-                <span className="font-medium whitespace-nowrap">{row.name}</span>
-                <span className="text-muted-foreground">{row.email}</span>
-                <span>
-                  <Badge variant="accent">{row.role}</Badge>
-                </span>
-                <span className="text-muted-foreground">{row.date}</span>
-                <span className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="size-7" disabled>
-                    <Archive className="text-destructive size-3.5" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="border-primary/30 size-7 border">
-                    <DownloadIcon className="text-muted-foreground size-3.5" />
-                  </Button>
-                </span>
-              </div>
-            ))}
-          </div>
-        </Preview>
-        <p className="text-muted-foreground text-xs">
-          Only agent users have the download icon. Admin users only show the deactivate button.
-        </p>
 
-        <StepLabel n={3}>Select a date and click Download Report</StepLabel>
         <Preview>
-          <div className="space-y-4">
-            <div>
-              <Paragraph className="text-foreground text-sm font-semibold">
-                Download Daily Report
-              </Paragraph>
-              <Paragraph className="text-muted-foreground text-xs">
-                Download daily report for Kofi Mensah. Select a date to generate the report.
-              </Paragraph>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs">Report Date</Label>
-              <Input type="date" disabled defaultValue="2025-03-28" />
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <Button size="sm" variant="outline" disabled>
-                Cancel
-              </Button>
-              <Button size="sm" disabled>
-                Download Report
-              </Button>
-            </div>
-          </div>
+          <Card className="gap-2">
+            <CardHeader>
+              <CardTitle className="text-sm">Admin Report</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground text-xs">
+                Summary report across all branches — deposits, withdrawals, service charges and
+                pending approvals.
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">From</Label>
+                  <Input type="date" disabled defaultValue="2025-03-28" className="text-xs" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">To</Label>
+                  <Input type="date" disabled defaultValue="2025-03-28" className="text-xs" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="secondary" size="sm" disabled>
+                  Download CSV
+                </Button>
+                <Button size="sm" disabled>
+                  Download PDF
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </Preview>
 
         <ul className="list-inside list-disc space-y-1 pl-1">
-          <li>The date defaults to today.</li>
-          <li>The report downloads as a PDF file.</li>
+          <li>
+            The PDF lists all branches with totals for deposits, withdrawals, service charges,
+            pending amount, and new customers.
+          </li>
+          <li>The CSV contains the same data per branch with a grand total row at the bottom.</li>
+          <li>
+            The admin report is also accessible from the profile dropdown via{" "}
+            <strong>Download report</strong> — this opens the same dialog with the same date range
+            and PDF / CSV options.
+          </li>
         </ul>
       </div>
 
@@ -201,17 +158,14 @@ export default function AdminReportsGuide() {
         <h3 className="text-foreground text-base font-semibold">Customer Account Statement</h3>
         <p>
           The customer account statement shows all transactions for a specific customer within an
-          optional date range.
+          optional date range. It is accessed from the Customers page, not the Reports page.
         </p>
 
         <StepLabel n={1}>
-          Navigate to the <strong>Customers</strong> page
+          Navigate to the <strong>Customers</strong> page and find the customer in the table
         </StepLabel>
-        <AdminNavPreview highlight="Customers" />
-
         <StepLabel n={2}>
-          Find the customer in the table and click the download icon (
-          <Download className="inline size-3.5" />) on their row
+          Click the download icon (<Download className="inline size-3.5" />) on their row
         </StepLabel>
         <Preview wide>
           <div className="space-y-0 rounded-md border text-xs">
@@ -225,46 +179,30 @@ export default function AdminReportsGuide() {
               <span>Last Dep.</span>
               <span />
             </div>
-            {[
-              {
-                name: "Ama Darko",
-                account: "KSS-0042",
-                phone: "024 555 1234",
-                email: "ama@mail.com",
-                branch: "Kumasi",
-                contribution: "₵50.00",
-                registered: "15/01/25",
-                lastDeposit: "28/03/25",
-              },
-            ].map((row) => (
-              <div
-                key={row.name}
-                className="grid grid-cols-8 items-center gap-2 border-b px-3 py-2.5 last:border-0"
-              >
-                <span className="text-primary font-medium whitespace-nowrap">{row.name}</span>
-                <span className="font-mono">{row.account}</span>
-                <span>
-                  <div className="text-muted-foreground leading-tight">
-                    <div>{row.phone}</div>
-                    <div className="truncate">{row.email}</div>
-                  </div>
-                </span>
-                <span>{row.branch}</span>
-                <span className="whitespace-nowrap">{row.contribution}</span>
-                <span className="text-muted-foreground">{row.registered}</span>
-                <span className="text-muted-foreground">{row.lastDeposit}</span>
-                <span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="border-primary/30 size-7 border"
-                    disabled
-                  >
-                    <Download className="size-3.5" />
-                  </Button>
-                </span>
-              </div>
-            ))}
+            <div className="grid grid-cols-8 items-center gap-2 px-3 py-2.5">
+              <span className="text-primary font-medium whitespace-nowrap">Ama Darko</span>
+              <span className="font-mono">KSS-0042</span>
+              <span>
+                <div className="text-muted-foreground leading-tight">
+                  <div>024 555 1234</div>
+                  <div className="truncate">ama@mail.com</div>
+                </div>
+              </span>
+              <span>Kumasi</span>
+              <span className="whitespace-nowrap">₵50.00</span>
+              <span className="text-muted-foreground">15/01/25</span>
+              <span className="text-muted-foreground">28/03/25</span>
+              <span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="border-primary/30 size-7 border"
+                  disabled
+                >
+                  <Download className="size-3.5" />
+                </Button>
+              </span>
+            </div>
           </div>
         </Preview>
 
@@ -272,13 +210,11 @@ export default function AdminReportsGuide() {
         <Preview>
           <div className="space-y-4">
             <div>
-              <Paragraph className="text-foreground text-sm font-semibold">
-                Download Account Statement
-              </Paragraph>
-              <Paragraph className="text-muted-foreground text-xs">
+              <p className="text-foreground text-sm font-semibold">Download Account Statement</p>
+              <p className="text-muted-foreground text-xs">
                 Download account statement for <strong>Ama Darko</strong>. Select a date range or
                 leave empty to download the last 3 months.
-              </Paragraph>
+              </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -308,8 +244,23 @@ export default function AdminReportsGuide() {
             Both dates are optional — leave them empty and the statement defaults to the last 3
             months.
           </li>
-          <li>The statement downloads as a PDF file.</li>
+          <li>The statement downloads as a PDF file only.</li>
         </ul>
+      </div>
+
+      {/* Agent Report from Users Page */}
+      <div className="space-y-3">
+        <h3 className="text-foreground text-base font-semibold">Agent Report (Users Page)</h3>
+        <p>
+          Individual agent reports can also be downloaded directly from the Users page. Navigate to{" "}
+          <strong>Users</strong>, find the agent in the table, and click the download icon (
+          <DownloadIcon className="inline size-3.5" />) on their row. Select a date range and click{" "}
+          <strong>Download Report</strong>.
+        </p>
+        <p className="text-muted-foreground text-xs">
+          Only agent users have the download icon. This downloads a PDF only — use the Reports page
+          for the CSV version.
+        </p>
       </div>
 
       <GuideNavigation />

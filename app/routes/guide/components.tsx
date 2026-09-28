@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Contact,
+  FileBarChart2,
   History,
   Home,
   Users,
@@ -139,6 +140,7 @@ const adminNavItems = [
   { label: "Customers", icon: Contact },
   { label: "Users", icon: Users },
   { label: "Audit Logs", icon: History },
+  { label: "Reports", icon: FileBarChart2 },
 ] as const;
 
 export type AdminNavHighlight = (typeof adminNavItems)[number]["label"] | "Approvals";

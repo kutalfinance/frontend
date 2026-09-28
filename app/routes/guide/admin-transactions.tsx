@@ -6,6 +6,7 @@ import {
   ChevronDown,
   Coins,
   SearchIcon,
+  Undo2,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -279,7 +280,7 @@ export default function AdminTransactionsGuide() {
             <strong>Type</strong> — filter by Deposit, Withdrawal, or Service Charge
           </li>
           <li>
-            <strong>Status</strong> — filter by Completed, Pending, Rejected, or Failed
+            <strong>Status</strong> — filter by Completed, Pending, Rejected, Failed, or Reversed
           </li>
           <li>
             <strong>Customer</strong> — filter by a specific customer (also updates the metrics
@@ -396,13 +397,121 @@ export default function AdminTransactionsGuide() {
           </li>
           <li>
             <strong>Status</strong> — green for Completed, grey for Pending, red for Rejected or
-            Failed
+            Failed, outline for Reversed
           </li>
           <li>
             <strong>Recorded By</strong> — the admin or agent who created the transaction
           </li>
           <li>
             <strong>Date &amp; Time</strong> — full timestamp of when the transaction was recorded
+          </li>
+        </ul>
+      </div>
+
+      {/* Reversing a Transaction */}
+      <div className="space-y-3">
+        <h3 className="text-foreground text-base font-semibold">Reversing a Transaction</h3>
+        <p>
+          Branch approvers can reverse a completed deposit or withdrawal. A{" "}
+          <strong>Reverse</strong> button appears on the right side of eligible rows.
+        </p>
+
+        <Preview wide>
+          <div className="space-y-0 rounded-md border text-xs">
+            <div className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] items-center gap-2 border-b px-3 py-2.5">
+              <span className="font-medium whitespace-nowrap">₵ 500.00</span>
+              <span className="text-primary font-medium">Ama Darko</span>
+              <span>
+                <Badge className="text-[10px]">
+                  <BanknoteArrowUp className="size-3" />
+                  DEPOSIT
+                </Badge>
+              </span>
+              <span>
+                <Badge className="text-[10px]">COMPLETED</Badge>
+              </span>
+              <span className="text-muted-foreground">Kofi Mensah</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground h-7 text-[10px]"
+                disabled
+              >
+                <Undo2 className="size-3" />
+                Reverse
+              </Button>
+            </div>
+          </div>
+        </Preview>
+
+        <p>
+          Clicking <strong>Reverse</strong> opens a confirmation dialog. Confirm to proceed — the
+          action cannot be undone.
+        </p>
+
+        <Preview>
+          <div className="space-y-4">
+            <div>
+              <p className="text-foreground text-sm font-semibold">Reverse Transaction?</p>
+              <p className="text-muted-foreground text-xs">
+                This will reverse the deposit of <strong>₵ 500.00</strong> for{" "}
+                <strong>Ama Darko</strong>. The transaction will be marked as reversed and the
+                customer&apos;s balance and contribution days will be adjusted. This cannot be
+                undone.
+              </p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button size="sm" variant="outline" disabled>
+                Cancel
+              </Button>
+              <Button size="sm" variant="destructive" disabled>
+                Reverse Transaction
+              </Button>
+            </div>
+          </div>
+        </Preview>
+
+        <p>
+          After reversal, the transaction shows a <strong>Reversed</strong> status badge and the
+          type badge is crossed out:
+        </p>
+
+        <Preview wide>
+          <div className="space-y-0 rounded-md border text-xs">
+            <div className="grid grid-cols-5 items-center gap-2 px-3 py-2.5">
+              <span className="font-medium whitespace-nowrap">₵ 500.00</span>
+              <span className="text-primary font-medium">Ama Darko</span>
+              <span>
+                <Badge variant="outline" className="text-[10px] line-through opacity-60">
+                  <BanknoteArrowUp className="size-3" />
+                  DEPOSIT
+                </Badge>
+              </span>
+              <span>
+                <Badge variant="outline" className="text-[10px]">
+                  REVERSED
+                </Badge>
+              </span>
+              <span className="text-muted-foreground">Kofi Mensah</span>
+            </div>
+          </div>
+        </Preview>
+
+        <ul className="list-inside list-disc space-y-1 pl-1">
+          <li>
+            Only <strong>branch approvers</strong> can reverse transactions. If the Reverse button
+            is not visible, you are not the approver for that customer&apos;s branch.
+          </li>
+          <li>
+            Only <strong>completed deposits and withdrawals</strong> can be reversed. Service
+            charges, reversal entries, and already-reversed transactions do not have a Reverse
+            button.
+          </li>
+          <li>
+            Reversing a withdrawal also cancels any linked service charge on that same transaction.
+          </li>
+          <li>
+            <strong className="text-destructive">This action cannot be undone.</strong>
           </li>
         </ul>
       </div>

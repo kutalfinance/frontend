@@ -1,4 +1,4 @@
-import { BanknoteArrowDown, Check, X } from "lucide-react";
+import { BanknoteArrowDown, Check, ScanEye, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,7 +55,9 @@ export default function AdminWithdrawalsGuide() {
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Approvals Table</h3>
         <p>
-          Each row represents a pending withdrawal with details and action buttons on the right.
+          Each row represents a pending withdrawal. Click the view icon (
+          <ScanEye className="inline size-3.5" />) on a row to open a side panel with the full
+          withdrawal details and the Approve / Reject buttons.
         </p>
 
         <Preview wide>
@@ -98,14 +100,9 @@ export default function AdminWithdrawalsGuide() {
                 </span>
                 <span className="text-muted-foreground">{row.recordedBy}</span>
                 <span className="text-muted-foreground whitespace-nowrap">{row.date}</span>
-                <span className="flex gap-1">
-                  <Button size="sm" variant="outline" className="h-7 text-[10px]" disabled>
-                    <Check className="size-3" />
-                    Approve
-                  </Button>
-                  <Button size="sm" variant="destructive" className="h-7 text-[10px]" disabled>
-                    <X className="size-3" />
-                    Reject
+                <span>
+                  <Button variant="ghost" size="icon" className="size-7" disabled>
+                    <ScanEye className="size-3.5" />
                   </Button>
                 </span>
               </div>
@@ -137,7 +134,10 @@ export default function AdminWithdrawalsGuide() {
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Approving a Withdrawal</h3>
         <p>
-          Click <strong>Approve</strong> on a row to open a confirmation dialog.
+          Click the view icon on a row to open the Withdrawal Request side panel. The panel shows
+          the customer&apos;s details, their contribution history, and a breakdown of the withdrawal
+          amount including any service charge. Click <strong>Approve</strong> in the panel footer to
+          open a confirmation dialog.
         </p>
         <Preview>
           <div className="space-y-4">
@@ -167,6 +167,7 @@ export default function AdminWithdrawalsGuide() {
             Once approved, the withdrawal status changes to <strong>Completed</strong> and the
             customer&apos;s balance is updated.
           </li>
+          <li>The side panel and confirmation dialog both close automatically.</li>
           <li>The transaction is removed from the pending list automatically.</li>
         </ul>
       </div>
@@ -175,7 +176,7 @@ export default function AdminWithdrawalsGuide() {
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Rejecting a Withdrawal</h3>
         <p>
-          Click <strong>Reject</strong> on a row to open a confirmation dialog.
+          Click <strong>Reject</strong> in the side panel footer to open a confirmation dialog.
         </p>
         <Preview>
           <div className="space-y-4">
@@ -205,6 +206,7 @@ export default function AdminWithdrawalsGuide() {
             Once rejected, the withdrawal status changes to <strong>Rejected</strong> and the
             customer&apos;s balance remains unchanged.
           </li>
+          <li>The side panel and confirmation dialog both close automatically.</li>
           <li>
             <strong className="text-destructive">This action cannot be undone.</strong> A new
             withdrawal must be submitted if needed.

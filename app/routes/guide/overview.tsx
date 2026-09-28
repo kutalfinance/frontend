@@ -40,6 +40,22 @@ export default function OverviewGuide() {
         </div>
       </div>
 
+      <div className="space-y-3">
+        <h3 className="text-foreground text-base font-semibold">Getting Help</h3>
+        <p>
+          If you need assistance, click your profile avatar in the top-right corner and select{" "}
+          <strong>Help &amp; Support</strong> from the dropdown. This opens the KSS support portal
+          in a new tab where you can submit a request or browse existing help articles.
+        </p>
+        <p>
+          You can also navigate directly to{" "}
+          <strong>
+            <code>/help</code>
+          </strong>{" "}
+          or share that link with other users — it redirects to the same portal.
+        </p>
+      </div>
+
       <GuideNavigation />
     </div>
   );

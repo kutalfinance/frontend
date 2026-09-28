@@ -3,6 +3,7 @@ import { type RouteConfig, index, layout, prefix, route } from "@react-router/de
 export default [
   route("/", "./routes/home.tsx"),
   route("/initialize", "./routes/initialize.tsx"),
+  route("/help", "./routes/help.tsx"),
 
   route("/guide", "./routes/guide/layout.tsx", [
     index("./routes/guide/overview.tsx"),

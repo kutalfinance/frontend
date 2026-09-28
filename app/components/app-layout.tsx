@@ -1,7 +1,7 @@
 import { Link, type LinkProps, href, useLocation } from "react-router";
 
 import { useQuery } from "@tanstack/react-query";
-import { Building2, CheckCircle, Download, FileBarChart2, History, Home, Menu, Users } from "lucide-react";
+import { Building2, CheckCircle, Download, FileBarChart2, HelpCircle, History, Home, Menu, Users } from "lucide-react";
 import { Contact, type LucideIcon } from "lucide-react";
 
 import { AppLogo } from "@/components/app-logo";
@@ -178,6 +178,12 @@ function UserMenu() {
         </DialogTrigger>
         <DropdownMenuItem asChild>
           <Link to="/guide">User guide</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <a href="/help" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+            <HelpCircle className="size-4" />
+            Help & Support
+          </a>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => logout.mutate()}>Log out</DropdownMenuItem>

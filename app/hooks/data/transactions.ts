@@ -1,14 +1,10 @@
-import { mutationOptions, queryOptions } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { keepPreviousData, mutationOptions, queryOptions } from "@tanstack/react-query";
 import z from "zod";
 
 import { queryClient } from "@/components/query-provider";
 
 import { api } from "@/lib/api";
-import { enqueueOperation } from "@/lib/offline";
-import { isOfflineMode } from "@/lib/offline-mode";
-import { TransactionTypes } from "@/lib/types";
-import type { APIResponse, Transaction, TransactionMetrics } from "@/lib/types";
+import type { APIResponse, PagedResponse, Transaction, TransactionMetrics } from "@/lib/types";
 
 import { errorToast, queryKeys, successToast } from "./utils";
 
@@ -28,62 +24,52 @@ export const validateTransactionsSearch = z
 
 export type TransactionsSearchParams = z.infer<typeof validateTransactionsSearch>;
 
-function filterTransactions(
-  transactions: Transaction[],
-  searchParams?: TransactionsSearchParams
-): Transaction[] {
-  let result = transactions;
-  if (searchParams?.customerId) {
-    result = result.filter((t) => t.customer.id === searchParams.customerId);
-  }
-  if (searchParams?.type) {
-    result = result.filter((t) => t.type === searchParams.type);
-  }
-  if (searchParams?.status) {
-    result = result.filter((t) => t.status === searchParams.status);
-  }
-  if (searchParams?.q) {
-    const q = searchParams.q.toLowerCase();
-    result = result.filter((t) => t.customer.name.toLowerCase().includes(q));
-  }
-  if (searchParams?.recordedAfter) {
-    const after = new Date(searchParams.recordedAfter).getTime();
-    result = result.filter((t) => new Date(t.createdAt).getTime() >= after);
-  }
-  if (searchParams?.recordedBefore) {
-    const before = new Date(searchParams.recordedBefore).getTime();
-    result = result.filter((t) => new Date(t.createdAt).getTime() <= before);
-  }
-  return result;
-}
-
 export const transactionsQueryOptions = ({
   searchParams,
 }: {
   searchParams?: TransactionsSearchParams;
 }) =>
   queryOptions({
-    queryKey: queryKeys.transactions.all(),
-    queryFn: () => api.get("transaction").json<APIResponse<Transaction[]>>(),
-    select: (data) => ({ ...data, data: filterTransactions(data.data, searchParams) }),
+    queryKey: queryKeys.transactions.filters(searchParams),
+    queryFn: () =>
+      api
+        .get("transaction", { searchParams: searchParams ?? {} })
+        .json<APIResponse<Transaction[]>>(),
+  });
+
+export const PAGED_TRANSACTIONS_PAGE_SIZE = 20;
+
+export const pagedTransactionsQueryOptions = ({
+  searchParams,
+  page,
+}: {
+  searchParams?: TransactionsSearchParams;
+  page: number;
+}) =>
+  queryOptions({
+    queryKey: [...queryKeys.transactions.filters(searchParams), "paged", page] as const,
+    queryFn: () =>
+      api
+        .get("transaction/paged", {
+          searchParams: { ...searchParams, page, size: PAGED_TRANSACTIONS_PAGE_SIZE },
+        })
+        .json<APIResponse<PagedResponse<Transaction>>>(),
+    placeholderData: keepPreviousData,
   });
 
 export const createWithdrawalOptions = mutationOptions({
   mutationFn: ({
     idempotencyKey,
-    customerName: _customerName,
     ...data
   }: {
     customerId: string;
     amount?: number;
     serviceCharge?: number;
     idempotencyKey: string;
-    customerName?: string;
   }) => {
-    if (isOfflineMode()) {
-      return Promise.reject(Object.assign(new Error("offline"), { isOffline: true }));
-    }
-    const body: { customerId: string; amount?: number; serviceCharge?: number } = { customerId: data.customerId };
+    const body: { customerId: string; amount?: number; serviceCharge?: number } = {
+      customerId: data.customerId,
+    };
     if (data.amount !== undefined) body.amount = data.amount;
     if (data.serviceCharge !== undefined) body.serviceCharge = data.serviceCharge;
     return api
@@ -95,62 +81,27 @@ export const createWithdrawalOptions = mutationOptions({
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
     successToast("Withdrawal request initiated");
   },
-  onError: (error: any, variables) => {
-    if (error.isOffline || isOfflineMode() || !navigator.onLine) {
-      enqueueOperation({
-        url: "transaction/withdraw",
-        method: "POST",
-        body: JSON.stringify({ customerId: variables.customerId, amount: variables.amount }),
-        idempotencyKey: variables.idempotencyKey,
-        label: `Withdrawal – ${variables.customerName ?? ""}`.trim().replace(/–\s*$/, ""),
-        queuedAt: Date.now(),
-      });
-      toast.info("You're offline — withdrawal queued and will sync automatically");
-      return;
-    }
-    errorToast(error);
-  },
+  onError: errorToast,
 });
 
 export const createDepositOptions = mutationOptions({
   mutationFn: ({
     idempotencyKey,
-    customerName: _customerName,
     ...data
   }: {
     customerId: string;
     amount?: number;
     idempotencyKey: string;
-    customerName?: string;
-  }) => {
-    if (isOfflineMode()) {
-      return Promise.reject(Object.assign(new Error("offline"), { isOffline: true }));
-    }
-    return api
+  }) =>
+    api
       .post("transaction/deposit", { json: data, headers: { "Idempotency-Key": idempotencyKey } })
-      .json<APIResponse<Transaction>>();
-  },
+      .json<APIResponse<Transaction>>(),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
     queryClient.invalidateQueries({ queryKey: queryKeys.customers.all() });
     successToast("Deposit recorded successfully");
   },
-  onError: (error: any, variables) => {
-    if (error.isOffline || isOfflineMode() || !navigator.onLine) {
-      const name = variables.customerName ? ` – ${variables.customerName}` : "";
-      enqueueOperation({
-        url: "transaction/deposit",
-        method: "POST",
-        body: JSON.stringify({ customerId: variables.customerId, amount: variables.amount }),
-        idempotencyKey: variables.idempotencyKey,
-        label: `Deposit${name}`,
-        queuedAt: Date.now(),
-      });
-      toast.info("You're offline — deposit queued and will sync automatically");
-      return;
-    }
-    errorToast(error);
-  },
+  onError: errorToast,
 });
 
 export const pendingApprovalsQueryOptions = () =>
@@ -187,40 +138,6 @@ const validateMetricsSearch = validateTransactionsSearch.pick({ customerId: true
 });
 type TransactionsMetricsSearchParams = z.infer<typeof validateMetricsSearch>;
 
-function computeMetricsFromCache(
-  searchParams: TransactionsMetricsSearchParams
-): APIResponse<TransactionMetrics> | undefined {
-  const all = queryClient.getQueryData<APIResponse<Transaction[]>>(queryKeys.transactions.all());
-  if (!all) return undefined;
-  let filtered = searchParams.customerId
-    ? all.data.filter((t) => t.customer.id === searchParams.customerId)
-    : all.data;
-  if (searchParams.startDate) {
-    const start = new Date(searchParams.startDate).getTime();
-    filtered = filtered.filter((t) => new Date(t.createdAt).getTime() >= start);
-  }
-  if (searchParams.endDate) {
-    const end = new Date(searchParams.endDate + "T23:59:59").getTime();
-    filtered = filtered.filter((t) => new Date(t.createdAt).getTime() <= end);
-  }
-  const completed = (type: TransactionTypes) =>
-    filtered
-      .filter((t) => t.type === type && t.status === "COMPLETED" && !t.isReversed)
-      .reduce((sum, t) => sum + t.amount, 0);
-  const totalDeposited = completed(TransactionTypes.DEPOSIT);
-  const totalWithdrawn = completed(TransactionTypes.WITHDRAWAL);
-  const totalCharged = completed(TransactionTypes.SERVICE_CHARGE);
-  return {
-    msg: "ok",
-    data: {
-      totalDeposited,
-      totalWithdrawn,
-      totalCharged,
-      balance: totalDeposited - totalWithdrawn - totalCharged,
-    } as TransactionMetrics,
-  };
-}
-
 export const transactionsMetricsOptions = ({
   searchParams,
 }: {
@@ -230,7 +147,6 @@ export const transactionsMetricsOptions = ({
     queryKey: queryKeys.transactions.metrics(searchParams),
     queryFn: () =>
       api.get("transaction/metrics", { searchParams }).json<APIResponse<TransactionMetrics>>(),
-    placeholderData: () => computeMetricsFromCache(searchParams),
   });
 
 export const reverseTransactionOptions = mutationOptions({

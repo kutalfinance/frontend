@@ -3,14 +3,9 @@ import { Link, href } from "react-router";
 
 import {
   type ColumnDef,
-  type ColumnFiltersState,
   type PaginationState,
-  type SortingState,
   type VisibilityState,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -138,44 +133,48 @@ function MoveCustomersDialog({
   );
 }
 
+/** Rows are one server page; filtering and sorting happen on the server. */
 export function CustomersTable({
   customers,
   isLoading,
+  pageIndex,
+  pageSize,
+  rowCount,
+  onPageChange,
 }: {
   customers: Customer[];
   isLoading: boolean;
+  pageIndex: number;
+  pageSize: number;
+  rowCount: number;
+  onPageChange: (pageIndex: number) => void;
 }) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 7 });
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [moveDialog, setMoveDialog] = useState(false);
 
+  const pagination: PaginationState = { pageIndex, pageSize };
   const table = useReactTable({
     data: customers,
     columns,
     getRowId: (row) => row.id,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    manualPagination: true,
+    rowCount,
+    onPaginationChange: (updater) =>
+      onPageChange((typeof updater === "function" ? updater(pagination) : updater).pageIndex),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
     state: {
-      sorting,
-      columnFilters,
       columnVisibility,
       rowSelection,
       pagination,
     },
   });
 
-  const selectedIds = table.getSelectedRowModel().rows.map((r) => r.original.id);
+  // Selection is keyed by id, so it survives moving between pages.
+  const selectedIds = Object.keys(rowSelection).filter((id) => rowSelection[id]);
 
   return (
     <div className="space-y-4">

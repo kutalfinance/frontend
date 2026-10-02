@@ -10,14 +10,13 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths(),
     VitePWA({
-      strategies: "injectManifest",
-      srcDir: "app",
-      filename: "sw.ts",
+      // Offline mode was removed. This ships a service worker that unregisters
+      // itself and deletes every cache on devices that still run the old one,
+      // so nobody keeps getting stale cached API responses. The manifest stays
+      // so the app is still installable.
+      selfDestroying: true,
       registerType: "autoUpdate",
       injectRegister: null,
-      workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,svg,woff,woff2}"],
-      },
       includeManifestIcons: false,
       manifest: {
         name: "KSS",

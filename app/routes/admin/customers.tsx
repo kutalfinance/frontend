@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Link, Outlet } from "react-router";
 
+import { useQuery } from "@tanstack/react-query";
 import { Contact, Plus, Upload } from "lucide-react";
 
 import {
@@ -14,7 +16,11 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Heading, Paragraph } from "@/components/ui/text";
 
-import { useCustomers, validateCustomerSearch } from "@/hooks/data/customers";
+import {
+  CUSTOMERS_PAGE_SIZE,
+  pagedCustomersQueryOptions,
+  validateCustomerSearch,
+} from "@/hooks/data/customers";
 import { useAdminMetrics } from "@/hooks/data/users";
 import { siteConfig } from "@/lib/config";
 import { formatMoney } from "@/lib/utils/money";
@@ -52,8 +58,15 @@ export function clientLoader({ request }: Route.ClientLoaderArgs) {
 
 export default function Customers({ loaderData }: Route.ComponentProps) {
   const { searchParams } = loaderData;
-  const { data, isPending } = useCustomers({ searchParams });
-  const customers = data?.data ?? [];
+  // Reset to the first page whenever the filters change.
+  const filtersKey = JSON.stringify(searchParams);
+  const [page, setPage] = useState({ filtersKey, index: 0 });
+  const pageIndex = page.filtersKey === filtersKey ? page.index : 0;
+
+  const { data, isPending } = useQuery(
+    pagedCustomersQueryOptions({ searchParams, page: pageIndex })
+  );
+  const customers = data?.data.items ?? [];
 
   return (
     <div className="container space-y-10">
@@ -90,7 +103,14 @@ export default function Customers({ loaderData }: Route.ComponentProps) {
           <CustomerClearFilters />
           <CustomerSortFilter />
         </CustomerFilters>
-        <CustomersTable customers={customers} isLoading={isPending} />
+        <CustomersTable
+          customers={customers}
+          isLoading={isPending}
+          pageIndex={pageIndex}
+          pageSize={CUSTOMERS_PAGE_SIZE}
+          rowCount={data?.data.totalItems ?? 0}
+          onPageChange={(index) => setPage({ filtersKey, index })}
+        />
       </div>
     </div>
   );

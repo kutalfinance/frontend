@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 
 import { format } from "date-fns";
-import { ArrowUpDown, CalendarIcon, SearchIcon } from "lucide-react";
+import { ArrowUpDown, CalendarIcon, ChevronsUpDown, SearchIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,10 +16,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useCustomers } from "@/hooks/data/customers";
 import { useDebounce } from "@/hooks/use-debounce";
 import { TransactionStatus, TransactionTypes } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { CustomerPicker, useSelectedCustomer } from "@/modules/customers/customer-picker";
 
 // Context
 interface TransactionFiltersContextValue {
@@ -131,38 +131,30 @@ export function TransactionTypeFilter() {
 
 export function TransactionCustomerFilter() {
   const { searchParams, setSearchParams, disabled } = useTransactionFilters();
-  const { data: customersData } = useCustomers();
-  const customers = customersData?.data ?? [];
+  const customerId = searchParams.get("customerId");
+  const selected = useSelectedCustomer(customerId);
 
   return (
-    <Select
+    <CustomerPicker
+      value={customerId}
+      allOption="All customers"
       disabled={disabled}
-      value={searchParams.get("customerId") || "all"}
-      onValueChange={(value) => {
+      onSelect={(customer) => {
         setSearchParams((prev) => {
-          if (value === "all") value = "";
-
-          if (value) prev.set("customerId", value);
+          if (customer) prev.set("customerId", customer.id);
           else prev.delete("customerId");
           return prev;
         });
       }}
     >
-      <SelectTrigger>
-        <div className="flex items-center gap-1.5">
-          <span className="text-muted-foreground">Customer:</span>
-          <SelectValue placeholder="Customer" />
-        </div>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All customers</SelectItem>
-        {customers.map((customer) => (
-          <SelectItem key={customer.id} value={customer.id}>
-            {customer.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+      <Button variant={customerId ? "secondary" : "outline"} disabled={disabled}>
+        <span className="text-muted-foreground">Customer:</span>
+        <span className="max-w-40 truncate">
+          {customerId ? (selected?.name ?? "Loading...") : "All customers"}
+        </span>
+        <ChevronsUpDown className="size-4 opacity-50" />
+      </Button>
+    </CustomerPicker>
   );
 }
 

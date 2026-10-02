@@ -80,7 +80,6 @@ export function AgentRecordDeposit({
         customerId: customer.id,
         amount: pendingData.amount,
         idempotencyKey,
-        customerName: customer.name,
       },
       { onSuccess: () => form.reset() }
     );
@@ -187,7 +186,6 @@ export function AgentRecordWithdrawal({
         amount: pendingData.amount,
         serviceCharge: pendingData.serviceCharge,
         idempotencyKey,
-        customerName: customer.name,
       },
       { onSuccess: () => form.reset() }
     );

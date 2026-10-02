@@ -46,7 +46,9 @@ export default function AdminReports() {
       <ModuleHeading>
         <ModuleHeader>
           <ModuleTitle>Reports</ModuleTitle>
-          <ModuleDescription>Generate and download PDF reports for any date range</ModuleDescription>
+          <ModuleDescription>
+            Generate and download PDF reports for any date range
+          </ModuleDescription>
         </ModuleHeader>
       </ModuleHeading>
 
@@ -65,7 +67,9 @@ function BranchReportCard() {
   const { data, isPending: loadingBranches } = useBranchesAdmin();
   const branches = data?.data ?? [];
   const { mutate, isPending } = useMutation(downloadAgentDailyReportOptions);
-  const { mutate: downloadCsv, isPending: isCsvPending } = useMutation(downloadAgentReportCsvOptions);
+  const { mutate: downloadCsv, isPending: isCsvPending } = useMutation(
+    downloadAgentReportCsvOptions
+  );
 
   const selectedBranch = branches.find((b) => b.id === branchId);
 
@@ -89,7 +93,9 @@ function BranchReportCard() {
           <Label>Branch</Label>
           <Select value={branchId} onValueChange={setBranchId} disabled={loadingBranches}>
             <SelectTrigger>
-              <SelectValue placeholder={loadingBranches ? "Loading branches…" : "Select a branch"} />
+              <SelectValue
+                placeholder={loadingBranches ? "Loading branches…" : "Select a branch"}
+              />
             </SelectTrigger>
             <SelectContent>
               {branches.map((b) => (
@@ -134,11 +140,7 @@ function BranchReportCard() {
           >
             Download CSV
           </Button>
-          <Button
-            onClick={onDownload}
-            disabled={!branchId || isPending}
-            isLoading={isPending}
-          >
+          <Button onClick={onDownload} disabled={!branchId || isPending} isLoading={isPending}>
             Download PDF
           </Button>
         </div>
@@ -151,7 +153,9 @@ function AdminReportCard() {
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(today);
   const { mutate, isPending } = useMutation(downloadAdminDailyReportOptions);
-  const { mutate: downloadCsv, isPending: isCsvPending } = useMutation(downloadAdminReportCsvOptions);
+  const { mutate: downloadCsv, isPending: isCsvPending } = useMutation(
+    downloadAdminReportCsvOptions
+  );
 
   function onDownload() {
     mutate({ startDate, endDate });

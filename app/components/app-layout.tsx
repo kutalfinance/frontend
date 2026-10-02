@@ -1,11 +1,20 @@
 import { Link, type LinkProps, href, useLocation } from "react-router";
 
 import { useQuery } from "@tanstack/react-query";
-import { Building2, CheckCircle, Download, FileBarChart2, HelpCircle, History, Home, Menu, Users } from "lucide-react";
+import {
+  Building2,
+  CheckCircle,
+  Download,
+  FileBarChart2,
+  HelpCircle,
+  History,
+  Home,
+  Menu,
+  Users,
+} from "lucide-react";
 import { Contact, type LucideIcon } from "lucide-react";
 
 import { AppLogo } from "@/components/app-logo";
-import { OfflineSyncButton } from "@/components/offline-sync-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -163,10 +172,13 @@ function UserMenu() {
         <DropdownMenuSeparator />
         {isApprover && (
           <DropdownMenuItem asChild>
-            <Link to={href("/admin/pending-approvals")} className="flex items-center justify-between gap-4">
+            <Link
+              to={href("/admin/pending-approvals")}
+              className="flex items-center justify-between gap-4"
+            >
               Pending approvals
               {pendingLabel && (
-                <span className="bg-destructive text-destructive-foreground rounded-full px-1.5 py-0.5 text-xs font-medium leading-none">
+                <span className="bg-destructive text-destructive-foreground rounded-full px-1.5 py-0.5 text-xs leading-none font-medium">
                   {pendingLabel}
                 </span>
               )}
@@ -180,7 +192,12 @@ function UserMenu() {
           <Link to="/guide">User guide</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <a href="/help" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+          <a
+            href="/help"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2"
+          >
             <HelpCircle className="size-4" />
             Help & Support
           </a>
@@ -199,15 +216,13 @@ function UserMenu() {
             <CheckCircle className="size-4" />
             <span className="hidden sm:inline">Approvals</span>
             {pendingLabel && (
-              <span className="bg-destructive text-destructive-foreground rounded-full px-1.5 py-0.5 text-xs font-medium leading-none">
+              <span className="bg-destructive text-destructive-foreground rounded-full px-1.5 py-0.5 text-xs leading-none font-medium">
                 {pendingLabel}
               </span>
             )}
           </Link>
         </Button>
       )}
-
-      {!isAdmin && <OfflineSyncButton />}
 
       {canInstall && (
         <Button variant="ghost" size="icon" onClick={install} title="Install app">

@@ -23,7 +23,7 @@ export function TransactionMetrics({ customerId }: { customerId?: string }) {
   const [appliedFrom, setAppliedFrom] = useState("");
   const [appliedTo, setAppliedTo] = useState("");
 
-  const { data, isPending, isPlaceholderData, isFetching } = useQuery(
+  const { data, isPending } = useQuery(
     transactionsMetricsOptions({
       searchParams: {
         customerId,
@@ -34,11 +34,7 @@ export function TransactionMetrics({ customerId }: { customerId?: string }) {
   );
   const metrics = data?.data;
 
-  // Placeholder data (a client-side estimate from cache) can be wrong, so show
-  // the loading state while the authoritative fetch is in flight rather than
-  // flashing stale numbers. If the fetch fails (e.g. offline), the estimate is
-  // still shown as a fallback.
-  const showLoading = isPending || (isPlaceholderData && isFetching);
+  const showLoading = isPending;
 
   const hasDateFilter = appliedFrom || appliedTo;
 

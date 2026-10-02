@@ -40,9 +40,9 @@ export function ReverseTransaction({
           <AlertDialogDescription>
             This will reverse the {transaction.type.toLowerCase()} of{" "}
             <strong>{formatMoney(transaction.amount)}</strong> for{" "}
-            <strong>{transaction.customer.name}</strong>. The transaction will be marked as
-            reversed and the customer's balance and contribution days will be adjusted. This cannot
-            be undone.
+            <strong>{transaction.customer.name}</strong>. The transaction will be marked as reversed
+            and the customer's balance and contribution days will be adjusted. This cannot be
+            undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

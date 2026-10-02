@@ -23,7 +23,10 @@ export function ApproveTransaction({
   transaction,
   onSuccess,
   ...props
-}: React.ComponentProps<typeof AlertDialogTrigger> & { transaction: Transaction; onSuccess?: () => void }) {
+}: React.ComponentProps<typeof AlertDialogTrigger> & {
+  transaction: Transaction;
+  onSuccess?: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const { mutate, isPending } = useMutation(approveTransactionOptions);
 
@@ -60,7 +63,10 @@ export function RejectTransaction({
   transaction,
   onSuccess,
   ...props
-}: React.ComponentProps<typeof AlertDialogTrigger> & { transaction: Transaction; onSuccess?: () => void }) {
+}: React.ComponentProps<typeof AlertDialogTrigger> & {
+  transaction: Transaction;
+  onSuccess?: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const { mutate, isPending } = useMutation(rejectTransactionOptions);
 

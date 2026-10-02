@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -18,14 +18,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import {
   Dialog,
   DialogContent,
@@ -44,12 +36,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input, inputStyles } from "@/components/ui/input";
-import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-import { useCustomers } from "@/hooks/data/customers";
 import { createDepositOptions, createWithdrawalOptions } from "@/hooks/data/transactions";
 import { cn } from "@/lib/utils";
 import { formatMoney } from "@/lib/utils/money";
+import { CustomerPicker, useSelectedCustomer } from "@/modules/customers/customer-picker";
 
 const transactionSchema = z.object({
   amount: z.coerce.number().optional() as z.ZodOptional<z.ZodNumber>,
@@ -65,17 +56,15 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
   const [open, setOpen] = useState(false);
   const [pendingData, setPendingData] = useState<TransactionForm | null>(null);
   const { mutate: createTransaction, isPending } = useMutation(createDepositOptions);
-  const { data } = useCustomers();
   const idempotencyKeyRef = useRef(crypto.randomUUID());
-  const customers = data?.data ?? [];
 
   const form = useForm<TransactionForm>({
     resolver: zodResolver(transactionSchema),
     defaultValues: { amount: undefined, customerId: customerIdParam ?? "" },
   });
+  const selectedCustomer = useSelectedCustomer(form.watch("customerId"));
 
   const handleSubmit = (data: TransactionForm) => {
-    const selectedCustomer = customers.find((c) => c.id === data.customerId);
     if (
       selectedCustomer &&
       data.amount !== undefined &&
@@ -98,9 +87,7 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
     createTransaction({ ...pendingData, idempotencyKey });
   };
 
-  const pendingCustomerName = pendingData
-    ? customers.find((c) => c.id === pendingData.customerId)?.name
-    : null;
+  const pendingCustomerName = pendingData ? selectedCustomer?.name : null;
 
   return (
     <>
@@ -139,56 +126,31 @@ export function AdminRecordDeposit({ ...props }: React.ComponentProps<typeof Dia
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Customer</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              inputStyles,
-                              "justify-between font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
+                    <CustomerPicker
+                      value={field.value}
+                      onSelect={(customer) =>
+                        form.setValue("customerId", customer?.id ?? "", { shouldValidate: true })
+                      }
+                    >
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            inputStyles,
+                            "justify-between font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          <span className="truncate">
                             {field.value
-                              ? customers.find((customer) => customer.id === field.value)?.name
+                              ? (selectedCustomer?.name ?? "Loading...")
                               : "Select customer"}
-                            <ChevronsUpDown className="opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="p-0">
-                        <Command>
-                          <CommandInput placeholder="Search customers..." className="h-9" />
-                          <CommandList>
-                            <CommandEmpty>No customers found.</CommandEmpty>
-                            <CommandGroup>
-                              {customers.map((customer) => (
-                                <CommandItem
-                                  key={customer.id}
-                                  value={customer.name}
-                                  onSelect={() => {
-                                    form.setValue("customerId", customer.id);
-                                  }}
-                                  asChild
-                                >
-                                  <PopoverClose className="w-full">
-                                    {customer.name}
-                                    <Check
-                                      className={cn(
-                                        "ml-auto",
-                                        customer.id === field.value ? "opacity-100" : "opacity-0"
-                                      )}
-                                    />
-                                  </PopoverClose>
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                          </span>
+                          <ChevronsUpDown className="opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </CustomerPicker>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -242,14 +204,17 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
   const [open, setOpen] = useState(false);
   const [pendingData, setPendingData] = useState<WithdrawalForm | null>(null);
   const { mutate: createTransaction, isPending } = useMutation(createWithdrawalOptions);
-  const { data } = useCustomers();
   const idempotencyKeyRef = useRef(crypto.randomUUID());
-  const customers = data?.data ?? [];
 
   const form = useForm<WithdrawalForm>({
     resolver: zodResolver(withdrawalSchema),
-    defaultValues: { customerId: customerIdParam ?? "", amount: undefined, serviceCharge: undefined },
+    defaultValues: {
+      customerId: customerIdParam ?? "",
+      amount: undefined,
+      serviceCharge: undefined,
+    },
   });
+  const selectedCustomer = useSelectedCustomer(form.watch("customerId"));
 
   const handleSubmit = (data: WithdrawalForm) => setPendingData(data);
 
@@ -268,14 +233,16 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
       },
       {
         onSuccess: () =>
-          form.reset({ customerId: customerIdParam ?? "", amount: undefined, serviceCharge: undefined }),
+          form.reset({
+            customerId: customerIdParam ?? "",
+            amount: undefined,
+            serviceCharge: undefined,
+          }),
       }
     );
   };
 
-  const pendingCustomerName = pendingData
-    ? customers.find((c) => c.id === pendingData.customerId)?.name
-    : null;
+  const pendingCustomerName = pendingData ? selectedCustomer?.name : null;
 
   return (
     <>
@@ -322,56 +289,31 @@ export function AdminRecordWithdrawal({ ...props }: React.ComponentProps<typeof 
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Customer</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              inputStyles,
-                              "justify-between font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
+                    <CustomerPicker
+                      value={field.value}
+                      onSelect={(customer) =>
+                        form.setValue("customerId", customer?.id ?? "", { shouldValidate: true })
+                      }
+                    >
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            inputStyles,
+                            "justify-between font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          <span className="truncate">
                             {field.value
-                              ? customers.find((customer) => customer.id === field.value)?.name
+                              ? (selectedCustomer?.name ?? "Loading...")
                               : "Select customer"}
-                            <ChevronsUpDown className="opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="p-0">
-                        <Command>
-                          <CommandInput placeholder="Search customers..." className="h-9" />
-                          <CommandList>
-                            <CommandEmpty>No customers found.</CommandEmpty>
-                            <CommandGroup>
-                              {customers.map((customer) => (
-                                <CommandItem
-                                  key={customer.id}
-                                  value={customer.name}
-                                  onSelect={() => {
-                                    form.setValue("customerId", customer.id);
-                                  }}
-                                  asChild
-                                >
-                                  <PopoverClose className="w-full">
-                                    {customer.name}
-                                    <Check
-                                      className={cn(
-                                        "ml-auto",
-                                        customer.id === field.value ? "opacity-100" : "opacity-0"
-                                      )}
-                                    />
-                                  </PopoverClose>
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                          </span>
+                          <ChevronsUpDown className="opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </CustomerPicker>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -33,14 +33,24 @@ declare module "@tanstack/react-table" {
   }
 }
 
+/** Pass to page on the server instead of slicing `transactions` client-side. */
+type ServerPagination = {
+  pageIndex: number;
+  pageSize: number;
+  rowCount: number;
+  onPageChange: (pageIndex: number) => void;
+};
+
 export function TransactionsTable({
   transactions,
   isLoading,
   isAgentView = false,
+  serverPagination,
 }: {
   transactions: Transaction[];
   isLoading: boolean;
   isAgentView?: boolean;
+  serverPagination?: ServerPagination;
 }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -53,7 +63,19 @@ export function TransactionsTable({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    getPaginationRowModel: serverPagination ? undefined : getPaginationRowModel(),
+    manualPagination: !!serverPagination,
+    rowCount: serverPagination?.rowCount,
+    onPaginationChange: serverPagination
+      ? (updater) => {
+          const current = {
+            pageIndex: serverPagination.pageIndex,
+            pageSize: serverPagination.pageSize,
+          };
+          const next = typeof updater === "function" ? updater(current) : updater;
+          serverPagination.onPageChange(next.pageIndex);
+        }
+      : undefined,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -64,6 +86,9 @@ export function TransactionsTable({
       columnFilters,
       columnVisibility,
       rowSelection,
+      ...(serverPagination && {
+        pagination: { pageIndex: serverPagination.pageIndex, pageSize: serverPagination.pageSize },
+      }),
     },
     meta: {
       isAgentView,
@@ -118,14 +143,20 @@ const columns: ColumnDef<Transaction>[] = [
       let badge: ReactNode;
       if (type === TransactionTypes.DEPOSIT) {
         badge = (
-          <Badge variant={isReversed ? "outline" : "default"} className={isReversed ? "line-through opacity-60" : undefined}>
+          <Badge
+            variant={isReversed ? "outline" : "default"}
+            className={isReversed ? "line-through opacity-60" : undefined}
+          >
             <BanknoteArrowUp />
             Deposit
           </Badge>
         );
       } else if (type === TransactionTypes.WITHDRAWAL) {
         badge = (
-          <Badge variant={isReversed ? "outline" : "destructive"} className={isReversed ? "line-through opacity-60" : undefined}>
+          <Badge
+            variant={isReversed ? "outline" : "destructive"}
+            className={isReversed ? "line-through opacity-60" : undefined}
+          >
             <BanknoteArrowDown />
             Withdrawal
           </Badge>
@@ -203,7 +234,11 @@ const columns: ColumnDef<Transaction>[] = [
       if (!canReverse) return null;
       return (
         <ReverseTransaction transaction={tx}>
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-destructive"
+          >
             <Undo2 className="size-4" />
             Reverse
           </Button>

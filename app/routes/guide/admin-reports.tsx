@@ -85,11 +85,12 @@ export default function AdminReportsGuide() {
         <ul className="list-inside list-disc space-y-1 pl-1">
           <li>A branch must be selected before either download button becomes active.</li>
           <li>
-            The PDF includes three sections: deposits, approved withdrawals, and pending withdrawals.
+            The PDF includes three sections: deposits, approved withdrawals, and pending
+            withdrawals.
           </li>
           <li>
-            The CSV contains the same data in spreadsheet format with columns: Time, Amount, Customer
-            Name, Account Number, Phone Number.
+            The CSV contains the same data in spreadsheet format with columns: Time, Amount,
+            Customer Name, Account Number, Phone Number.
           </li>
         </ul>
       </div>

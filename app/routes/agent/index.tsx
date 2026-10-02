@@ -123,7 +123,7 @@ function MetricCard({
 }) {
   const card = (
     <Card
-      className={`gap-2 ${color ? colorClasses[color] : ""}${to ? " hover:bg-muted/30 transition-colors" : ""}`}
+      className={`gap-2 ${color ? colorClasses[color] : ""}${to ? "hover:bg-muted/30 transition-colors" : ""}`}
     >
       <CardHeader>
         <div className="w-fit rounded-md border p-2">

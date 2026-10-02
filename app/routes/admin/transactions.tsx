@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Outlet } from "react-router";
 
 import { useQuery } from "@tanstack/react-query";
@@ -13,7 +14,11 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useLoggedInUser } from "@/hooks/auth/common";
-import { transactionsQueryOptions, validateTransactionsSearch } from "@/hooks/data/transactions";
+import {
+  PAGED_TRANSACTIONS_PAGE_SIZE,
+  pagedTransactionsQueryOptions,
+  validateTransactionsSearch,
+} from "@/hooks/data/transactions";
 import { siteConfig } from "@/lib/config";
 import {
   AdminRecordDeposit,
@@ -56,8 +61,15 @@ export function clientLoader({ request }: Route.ClientLoaderArgs) {
 
 export default function Transactions({ loaderData }: Route.ComponentProps) {
   const { searchParams } = loaderData;
-  const { data, isPending } = useQuery(transactionsQueryOptions({ searchParams }));
-  const transactions = data?.data ?? [];
+  // Reset to the first page whenever the filters change.
+  const filtersKey = JSON.stringify(searchParams);
+  const [page, setPage] = useState({ filtersKey, index: 0 });
+  const pageIndex = page.filtersKey === filtersKey ? page.index : 0;
+
+  const { data, isPending } = useQuery(
+    pagedTransactionsQueryOptions({ searchParams, page: pageIndex })
+  );
+  const transactions = data?.data.items ?? [];
 
   const { data: userData } = useLoggedInUser();
   const user = userData?.data;
@@ -98,7 +110,16 @@ export default function Transactions({ loaderData }: Route.ComponentProps) {
         <TransactionClearFilters />
         <TransactionSortFilter />
       </TransactionFilters>
-      <TransactionsTable transactions={transactions} isLoading={isPending} />
+      <TransactionsTable
+        transactions={transactions}
+        isLoading={isPending}
+        serverPagination={{
+          pageIndex,
+          pageSize: PAGED_TRANSACTIONS_PAGE_SIZE,
+          rowCount: data?.data.totalItems ?? 0,
+          onPageChange: (index) => setPage({ filtersKey, index }),
+        }}
+      />
     </div>
   );
 }

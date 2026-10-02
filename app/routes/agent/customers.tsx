@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { Link, href } from "react-router";
 
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { ChevronLeftIcon, ChevronRightIcon, Plus } from "lucide-react";
 
 import {
   ModuleActions,
@@ -19,10 +20,10 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Heading } from "@/components/ui/text";
+import { Heading, Paragraph } from "@/components/ui/text";
 
 import { branchByAgent } from "@/hooks/data/branches";
-import { useCustomers, validateCustomerSearch } from "@/hooks/data/customers";
+import { pagedCustomersQueryOptions, validateCustomerSearch } from "@/hooks/data/customers";
 import { useAgentMetrics } from "@/hooks/data/users";
 import { siteConfig } from "@/lib/config";
 import { CustomersList } from "@/modules/customers/customers-list";
@@ -55,13 +56,20 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 export default function AgentCustomers({ loaderData }: Route.ComponentProps) {
   const { searchParams } = loaderData;
 
-  const { data: branchData } = useSuspenseQuery(branchByAgent);
-  const branch = branchData.data;
+  // Warm the branch cache for the rest of the agent pages.
+  useSuspenseQuery(branchByAgent);
 
-  const { data: customersData, isPending: customersLoading } = useCustomers({
-    searchParams: { ...searchParams, branchId: branch?.id },
-  });
-  const customers = customersData?.data ?? [];
+  // The server scopes agents to their own branch. Reset to the first page
+  // whenever the filters change.
+  const filtersKey = JSON.stringify(searchParams);
+  const [page, setPage] = useState({ filtersKey, index: 0 });
+  const pageIndex = page.filtersKey === filtersKey ? page.index : 0;
+
+  const { data: customersData, isPending: customersLoading } = useQuery(
+    pagedCustomersQueryOptions({ searchParams, page: pageIndex })
+  );
+  const customers = customersData?.data.items ?? [];
+  const totalPages = customersData?.data.totalPages ?? 0;
 
   return (
     <div className="container space-y-6">
@@ -100,6 +108,34 @@ export default function AgentCustomers({ loaderData }: Route.ComponentProps) {
       </CustomerFilters>
 
       <CustomersList customers={customers} isLoading={customersLoading} />
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between gap-4">
+          <Paragraph className="text-muted-foreground text-sm">
+            Page {pageIndex + 1} of {totalPages}
+          </Paragraph>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setPage({ filtersKey, index: pageIndex - 1 })}
+              disabled={pageIndex === 0}
+            >
+              <span className="sr-only">Go to previous page</span>
+              <ChevronLeftIcon className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setPage({ filtersKey, index: pageIndex + 1 })}
+              disabled={pageIndex >= totalPages - 1}
+            >
+              <span className="sr-only">Go to next page</span>
+              <ChevronRightIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

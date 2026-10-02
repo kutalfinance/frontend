@@ -1,13 +1,17 @@
-import { mutationOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import {
+  keepPreviousData,
+  mutationOptions,
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import z from "zod";
 
 import { queryClient } from "@/components/query-provider";
 
 import { api } from "@/lib/api";
-import { enqueueOperation } from "@/lib/offline";
-import { isOfflineMode } from "@/lib/offline-mode";
-import type { APIResponse, Customer, UploadJob } from "@/lib/types";
+import type { APIResponse, Customer, PagedResponse, UploadJob } from "@/lib/types";
 
 import { errorToast, invalidationHelpers, queryKeys, successToast } from "./utils";
 
@@ -26,84 +30,48 @@ export const validateCustomerSearch = z
 
 export type CustomerSearchParams = z.infer<typeof validateCustomerSearch>;
 
-function filterCustomers(customers: Customer[], searchParams?: CustomerSearchParams): Customer[] {
-  let result = customers;
-  if (searchParams?.q) {
-    const q = searchParams.q.toLowerCase();
-    result = result.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        c.phoneNumber.includes(q) ||
-        c.accountNumber.toLowerCase().includes(q)
-    );
-  }
-  if (searchParams?.branchId) {
-    result = result.filter((c) => c.branch?.id === searchParams.branchId);
-  }
-  if (searchParams?.createdAfter) {
-    const after = new Date(searchParams.createdAfter).getTime();
-    result = result.filter((c) => new Date(c.createdAt).getTime() >= after);
-  }
-  if (searchParams?.createdBefore) {
-    const before = new Date(searchParams.createdBefore).getTime();
-    result = result.filter((c) => new Date(c.createdAt).getTime() <= before);
-  }
-  if (searchParams?.lastDepositAfter) {
-    const after = new Date(searchParams.lastDepositAfter).getTime();
-    result = result.filter((c) => c.lastDepositDate != null && new Date(c.lastDepositDate).getTime() >= after);
-  }
-  if (searchParams?.hasPendingWithdrawal === "true") {
-    result = result.filter((c) => c.hasPendingWithdrawal);
-  }
-  if (searchParams?.sortBy) {
-    const dir = searchParams.sortDirection === "desc" ? -1 : 1;
-    const key = searchParams.sortBy as keyof Customer;
-    result = [...result].sort(
-      (a, b) => String(a[key] ?? "").localeCompare(String(b[key] ?? "")) * dir
-    );
-  }
-  return result;
-}
-
+/** Unpaginated, server-filtered. Only for bounded sets (e.g. one branch's customers). */
 export function useCustomers({ searchParams }: { searchParams?: CustomerSearchParams } = {}) {
   return useQuery({
-    queryKey: queryKeys.customers.all(),
-    queryFn: () => api.get("customer").json<APIResponse<Customer[]>>(),
-    select: (data) => ({ ...data, data: filterCustomers(data.data, searchParams) }),
+    queryKey: queryKeys.customers.filters(searchParams),
+    queryFn: () =>
+      api.get("customer", { searchParams: searchParams ?? {} }).json<APIResponse<Customer[]>>(),
   });
 }
+
+export const CUSTOMERS_PAGE_SIZE = 20;
+
+export const pagedCustomersQueryOptions = ({
+  searchParams,
+  page,
+  size = CUSTOMERS_PAGE_SIZE,
+}: {
+  searchParams?: CustomerSearchParams;
+  page: number;
+  size?: number;
+}) =>
+  queryOptions({
+    queryKey: [...queryKeys.customers.filters(searchParams), "paged", page, size],
+    queryFn: () =>
+      api
+        .get("customer/paged", { searchParams: { ...searchParams, page, size } })
+        .json<APIResponse<PagedResponse<Customer>>>(),
+    placeholderData: keepPreviousData,
+  });
 
 export function useCreateCustomer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: Partial<Customer> & { branchId: string }) => {
-      if (isOfflineMode()) {
-        return Promise.reject(Object.assign(new Error("offline"), { isOffline: true }));
-      }
-      return api.post("customer", { json: data }).json<APIResponse<Customer>>();
-    },
+    mutationFn: (data: Partial<Customer> & { branchId: string }) =>
+      api.post("customer", { json: data }).json<APIResponse<Customer>>(),
     onSuccess: () => {
       invalidationHelpers.customers.related().forEach((queryKey) => {
         queryClient.invalidateQueries({ queryKey });
       });
       successToast("Customer created successfully");
     },
-    onError: (error: any, variables) => {
-      if (error.isOffline || isOfflineMode() || !navigator.onLine) {
-        enqueueOperation({
-          url: "customer",
-          method: "POST",
-          body: JSON.stringify(variables),
-          idempotencyKey: crypto.randomUUID(),
-          label: `New Customer – ${variables.name ?? ""}`,
-          queuedAt: Date.now(),
-        });
-        toast.info("You're offline — customer will be created when connection is restored");
-        return;
-      }
-      errorToast(error);
-    },
+    onError: errorToast,
   });
 }
 
@@ -159,10 +127,17 @@ export const customerByIdQueryOptions = (id: string) => ({
   queryKey: queryKeys.customers.detail(id),
   queryFn: () => api.get(`customer/${id}`).json<APIResponse<Customer>>(),
   enabled: !!id,
+  // Show the row from any customer list already in the cache while the detail loads.
   placeholderData: (): APIResponse<Customer> | undefined => {
-    const all = queryClient.getQueryData<APIResponse<Customer[]>>(queryKeys.customers.all());
-    const found = all?.data.find((c) => c.id === id);
-    return found ? { msg: "ok", data: found } : undefined;
+    const lists = queryClient.getQueriesData<APIResponse<Customer[] | PagedResponse<Customer>>>({
+      queryKey: queryKeys.customers.all(),
+    });
+    for (const [, res] of lists) {
+      const rows = Array.isArray(res?.data) ? res.data : res?.data?.items;
+      const found = rows?.find((c) => c.id === id);
+      if (found) return { msg: "ok", data: found };
+    }
+    return undefined;
   },
 });
 

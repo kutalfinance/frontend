@@ -4,12 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ArrowDownUp, BanknoteArrowDown } from "lucide-react";
 
+import { Loader } from "@/components/loader";
 import {
   ModuleDescription,
   ModuleHeader,
   ModuleHeading,
   ModuleTitle,
 } from "@/components/module-heading";
+import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -18,7 +20,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Badge } from "@/components/ui/badge";
 import {
   Empty,
   EmptyDescription,
@@ -26,7 +27,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Loader } from "@/components/loader";
 import { Paragraph } from "@/components/ui/text";
 
 import { transactionsQueryOptions } from "@/hooks/data/transactions";

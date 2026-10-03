@@ -412,8 +412,8 @@ export default function AdminTransactionsGuide() {
       <div className="space-y-3">
         <h3 className="text-foreground text-base font-semibold">Reversing a Transaction</h3>
         <p>
-          Branch approvers can reverse a completed deposit or withdrawal. A{" "}
-          <strong>Reverse</strong> button appears on the right side of eligible rows.
+          Branch approvers can reverse a completed deposit or withdrawal. A <strong>Reverse</strong>{" "}
+          button appears on the right side of eligible rows.
         </p>
 
         <Preview wide>

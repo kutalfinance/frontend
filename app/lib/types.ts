@@ -3,6 +3,14 @@ export type APIResponse<T> = {
   data: T;
 };
 
+export type PagedResponse<T> = {
+  items: T[];
+  page: number;
+  size: number;
+  totalItems: number;
+  totalPages: number;
+};
+
 export enum UserRoles {
   ADMIN = "ADMIN",
   AGENT = "AGENT",

@@ -68,7 +68,7 @@ export function CustomerListItem({ customer }: { customer: Customer }) {
               {customer.name}
             </Heading>
             {customer.hasPendingWithdrawal && (
-              <Badge variant="outline" className="text-amber-600 border-amber-400 shrink-0 gap-1">
+              <Badge variant="outline" className="shrink-0 gap-1 border-amber-400 text-amber-600">
                 <Clock className="size-3" />
                 Pending
               </Badge>

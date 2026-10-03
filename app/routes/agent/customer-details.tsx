@@ -71,7 +71,7 @@ export function meta() {
 
 export async function clientLoader({ request, params }: Route.ClientLoaderArgs) {
   // Seed the per-customer cache from the all-customers list so the detail page
-  // renders instantly (including offline) even if never individually fetched.
+  // renders instantly even if never individually fetched.
   queryClient.prefetchQuery(customerByIdQueryOptions(params.customerId)).catch(() => {});
 
   const url = new URL(request.url);
